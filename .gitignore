@@ -1,12 +1,10 @@
 # Global ignoring of different binaries and another temporary files
 
-# Visual Studio user settings
-*.suo
-*.user
-
-# Visual C++ cache files
+# Visual Studio cache and settings
 .vs/
 ipch/
+*.suo
+*.user
 *.ncb
 *.opendb
 *.sdf
@@ -14,28 +12,25 @@ ipch/
 *.VC.db
 *.VC.VC.opendb
 *.aps
-build/
 
 # Build results
 obj/
 lib/
 bin/
+build/
+build_win32/
+build32/
+
+# Common logs
+*.log
 
 # Migrating report files
 _UpgradeReport_Files/
 UpgradeLog*.XML
 UpgradeLog*.htm
 
-# Dependencies
-sdk/3d_sdk/
-dep/
-packages/
-
 # C++ Builder backups
-*.~bpg
-*.~bpr
-*.~h
-*.~cpp
+*.~*
 
 # X-Ray resources
 *.db*
@@ -43,8 +38,28 @@ packages/
 # X-Ray user files
 _appdata_/
 
+# masOS Cache
+.DS_Store
+
+# Windows cache
+Thumbs.db
+
+# Build results
+obj/
+lib/
+bin/
+build/
+
+# Dependencies
+sdk/3d_sdk/
+dep/
+packages/
+
 # Temporary files
 temp/
 gamedata_origin/
 patch/
-*.log
+
+# Generated files
+imgui.ini
+git_version.h
