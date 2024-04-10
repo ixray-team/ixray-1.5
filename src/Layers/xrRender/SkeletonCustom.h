@@ -160,28 +160,57 @@ public:
 	virtual						~CKinematics		();
 
 	// Low level interface
-	u16							LL_BoneID		(LPCSTR  B);
-	u16							LL_BoneID		(const shared_str& B);
-	LPCSTR						LL_BoneName_dbg	(u16 ID);
+				u16				_BCL	LL_BoneID			(LPCSTR  B);
+				u16				_BCL	LL_BoneID			(const shared_str& B);
+				LPCSTR			_BCL	LL_BoneName_dbg		(u16 ID);
 
-    CInifile*					LL_UserData			(){return pUserData;}
+				CInifile*		_BCL	LL_UserData			()						{return pUserData;}
 	accel*						LL_Bones			(){return bone_map_N;}
-	ICF CBoneInstance&			LL_GetBoneInstance	(u16 bone_id)		{	VERIFY(bone_id<LL_BoneCount()); VERIFY(bone_instances); return bone_instances[bone_id];	}
-	CBoneData&					LL_GetData			(u16 bone_id)		{	VERIFY(bone_id<LL_BoneCount()); VERIFY(bones);			return *((*bones)[bone_id]);	}
-	u16							LL_BoneCount		()					{	return u16(bones->size());										}
+	ICF			CBoneInstance&	_BCL	LL_GetBoneInstance	(u16 bone_id)			{	VERIFY(bone_id<LL_BoneCount()); VERIFY(bone_instances); return bone_instances[bone_id];	}
+	ICF const	CBoneInstance&	_BCL	LL_GetBoneInstance	(u16 bone_id) const		{	VERIFY(bone_id<LL_BoneCount()); VERIFY(bone_instances); return bone_instances[bone_id];	}
+	CBoneData&					_BCL	LL_GetData			(u16 bone_id)
+    {
+    	VERIFY(bone_id<LL_BoneCount());
+        VERIFY(bones);
+        CBoneData& bd =  *((*bones)[bone_id]) ;
+        return bd;
+    }
+
+	virtual	const IBoneData&_BCL	GetBoneData(u16 bone_id) const
+	{
+		VERIFY(bone_id<LL_BoneCount());
+        VERIFY(bones);
+        CBoneData& bd =  *((*bones)[bone_id]) ;
+        return bd;
+	}
+	CBoneData*	_BCL	LL_GetBoneData		(u16 bone_id)
+	{
+		
+		VERIFY(bone_id<LL_BoneCount());
+        VERIFY(bones);
+		u32	sz = sizeof(vecBones);
+		u32	sz1=  sizeof(((*bones)[bone_id])->children);
+		Msg("sz: %d",sz);
+		Msg("sz1: %d",sz1);
+        CBoneData* bd =  ((*bones)[bone_id]) ;
+        return bd;
+	}
+	u16						_BCL	LL_BoneCount		()	const			{	return u16(bones->size());										}
 	u16							LL_VisibleBoneCount	()					{	u64 F=visimask.flags&((u64(1)<<u64(LL_BoneCount()))-1); return (u16)btwCount1(F); }
-	ICF Fmatrix&				LL_GetTransform		(u16 bone_id)		{	return LL_GetBoneInstance(bone_id).mTransform;					}
+	ICF Fmatrix&			_BCL	LL_GetTransform		(u16 bone_id)		{	return LL_GetBoneInstance(bone_id).mTransform;					}
+	ICF const Fmatrix&		_BCL	LL_GetTransform		(u16 bone_id) const	{	return LL_GetBoneInstance(bone_id).mTransform;					}
 	ICF Fmatrix&				LL_GetTransform_R	(u16 bone_id)		{	return LL_GetBoneInstance(bone_id).mRenderTransform;			}	// rendering only
 	Fobb&						LL_GetBox			(u16 bone_id)		{	VERIFY(bone_id<LL_BoneCount());	return (*bones)[bone_id]->obb;	}
+	const Fbox&				_BCL	GetBox				()const				{	return vis.box ;}
 	void						LL_GetBindTransform (xr_vector<Fmatrix>& matrices);
     int 						LL_GetBoneGroups 	(xr_vector<xr_vector<u16> >& groups);
 
-	u16							LL_GetBoneRoot		()					{	return iRoot;													}
+	u16						_BCL	LL_GetBoneRoot		()					{	return iRoot;													}
 	void						LL_SetBoneRoot		(u16 bone_id)		{	VERIFY(bone_id<LL_BoneCount());	iRoot=bone_id;					}
 
-    BOOL						LL_GetBoneVisible	(u16 bone_id)		{	VERIFY(bone_id<LL_BoneCount()); return visimask.is(u64(1)<<bone_id);	}
+    BOOL					_BCL	LL_GetBoneVisible	(u16 bone_id)		{	VERIFY(bone_id<LL_BoneCount()); return visimask.is(u64(1)<<bone_id);	}
 	void						LL_SetBoneVisible	(u16 bone_id, BOOL val, BOOL bRecursive);
-	u64							LL_GetBonesVisible	()					{	return visimask.get();	}
+	u64						_BCL	LL_GetBonesVisible	()					{	return visimask.get();	}
 	void						LL_SetBonesVisible	(u64 mask);
 
 	// Main functionality
@@ -199,6 +228,9 @@ public:
 	// debug
 #ifdef DEBUG
 	void						DebugRender			(Fmatrix& XFORM);
+protected:
+	virtual shared_str		_BCL	getDebugName()	{ return dbg_name; }
+public:
 #endif
 
 	// General "Visual" stuff
@@ -209,8 +241,8 @@ public:
     virtual void 				Release				();
 
 	virtual	IKinematicsAnimated*dcast_PKinematicsAnimated() { return 0;	}
-	virtual IRenderVisual*		dcast_RenderVisual() { return this; }
-	virtual IKinematics*		dcast_PKinematics()  { return this; }
+	virtual IRenderVisual*	_BCL dcast_RenderVisual() { return this; }
+	virtual IKinematics*	_BCL dcast_PKinematics()  { return this; }
 //	virtual	CKinematics*		dcast_PKinematics	()				{ return this;	}
 
 	virtual u32					mem_usage			(bool bInstance)
@@ -226,6 +258,7 @@ public:
 	}
 private:
 	bool						m_is_original_lod;
+
 };
 IC CKinematics* PCKinematics		(dxRender_Visual* V)		{ return V?(CKinematics*)V->dcast_PKinematics():0; }
 //---------------------------------------------------------------------------

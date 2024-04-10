@@ -174,8 +174,8 @@ public:
 	virtual void				Release			();
 	virtual void				Spawn			();
 	virtual	IKinematicsAnimated*dcast_PKinematicsAnimated() { return this;	}
-	virtual IRenderVisual*		dcast_RenderVisual		() { return this; }
-	virtual IKinematics*		dcast_PKinematics		()  { return this; }
+	virtual IRenderVisual*	_BCL	dcast_RenderVisual		() { return this; }
+	virtual IKinematics*	_BCL 	dcast_PKinematics		()  { return this; }
 
 	virtual						~CKinematicsAnimated	();
 								CKinematicsAnimated		();
@@ -191,6 +191,8 @@ public:
 		VERIFY					(bone_part_id < MAX_PARTS);
 		return					(blend_cycles[bone_part_id]);
 	}
+
+	virtual float				get_animation_length (MotionID motion_ID);
 };
 //IC CKinematicsAnimated* PKinematicsAnimated(IRender_Visual* V) { return V?V->dcast_PKinematicsAnimated():0; }
 IC CKinematicsAnimated* PKinematicsAnimated(IRenderVisual* V) { return V?(CKinematicsAnimated*)V->dcast_PKinematicsAnimated():0; }

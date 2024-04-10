@@ -13,6 +13,7 @@ class    CBoneInstanceAnimated;
 struct	 CKey;
 class	 CInifile;
 class	IKinematicsAnimated;
+class	 IRenderVisual;
 struct IterateBlendsCallback
 {
 	virtual	void	operator () ( CBlend &B ) = 0;
@@ -99,8 +100,10 @@ public:
 
 	virtual const CPartition&			partitions		() const = 0;
 
-	virtual IRenderVisual* dcast_RenderVisual() = 0;
-	virtual IKinematics* dcast_PKinematics() = 0;
+	virtual IRenderVisual*	_BCL dcast_RenderVisual() = 0;
+	virtual IKinematics*	_BCL dcast_PKinematics() = 0;
+
+	virtual float						get_animation_length (MotionID motion_ID) = 0;
 //#ifdef DEBUG
 //	virtual	const BlendSVec			&blend_cycle	(const u32 &bone_part_id) const = 0;
 //#endif //	DEBUG
