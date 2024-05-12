@@ -1,7 +1,7 @@
 #pragma once
 
 #include "telekinetic_object.h"
-#include "../../PHObject.h"
+#include "../../../xrPhysics/PHObject.h"
 
 
 
