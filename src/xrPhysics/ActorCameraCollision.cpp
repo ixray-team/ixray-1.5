@@ -15,6 +15,7 @@
 #ifdef DEBUG
 #include "phdebug.h"
 #endif
+
 CPhysicsShell*	CActor::actor_camera_shell = NULL;
 
 static bool cam_collided = false;

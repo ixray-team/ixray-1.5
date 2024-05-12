@@ -69,7 +69,7 @@ void  CAmebaZone::Affect(SZoneObjectInfo* O)
 	}
 }
 
-void CAmebaZone::PhTune(dReal step)
+void CAmebaZone::PhTune(float step)
 {
 	OBJECT_INFO_VEC_IT it;
 	for(it = m_ObjectInfoMap.begin(); m_ObjectInfoMap.end() != it; ++it) 

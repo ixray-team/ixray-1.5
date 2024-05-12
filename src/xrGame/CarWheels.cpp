@@ -313,7 +313,7 @@ void CCar::SWheelSteer::Limit()
 	dJointID joint=J->GetDJoint();
 	if(!limited)
 	{
-		dReal angle = dJointGetHinge2Angle1(joint);
+		float angle = dJointGetHinge2Angle1(joint);
 		if(dFabs(angle)<M_PI/180.f)
 		{
 			pwheel->SetSteerLimits(0.f,0.f);

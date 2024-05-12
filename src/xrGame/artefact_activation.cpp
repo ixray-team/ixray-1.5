@@ -110,7 +110,7 @@ void SArtefactActivation::UpdateActivation()
 	UpdateEffects				();
 }
 
-void SArtefactActivation::PhDataUpdate(dReal step)
+void SArtefactActivation::PhDataUpdate(float step)
 {
 	R_ASSERT( m_af );
 	

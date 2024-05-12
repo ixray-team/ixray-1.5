@@ -104,7 +104,7 @@ void CPHMovementControl::AddControlVel	(const Fvector& vel)
 	vExternalImpulse.add(vel);
 	bExernalImpulse=true;
 }
-void CPHMovementControl::ApplyImpulse(const Fvector& dir,const dReal P)
+void CPHMovementControl::ApplyImpulse(const Fvector& dir,const float P)
 {
 	VERIFY( m_character );
 	if(fis_zero(P))
@@ -1150,7 +1150,7 @@ void CPHMovementControl::InterpolateBox		(DWORD id, float k)
 	dVectorInterpolate(size,to_size,k);
 	m_character->SetBox(size);
 }
-void CPHMovementControl::ApplyHit(const Fvector& dir,const dReal P,ALife::EHitType hit_type)
+void CPHMovementControl::ApplyHit(const Fvector& dir,const float P,ALife::EHitType hit_type)
 {
 
 	VERIFY( m_character );

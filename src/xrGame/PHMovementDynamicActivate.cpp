@@ -139,12 +139,12 @@ public:
 		bool ret=false;
 		if(dV_valid(linear_velocity))
 		{
-			dReal mag;
+			float mag;
 			Fvector vlinear_velocity;vlinear_velocity.set(cast_fv(linear_velocity));
 			mag=_sqrt(linear_velocity[0]*linear_velocity[0]+linear_velocity[2]*linear_velocity[2]);//
 			if(mag>l_limit)
 			{
-				dReal f=mag/l_limit;
+				float f=mag/l_limit;
 				//dBodySetLinearVel(m_body,linear_velocity[0]/f,linear_velocity[1],linear_velocity[2]/f);///f
 				vlinear_velocity.x/=f;vlinear_velocity.z/=f;
 				ret=true;
@@ -164,7 +164,7 @@ public:
 			return true;
 		}
 	}
-	virtual void PhDataUpdate(dReal step)
+	virtual void PhDataUpdate(float step)
 	{
 		const float		*linear_velocity		=dBodyGetLinearVel(m_body);
 
@@ -186,7 +186,7 @@ public:
 		dVectorSet(m_safe_velocity,linear_velocity);
 	}
 
-	virtual void PhTune(dReal step)
+	virtual void PhTune(float step)
 	{
 
 		VelocityLimit();
@@ -221,7 +221,7 @@ public:
 	float mf_slf_y(){return m_max_force_self_y;}
 	float mf_slf_sd(){return m_max_force_self_sd;}
 protected:
-	virtual void PhTune(dReal step)
+	virtual void PhTune(float step)
 	{
 		InitValues();
 		int num=dBodyGetNumJoints(m_body);
@@ -236,7 +236,7 @@ protected:
 		}
 	}
 
-	virtual void PhDataUpdate(dReal step)
+	virtual void PhDataUpdate(float step)
 	{
 		int num=dBodyGetNumJoints(m_body);
 		for(int i=0;i<num;i++)
@@ -249,10 +249,10 @@ protected:
 				dxJoint* b_joint=(dxJoint*) joint;
 				dBodyID other_body=b_joint->node[1].body;
 				bool b_body_second=(b_joint->node[1].body==m_body);
-				dReal* self_force=feedback->f1;
-				dReal* self_torque=feedback->t1;
-				dReal* othrers_force=feedback->f2;
-				dReal* othrers_torque=feedback->t2;
+				float* self_force=feedback->f1;
+				float* self_torque=feedback->t1;
+				float* othrers_force=feedback->f2;
+				float* othrers_torque=feedback->t2;
 				if(b_body_second)
 				{
 					other_body=b_joint->node[0].body;
@@ -269,7 +269,7 @@ protected:
 				if(other_body)
 				{
 					dVector3 shoulder;dVectorSub(shoulder,dJointGetPositionContact(joint),dBodyGetPosition(other_body));
-					dReal shoulder_lenght=_sqrt(dDOT(shoulder,shoulder));
+					float shoulder_lenght=_sqrt(dDOT(shoulder,shoulder));
 
 					save_max(m_max_force_others,_sqrt(dDOT( othrers_force,othrers_force)));
 					if(!fis_zero(shoulder_lenght)) 

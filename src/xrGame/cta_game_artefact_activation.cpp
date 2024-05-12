@@ -89,7 +89,7 @@ void CtaArtefactActivation::SpawnAnomaly()
 	inherited::SpawnAnomaly();
 }
 
-void CtaArtefactActivation::PhDataUpdate(dReal step)
+void CtaArtefactActivation::PhDataUpdate(float step)
 {
 	inherited::PhDataUpdate(step);
 }

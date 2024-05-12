@@ -116,74 +116,74 @@ IC	float	dXZDot(const Fvector& v0,const Fvector& v1)
 {
 	return v0.x*v1.x+v0.z*v1.z;
 }
-IC	void	dVectorSet(dReal* vd,const dReal* vs)
+IC	void	dVectorSet(float* vd,const float* vs)
 {
 	vd[0]=vs[0];vd[1]=vs[1];vd[2]=vs[2];
 }
 
-IC	void	dVectorSetInvert(dReal* vd,const dReal* vs)
+IC	void	dVectorSetInvert(float* vd,const float* vs)
 {
 	vd[0]=-vs[0];vd[1]=-vs[1];vd[2]=-vs[2];
 }
 
-IC	void dVectorSetZero(dReal* vd)
+IC	void dVectorSetZero(float* vd)
 {
 	vd[0]=0.f;vd[1]=0.f;vd[2]=0.f;
 }
 
-IC	void	dVector4Set(dReal* vd,const dReal* vs)
+IC	void	dVector4Set(float* vd,const float* vs)
 {
 	vd[0]=vs[0];vd[1]=vs[1];vd[2]=vs[2];vd[3]=vs[3];
 }
 
-IC	void	dVector4SetZero(dReal* vd)
+IC	void	dVector4SetZero(float* vd)
 {
 	vd[0]=0.f;vd[1]=0.f;vd[2]=0.f;vd[3]=0.f;
 } 
 
-IC void		dQuaternionSet(dReal* vd,const dReal* vs)
+IC void		dQuaternionSet(float* vd,const float* vs)
 {
 	dVector4Set(vd,vs);
 }
 
 
-IC	void	dVectorAdd(dReal* v,const dReal* av)
+IC	void	dVectorAdd(float* v,const float* av)
 {
 	v[0]+=av[0];	v[1]+=av[1];	v[2]+=av[2];
 }
-IC	void	dVectorAddMul(dReal* v,const dReal* ad,float mul)
+IC	void	dVectorAddMul(float* v,const float* ad,float mul)
 {
 	v[0]+=ad[0]*mul;
 	v[1]+=ad[1]*mul;
 	v[2]+=ad[2]*mul;
 }
-IC	void	dVectorAdd(dReal* v,const dReal* av0,const dReal* av1)
+IC	void	dVectorAdd(float* v,const float* av0,const float* av1)
 {
 	v[0]=av0[0]+av1[0];	v[1]=av0[1]+av1[1]; v[2]=av0[2]+av1[2];
 }
 
-IC	void	dVectorSub(dReal* v,const dReal* av)
+IC	void	dVectorSub(float* v,const float* av)
 {
 	v[0]-=av[0];	v[1]-=av[1];	v[2]-=av[2];
 }
 
-IC	void	dVectorSub(dReal* v,const dReal* av1,const dReal* av0)
+IC	void	dVectorSub(float* v,const float* av1,const float* av0)
 {
 	v[0]=av1[0]-av0[0];	v[1]=av1[1]-av0[1]; v[2]=av1[2]-av0[2];
 }
-IC	void	dVectorInvert(dReal* v)
+IC	void	dVectorInvert(float* v)
 {
 	v[0]=-v[0];v[1]=-v[1];v[2]=-v[2];
 }
-IC	void	dVectorMul(dReal* v,float mt)
+IC	void	dVectorMul(float* v,float mt)
 {
 	v[0]*=mt;v[1]*=mt;v[2]*=mt;
 }
-IC	void	dVectorMul(dReal* res,const dReal* av,float mt)
+IC	void	dVectorMul(float* res,const float* av,float mt)
 {
 	res[0]=av[0]*mt;res[1]=av[1]*mt;res[2]=av[2]*mt;
 }
-IC	void	dVectorInterpolate(dReal* v,dReal* to,float k) //changes to
+IC	void	dVectorInterpolate(float* v,float* to,float k) //changes to
 {
 	dVectorMul(v,1.f-k);dVectorMul(to,k);dVectorAdd(v,to);
 }
