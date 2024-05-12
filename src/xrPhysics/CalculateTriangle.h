@@ -2,7 +2,8 @@
 #include "MathUtils.h"
 #include "Level.h"
 #include "Geometry.h"
-#include "../xrPhysics/tri-colliderknoopc/dtricollidermath.h"
+#include "tri-colliderknoopc/dtricollidermath.h"
+#include "ode_redefine.h"
 
 ICF void GetNormal(CDB::TRI*XTri,Fvector &n)
 {

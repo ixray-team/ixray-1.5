@@ -2,6 +2,7 @@
 #define PH_STATIC_GEOM_SHELL_H
 #include "PHGeometryOwner.h"
 #include "PHObject.h"
+#include "PHUpdateObject.h"
 
 class CPHStaticGeomShell: 
 	public CPHGeometryOwner,
