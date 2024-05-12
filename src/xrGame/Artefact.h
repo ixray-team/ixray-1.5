@@ -69,8 +69,8 @@ public:
 	virtual void					StartLights();
 	virtual void					StopLights();
 
-	virtual void					PhDataUpdate					(dReal step);
-	virtual void					PhTune							(dReal step)	{};
+	virtual void					PhDataUpdate					(float step);
+	virtual void					PhTune							(float step)	{};
 
 	float							AdditionalInventoryWeight		() const {return m_additional_weight;}
 	bool							m_bCanSpawnZone;

@@ -12,8 +12,8 @@ public:
 	virtual				void		Affect				(SZoneObjectInfo* O)		;
 	
 protected:
-	virtual				void		PhTune				(dReal step)			;
-	virtual				void		PhDataUpdate		(dReal step)			{;}
+	virtual				void		PhTune				(float step)			;
+	virtual				void		PhDataUpdate		(float step)			{;}
 	virtual				bool		BlowoutState		()						;
 	virtual				void		SwitchZoneState		(EZoneState new_state)	;
 	virtual				void		Load				(LPCSTR section)		;
