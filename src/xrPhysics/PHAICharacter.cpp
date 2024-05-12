@@ -5,7 +5,7 @@
 #include "Physics.h"
 #include "ExtendedGeom.h"
 #include "../xrEngine/cl_intersect.h"
-#include "../xrPhysics/tri-colliderKNoOPC\__aabb_tri.h"
+#include "tri-colliderKNoOPC\__aabb_tri.h"
 
 #include "phaicharacter.h"
 

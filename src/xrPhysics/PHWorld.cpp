@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "PHWorld.h"
-#include "../xrPhysics/tri-colliderknoopc/dTriList.h"
+#include "tri-colliderknoopc/dTriList.h"
 #include "PhysicsCommon.h"
 #include "Level.h"
 #include "ExtendedGeom.h"

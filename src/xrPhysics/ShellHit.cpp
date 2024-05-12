@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "PHDynamicData.h"
 #include "Physics.h"
-#include "../xrPhysics/tri-colliderknoopc/dTriList.h"
+#include "tri-colliderknoopc/dTriList.h"
 #include "PHShellSplitter.h"
 #include "PHFracture.h"
 #include "PHJointDestroyInfo.h"

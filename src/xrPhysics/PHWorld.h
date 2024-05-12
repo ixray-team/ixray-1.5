@@ -1,7 +1,7 @@
 #ifndef PH_WORLD_H
 #define PH_WORLD_H
 #include "Physics.h"
-
+#include "PHUpdateObject.h"
 // refs
 struct	SGameMtlPair;
 class	CPHCommander;

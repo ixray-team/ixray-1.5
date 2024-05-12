@@ -1,8 +1,8 @@
 #ifndef PHSHELL_SPLITTER_H
 #define PHSHELL_SPLITTER_H
 #include "PHDefs.h"
-#include "PHObject.h"
 #include "PHFracture.h"
+#include "PHUpdateObject.h"
 
 class CPHShellSplitter;
 
@@ -32,7 +32,8 @@ private:
 
 using SPLITTER_STORAGE = xr_vector<CPHShellSplitter>;
 using SPLITTER_I = SPLITTER_STORAGE::iterator;
-using SPLITTER_RI = xr_vector<CPHShellSplitter>::reverse_iterator;
+using SPLITTER_RI = SPLITTER_STORAGE::reverse_iterator;
+
 
 class CPHShellSplitterHolder : public CPHUpdateObject			//call all Fractures and Breakable Joints Updates
 {

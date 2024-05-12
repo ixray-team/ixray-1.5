@@ -4,10 +4,10 @@
 
 #include "entity.h"
 #include "PHDynamicData.h"
-#include "PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
+#include "../xrPhysics/PHUpdateObject.h"
 #include "script_entity.h"
 #include "CarLights.h"
-#include "phobject.h"
 #include "holder_custom.h"
 #include "PHSkeleton.h"
 #include "DamagableItem.h"

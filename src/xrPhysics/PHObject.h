@@ -128,25 +128,5 @@ IC			const CLBits&				collide_bits		()const 								{return m_collide_bits;}
 IC			const _flags<CLClassBits>&	collide_class_bits 	()const 								{return m_collide_class_bits;}
 			void			CollideDynamics					()										;
 };
-
-
-class CPhysicsShell;
-class CPHUpdateObject 
-{
-	DECLARE_PHLIST_ITEM(CPHUpdateObject)
-	bool				b_activated																	;
-
-public:
-					CPHUpdateObject	()																;
-	virtual			~CPHUpdateObject()																{Deactivate();}
-	void			Activate		()																;
-	void			Deactivate		()																;
-IC	bool			IsActive		()																{return b_activated;}
-	virtual void	PhDataUpdate	(dReal step)													=0;
-	virtual void	PhTune			(dReal step)													=0;
-	virtual void	NetRelcase		(CPhysicsShell *s)												{};
-};
-
-DEFINE_PHITEM_LIST(CPHObject,PH_OBJECT_STORAGE,PH_OBJECT_I)
-DEFINE_PHITEM_LIST(CPHUpdateObject,PH_UPDATE_OBJECT_STORAGE,PH_UPDATE_OBJECT_I)
+DEFINE_PHITEM_LIST(CPHObject, PH_OBJECT_STORAGE, PH_OBJECT_I)
 #endif//CPHOBJECT
