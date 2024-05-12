@@ -3,7 +3,7 @@
 //#if 0
 
 #include "entity.h"
-#include "PHDynamicData.h"
+#include "../xrPhysics/PHDynamicData.h"
 #include "../xrPhysics/PhysicsShell.h"
 #include "../xrPhysics/PHUpdateObject.h"
 #include "script_entity.h"
@@ -11,7 +11,7 @@
 #include "holder_custom.h"
 #include "PHSkeleton.h"
 #include "DamagableItem.h"
-#include "phcollisiondamagereceiver.h"
+#include "../xrPhysics/phcollisiondamagereceiver.h"
 #include "CarDamageParticles.h"
 #include "xrserver_objects_alife.h"
 #include "CarDamageParticles.h"

@@ -4,7 +4,7 @@
 //#if 0
 
 #include "ParticlesObject.h"
-#include "Physics.h"
+#include "../xrPhysics/Physics.h"
 
 #ifdef DEBUG
 #	include "../xrEngine/StatGraph.h"
@@ -29,7 +29,7 @@
 #include "CarWeapon.h"
 #include "game_object_space.h"
 #include "../xrEngine/gamemtllib.h"
-#include "PHActivationShape.h"
+#include "../xrPhysics/PHActivationShape.h"
 #include "CharacterPhysicsSupport.h"
 #include "car_memory.h"
 

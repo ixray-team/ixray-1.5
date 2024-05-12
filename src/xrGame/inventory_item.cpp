@@ -11,7 +11,7 @@
 #include "inventory_item.h"
 #include "inventory_item_impl.h"
 #include "inventory.h"
-#include "Physics.h"
+#include "../xrPhysics/Physics.h"
 #include "physicsshellholder.h"
 #include "entity_alive.h"
 #include "Level.h"

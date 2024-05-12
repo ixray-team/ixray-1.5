@@ -3,9 +3,9 @@
 
 #include "phmovementcontrol.h"
 
-#include "ExtendedGeom.h"
-#include "MathUtils.h"
-#include "Physics.h"
+#include "../xrPhysics/ExtendedGeom.h"
+#include "../xrPhysics/MathUtils.h"
+#include "../xrPhysics/Physics.h"
 #include "Level.h"
 #include "../xrEngine/gamemtllib.h"
 #include "PhysicsShellHolder.h"

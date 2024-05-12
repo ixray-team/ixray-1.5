@@ -6,7 +6,7 @@
 
 #include "explosive.h"
 
-#include "PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "entity.h"
 //#include "PSObject.h"
 #include "ParticlesObject.h"
@@ -26,10 +26,10 @@
 #	include "PHDebug.h"
 #endif
 
-#include "Physics.h"
-#include "MathUtils.h"
-#include "phvalidevalues.h"
-#include "PHActivationShape.h"
+#include "../xrPhysics/Physics.h"
+#include "../xrPhysics/MathUtils.h"
+#include "../xrPhysics/phvalidevalues.h"
+#include "../xrPhysics/PHActivationShape.h"
 #include "game_base_space.h"
 #include "profiler.h"
 

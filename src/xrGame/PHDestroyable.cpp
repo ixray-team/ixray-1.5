@@ -7,37 +7,37 @@
 #include "object_factory.h"
 #include "xrServer_Objects_ALife.h"
 #include "Level.h"
-#include "PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "Actor.h"
 #include "CharacterPhysicsSupport.h"
 #include "ai_object_location.h"
 #include "ai_space.h"
 #include "game_graph.h"
-#include "PHCollideValidator.h"
-#include "PHShell.h"
-#include "MathUtils.h"
+#include "../xrPhysics/PHCollideValidator.h"
+#include "../xrPhysics/PHShell.h"
+#include "../xrPhysics/MathUtils.h"
 #ifdef DEBUG
-#include "PHWorld.h"
+#include "../xrPhysics/PHWorld.h"
 #endif
 
 #include "../Include/xrRender/Kinematics.h"
 /*
 [impulse_transition_to_parts]
-random_min              =1       ; х массу объекта = величина случайно направленного импульса 
-; с случайн				о выбранной точкой приложения в пределах нового обекта
-random_hit_imp         =0.1     ; х величена хит - импульса =............
+random_min              =1       ; С… РјР°СЃСЃСѓ РѕР±СЉРµРєС‚Р° = РІРµР»РёС‡РёРЅР° СЃР»СѓС‡Р°Р№РЅРѕ РЅР°РїСЂР°РІР»РµРЅРЅРѕРіРѕ РёРјРїСѓР»СЊСЃР° 
+; СЃ СЃР»СѓС‡Р°Р№РЅ				Рѕ РІС‹Р±СЂР°РЅРЅРѕР№ С‚РѕС‡РєРѕР№ РїСЂРёР»РѕР¶РµРЅРёСЏ РІ РїСЂРµРґРµР»Р°С… РЅРѕРІРѕРіРѕ РѕР±РµРєС‚Р°
+random_hit_imp         =0.1     ; С… РІРµР»РёС‡РµРЅР° С…РёС‚ - РёРјРїСѓР»СЊСЃР° =............
 
-;ref_bone                       ; кость из по которой определяется скорость для частей у который связь не задана по умолчанию рут
-imp_transition_factor  =0.1     ; фактор с которым прикладывается хит по исходному объекту ко всем частям 
-lv_transition_factor   =1       ; коэффициент передачи линейной скорости
-av_transition_factor   =1       ; коэффициент передачи угловой скорости
+;ref_bone                       ; РєРѕСЃС‚СЊ РёР· РїРѕ РєРѕС‚РѕСЂРѕР№ РѕРїСЂРµРґРµР»СЏРµС‚СЃСЏ СЃРєРѕСЂРѕСЃС‚СЊ РґР»СЏ С‡Р°СЃС‚РµР№ Сѓ РєРѕС‚РѕСЂС‹Р№ СЃРІСЏР·СЊ РЅРµ Р·Р°РґР°РЅР° РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ СЂСѓС‚
+imp_transition_factor  =0.1     ; С„Р°РєС‚РѕСЂ СЃ РєРѕС‚РѕСЂС‹Рј РїСЂРёРєР»Р°РґС‹РІР°РµС‚СЃСЏ С…РёС‚ РїРѕ РёСЃС…РѕРґРЅРѕРјСѓ РѕР±СЉРµРєС‚Сѓ РєРѕ РІСЃРµРј С‡Р°СЃС‚СЏРј 
+lv_transition_factor   =1       ; РєРѕСЌС„С„РёС†РёРµРЅС‚ РїРµСЂРµРґР°С‡Рё Р»РёРЅРµР№РЅРѕР№ СЃРєРѕСЂРѕСЃС‚Рё
+av_transition_factor   =1       ; РєРѕСЌС„С„РёС†РёРµРЅС‚ РїРµСЂРµРґР°С‡Рё СѓРіР»РѕРІРѕР№ СЃРєРѕСЂРѕСЃС‚Рё
 
 
 [impulse_transition_from_source_bone]
 source_bone            =0       ; ref_bone
-imp_transition_factor  =1       ; коэффициент передачи импульса     
-lv_transition_factor   =1       ; коэффициент передачи линейной скорости 
-av_transition_factor   =1       ; коэффициент передачи угловой скорости
+imp_transition_factor  =1       ; РєРѕСЌС„С„РёС†РёРµРЅС‚ РїРµСЂРµРґР°С‡Рё РёРјРїСѓР»СЊСЃР°     
+lv_transition_factor   =1       ; РєРѕСЌС„С„РёС†РёРµРЅС‚ РїРµСЂРµРґР°С‡Рё Р»РёРЅРµР№РЅРѕР№ СЃРєРѕСЂРѕСЃС‚Рё 
+av_transition_factor   =1       ; РєРѕСЌС„С„РёС†РёРµРЅС‚ РїРµСЂРµРґР°С‡Рё СѓРіР»РѕРІРѕР№ СЃРєРѕСЂРѕСЃС‚Рё
 
 */
 CPHDestroyable::CPHDestroyable()

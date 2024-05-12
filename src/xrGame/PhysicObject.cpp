@@ -1,7 +1,7 @@
 #include "pch_script.h"
 #include "physicobject.h"
-#include "PhysicsShell.h"
-#include "Physics.h"
+#include "../xrPhysics/PhysicsShell.h"
+#include "../xrPhysics/Physics.h"
 #include "xrserver_objects_alife.h"
 #include "Level.h"
 #include "../Include/xrRender/Kinematics.h"
@@ -10,7 +10,7 @@
 #include "../xrEngine/cf_dynamic_mesh.h"
 
 #include "game_object_space.h"
-#include "PhysicsShellAnimator.h"
+#include "../xrPhysics/PhysicsShellAnimator.h"
 #include "moving_bones_snd_player.h"
 #ifdef	DEBUG
 #include "phdebug.h"

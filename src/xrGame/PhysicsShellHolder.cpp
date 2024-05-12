@@ -1,6 +1,6 @@
 #include "pch_script.h"
 #include "PhysicsShellHolder.h"
-#include "PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "xrMessages.h"
 #include "ph_shell_interface.h"
 #include "../Include/xrRender/Kinematics.h"
@@ -10,9 +10,9 @@
 #include "PHScriptCall.h"
 #include "CustomRocket.h"
 #include "Grenade.h"
-#include "phworld.h"
-#include "phactivationshape.h"
-#include "phvalide.h"
+#include "../xrPhysics/phworld.h"
+#include "../xrPhysics/phactivationshape.h"
+#include "../xrPhysics/phvalide.h"
 #include "characterphysicssupport.h"
 #include "phmovementcontrol.h"
 #include "physics_shell_animated.h"
@@ -59,7 +59,7 @@ void CPhysicsShellHolder::net_Destroy()
 	//remove calls
 	CPHSriptReqGObjComparer cmpr(this);
 	Level().ph_commander_scripts().remove_calls(&cmpr);
-	//удалить партиклы из ParticlePlayer
+	//СѓРґР°Р»РёС‚СЊ РїР°СЂС‚РёРєР»С‹ РёР· ParticlePlayer
 	CParticlesPlayer::net_DestroyParticles		();
 	inherited::net_Destroy						();
 	b_sheduled									=	false;
@@ -325,7 +325,7 @@ void CPhysicsShellHolder::OnChangeVisual()
 void CPhysicsShellHolder::UpdateCL	()
 {
 	inherited::UpdateCL	();
-	//обновить присоединенные партиклы
+	//РѕР±РЅРѕРІРёС‚СЊ РїСЂРёСЃРѕРµРґРёРЅРµРЅРЅС‹Рµ РїР°СЂС‚РёРєР»С‹
 	UpdateParticles		();
 }
 float CPhysicsShellHolder::EffectiveGravity()

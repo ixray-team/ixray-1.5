@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "climableobject.h "
-#include "PHStaticGeomShell.h"
+#include "../xrPhysics/PHStaticGeomShell.h"
 #include "xrServer_Objects_ALife.h"
-#include "PHCharacter.h"
-#include "MathUtils.h"
+#include "../xrPhysics/PHCharacter.h"
+#include "../xrPhysics/MathUtils.h"
 
 #ifdef DEBUG
 #	include "debug_renderer.h"

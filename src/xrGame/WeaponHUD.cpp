@@ -1,6 +1,6 @@
-// WeaponHUD.cpp:	HUD для оружия и прочих предметов, которые
-//					могут держать в руках персонажи, также используется
-//					для синхронизации анимаций с видом от 3-го лица
+// WeaponHUD.cpp:	HUD РґР»СЏ РѕСЂСѓР¶РёСЏ Рё РїСЂРѕС‡РёС… РїСЂРµРґРјРµС‚РѕРІ, РєРѕС‚РѕСЂС‹Рµ
+//					РјРѕРіСѓС‚ РґРµСЂР¶Р°С‚СЊ РІ СЂСѓРєР°С… РїРµСЂСЃРѕРЅР°Р¶Рё, С‚Р°РєР¶Рµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ
+//					РґР»СЏ СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёРё Р°РЅРёРјР°С†РёР№ СЃ РІРёРґРѕРј РѕС‚ 3-РіРѕ Р»РёС†Р°
 //////////////////////////////////////////////////////////////////////
 #include "stdafx.h"
 #include "WeaponHUD.h"
@@ -8,7 +8,7 @@
 #include "../xrEngine/Motion.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "level.h"
-#include "MathUtils.h"
+#include "../xrPhysics/MathUtils.h"
 weapon_hud_container* g_pWeaponHUDContainer=0;
 
 BOOL weapon_hud_value::load(const shared_str& section, CHudItem* owner)

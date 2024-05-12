@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #ifdef DEBUG
-#include "physics.h"
-#include "MathUtils.h"
+#include "../xrPhysics/physics.h"
+#include "../xrPhysics/MathUtils.h"
 #include "../xrEngine/StatGraph.h"
 #include "PHDebug.h"
-#include "PHObject.h"
-#include "ExtendedGeom.h"
+#include "../xrPhysics/PHObject.h"
+#include "../xrPhysics/ExtendedGeom.h"
 #include "Level.h"
 #include "Hudmanager.h"
 
@@ -16,7 +16,7 @@
 #include "../Include/xrRender/KinematicsAnimated.h"
 #include "../xrEngine/bone.h"
 #include "../xrEngine/iphdebug.h"
-#include "phelement.h"
+#include "../xrPhysics/phelement.h"
 
 Flags32		ph_dbg_draw_mask						;
 Flags32		ph_dbg_draw_mask1						;

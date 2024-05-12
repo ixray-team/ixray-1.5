@@ -1,5 +1,5 @@
 #include "pch_script.h"
-#include "PHCollisionDamageReceiver.h"
+#include "../xrPhysics/PHCollisionDamageReceiver.h"
 #include "PhysicObject.h"
 #include "hit.h"
 #include "PHDestroyable.h"
@@ -12,9 +12,9 @@
 #include "game_object_space.h"
 #include "script_callback_ex.h"
 #include "script_game_object.h"
-#include "PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #ifdef DEBUG
-#include "PHWorld.h"
+#include "../xrPhysics/PHWorld.h"
 extern CPHWorld			*ph_world;
 #endif
 CDestroyablePhysicsObject ::CDestroyablePhysicsObject()

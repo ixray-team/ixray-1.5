@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "alife_space.h"
 #include "hit.h"
-#include "ode_include.h"
+#include "../xrPhysics/ode_include.h"
 #include "../xrEngine/bone.h"
 #include "xrMessages.h"
 #include "Level.h"
