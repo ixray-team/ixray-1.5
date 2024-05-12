@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../../../PhysicsShell.h"
-#include "../../../PHInterpolation.h"
-#include "../../../PHElement.h"
+#include "../../../../xrPhysics/PhysicsShell.h"
+#include "../../../../xrPhysics/PHInterpolation.h"
+#include "../../../../xrPhysics/PHElement.h"
 
 #define TEMPLATE_SPECIALIZATION template <\
 	typename _Object\
@@ -63,7 +63,7 @@ void CStateMonsterRestFunAbstract::execute()
 			dir_.setHP		(h, p + 5 * PI / 180);
 			dir_.normalize	();
 			
-			// выполнить бросок
+			// РІС‹РїРѕР»РЅРёС‚СЊ Р±СЂРѕСЃРѕРє
 			for (u32 i=0; i<target->m_pPhysicsShell->Elements().size();i++) {
 				target->m_pPhysicsShell->Elements()[i]->applyImpulse(dir_, IMPULSE_TO_CORPSE * target->m_pPhysicsShell->getMass() / target->m_pPhysicsShell->Elements().size());
 			}

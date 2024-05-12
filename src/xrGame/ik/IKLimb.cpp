@@ -8,9 +8,9 @@
 #include "../game_object_space.h"
 #include "../ik_anim_state.h"
 
-#include "../ode_include.h"
-#include "../MathUtils.h"
-#include "../matrix_utils.h"
+#include "../../xrPhysics/ode_include.h"
+#include "../../xrPhysics/MathUtils.h"
+#include "../../xrPhysics/matrix_utils.h"
 #include "../pose_extrapolation.h"
 #ifdef DEBUG
 #include "../PHDebug.h"
