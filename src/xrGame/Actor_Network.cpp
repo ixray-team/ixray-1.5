@@ -10,7 +10,7 @@
 
 #include "ActorEffector.h"
 
-#include "PHWorld.h"
+#include "../xrPhysics/PHWorld.h"
 #include "level.h"
 #include "xr_level_controller.h"
 #include "game_cl_base.h"
@@ -43,7 +43,7 @@
 #include "../xrengine/xr_collide_form.h"
 #ifdef DEBUG
 #	include "debug_renderer.h"
-#	include "Physics.h"
+#	include "../xrPhysics/Physics.h"
 #endif
 
 int			g_cl_InterpolationType		= 0;

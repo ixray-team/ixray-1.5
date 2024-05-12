@@ -6,11 +6,11 @@
 #include "game_object_space.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../xrEngine/LightAnimLibrary.h"
-#include "PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "script_callback_ex.h"
 #include "ai/stalker/ai_stalker.h"
 #include "CustomZone.h"
-#include "MathUtils.h"
+#include "../xrPhysics/MathUtils.h"
 #include "actor.h"
 
 bool CHelicopter::isObjectVisible			(CObject* O)
@@ -88,7 +88,7 @@ void CHelicopter::UpdateHeliParticles	()
 		if (m_lanim)
 		{
 			int frame;
-			u32 clr					= m_lanim->CalculateBGR(Device.fTimeGlobal,frame); // тючтЁр•рхЄ т ЇюЁьрЄх BGR
+			u32 clr					= m_lanim->CalculateBGR(Device.fTimeGlobal,frame); // С‚СЋС‡С‚РЃСЂвЂўСЂС…Р„ С‚ Р‡СЋРЃСЊСЂР„С… BGR
 			Fcolor					fclr;
 			fclr.set				((float)color_get_B(clr),(float)color_get_G(clr),(float)color_get_R(clr),1.f);
 			fclr.mul_rgb			(m_light_brightness/255.f);
@@ -163,8 +163,8 @@ float CHelicopter::GetMaxVelocity()
 //////////////////////Start By JoHnY///////////////////////
 void CHelicopter::SetLinearAcc(float LAcc_fw, float LAcc_bw)
 {
-	m_movement.LinearAcc_fw = LAcc_fw;	//ускорение разгона
-	m_movement.LinearAcc_bk = LAcc_bw;	//ускорение торможения
+	m_movement.LinearAcc_fw = LAcc_fw;	//СѓСЃРєРѕСЂРµРЅРёРµ СЂР°Р·РіРѕРЅР°
+	m_movement.LinearAcc_bk = LAcc_bw;	//СѓСЃРєРѕСЂРµРЅРёРµ С‚РѕСЂРјРѕР¶РµРЅРёСЏ
 
 }
 //////////////////////End By JoHnY/////////////////////////
@@ -262,7 +262,7 @@ void CHelicopter::PHHit(SHit &H)
 #include "team_hierarchy_holder.h"
 #include "squad_hierarchy_holder.h"
 
-#include "extendedgeom.h"
+#include "../xrPhysics/extendedgeom.h"
 void CollisionCallbackDead(bool& do_colide,bool bo1,dContact& c,SGameMtl* material_1,SGameMtl* material_2)
 {	
 	do_colide=true; 

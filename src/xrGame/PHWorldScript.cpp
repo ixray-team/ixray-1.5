@@ -1,6 +1,6 @@
 #include "pch_script.h"
-#include "Physics.h"
-#include "PHWorld.h"
+#include "../xrPhysics/Physics.h"
+#include "../xrPhysics/PHWorld.h"
 #include "PHCommander.h"
 
 using namespace luabind;

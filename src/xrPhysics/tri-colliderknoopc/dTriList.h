@@ -1,5 +1,5 @@
 //#include "stdafx.h"
-#include "ode_include.h"
+#include "../xrPhysics/ode_include.h"
 
 
 /* Class ID */

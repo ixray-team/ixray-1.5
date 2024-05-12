@@ -2,10 +2,10 @@
 #include "HangingLamp.h"
 #include "../xrEngine/LightAnimLibrary.h"
 #include "../xrEngine/xr_collide_form.h"
-#include "PhysicsShell.h"
-#include "Physics.h"
+#include "../xrPhysics/PhysicsShell.h"
+#include "../xrPhysics/Physics.h"
 #include "xrserver_objects_alife.h"
-#include "PHElement.h"
+#include "../xrPhysics/PHElement.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../Include/xrRender/KinematicsAnimated.h"
 #include "game_object_space.h"
@@ -234,7 +234,7 @@ void CHangingLamp::UpdateCL	()
 		
 		if (lanim){
 			int frame;
-			u32 clr					= lanim->CalculateBGR(Device.fTimeGlobal,frame); // âîçâðàùàåò â ôîðìàòå BGR
+			u32 clr					= lanim->CalculateBGR(Device.fTimeGlobal,frame); // Ð²Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÑ‚ Ð² Ñ„Ð¾Ñ€Ð¼Ð°Ñ‚Ðµ BGR
 			Fcolor					fclr;
 			fclr.set				((float)color_get_B(clr),(float)color_get_G(clr),(float)color_get_R(clr),1.f);
 			fclr.mul_rgb			(fBrightness/255.f);

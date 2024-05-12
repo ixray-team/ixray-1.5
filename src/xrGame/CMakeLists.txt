@@ -9,7 +9,7 @@ file(GLOB_RECURSE XGM_SOURCE_ALL_FILES
     "*.h"
     "../xrServerEntities/*.*"
     "../xrGameSpy/gamespy/md5c.c"
-    "../xrPhysics/*.*"
+    "../xrPhysics/*.cpp"
 )
 file(GLOB_RECURSE XGM_SOURCE_AI_FILES
     "ai/*.*"
@@ -130,7 +130,6 @@ target_precompile_headers(xrGame PUBLIC "stdafx.h")
 target_include_directories(xrGame PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(xrGame PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../xrServerEntities/")
 target_include_directories(xrGame PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/ui/")
-target_include_directories(xrGame PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../xrPhysics")
 target_include_directories(xrGame PUBLIC "${IXRAY_SDK_INC}")
 
 # Project defines

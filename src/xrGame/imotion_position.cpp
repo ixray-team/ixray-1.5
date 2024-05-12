@@ -2,14 +2,14 @@
 
 #include "imotion_position.h"
 
-#include "physicsshell.h"
-#include "MathUtils.h"
+#include "../xrPhysics/physicsshell.h"
+#include "../xrPhysics/MathUtils.h"
 
 #include "../Include/xrRender/Kinematics.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////
 #include "physicsshellholder.h"
-#include "extendedgeom.h"
+#include "../xrPhysics/extendedgeom.h"
 #include "game_object_space.h"
 #include "animation_utils.h"
 #ifdef	DEBUG

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "pda.h"
 #include "hudmanager.h"
-#include "PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "Entity.h"
 #include "actor.h"
 

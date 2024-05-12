@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #pragma hdrstop
 #ifdef DEBUG
-#include "ode_include.h"
+#include "../xrPhysics/ode_include.h"
 #include "../xrEngine/StatGraph.h"
 #include "PHDebug.h"
-#include "phworld.h"
+#include "../xrPhysics/phworld.h"
 #endif
 #include "alife_space.h"
 #include "hit.h"

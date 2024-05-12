@@ -1,7 +1,7 @@
 #include "pch_script.h"
 #include "helicopter.h"
 #include "xrserver_objects_alife.h"
-#include "PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "level.h"
 #include "ai_sounds.h"
 #include "../Include/xrRender/Kinematics.h"
@@ -11,7 +11,7 @@
 #include "script_game_object.h"
 #include "../xrEngine/LightAnimLibrary.h"
 #include "HudManager.h"
-#include "physicscommon.h"
+#include "../xrPhysics/physicscommon.h"
 //50fps fixed
 float STEP=0.02f;
 

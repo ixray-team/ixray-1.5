@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "grenade.h"
-#include "PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "entity.h"
 #include "ParticlesObject.h"
 #include "actor.h"

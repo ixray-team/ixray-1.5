@@ -6,8 +6,8 @@
 #include "GameObject.h"
 
 
-#include "ode_include.h"
-#include "MathUtils.h"
+#include "../xrPhysics/ode_include.h"
+#include "../xrPhysics/MathUtils.h"
 #include "../include/xrrender/Kinematics.h"
 #include "../xrEngine/bone.h"
 #include "../xrEngine/ennumerateVertices.h"

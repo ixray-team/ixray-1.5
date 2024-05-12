@@ -1,17 +1,17 @@
 ///////////////////////////////////////////////////////////////
 // GraviArtifact.cpp
-// GraviArtefact - гравитационный артефакт, прыгает на месте
-// и неустойчиво парит над землей
+// GraviArtefact - РіСЂР°РІРёС‚Р°С†РёРѕРЅРЅС‹Р№ Р°СЂС‚РµС„Р°РєС‚, РїСЂС‹РіР°РµС‚ РЅР° РјРµСЃС‚Рµ
+// Рё РЅРµСѓСЃС‚РѕР№С‡РёРІРѕ РїР°СЂРёС‚ РЅР°Рґ Р·РµРјР»РµР№
 ///////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
 #include "GraviArtifact.h"
-#include "PhysicsShell.h"
+#include "../xrPhysics/PhysicsShell.h"
 #include "level.h"
 #include "xrmessages.h"
 #include "game_cl_base.h"
 #include "../Include/xrRender/Kinematics.h"
-#include "phworld.h"
+#include "../xrPhysics/phworld.h"
 extern CPHWorld*	ph_world;
 #define CHOOSE_MAX(x,inst_x,y,inst_y,z,inst_z)\
 	if(x>y)\
@@ -55,7 +55,7 @@ void CGraviArtefact::UpdateCLChild()
 			dir.set(0, -1.f, 0);
 			collide::rq_result RQ;
 			
-			//проверить высоту артифакта
+			//РїСЂРѕРІРµСЂРёС‚СЊ РІС‹СЃРѕС‚Сѓ Р°СЂС‚РёС„Р°РєС‚Р°
 			if(Level().ObjectSpace.RayPick(Position(), dir, m_fJumpHeight, collide::rqtBoth, RQ, this)) 
 			{
 				dir.y = 1.f; 
