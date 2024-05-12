@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "PHDynamicData.h"
 #include "Physics.h"
-#include "tri-colliderknoopc/dTriList.h"
+#include "../xrPhysics/tri-colliderknoopc/dTriList.h"
 #include "PHJointDestroyInfo.h"
 ///////////////////////////////////////////////////////////////
 ///#pragma warning(disable:4995)
