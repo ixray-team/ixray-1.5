@@ -8,6 +8,7 @@
 #include "MathUtils.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "PHCollideValidator.h"
+#include "ph_valid_ode.h"
 CPHShellSplitterHolder::CPHShellSplitterHolder(CPHShell* shell)
 {
 	m_pShell=shell;
@@ -267,7 +268,7 @@ if(spl_inf.m_end_jt_num!=u16(-1))
 
 static ELEMENT_PAIR_VECTOR new_elements;
 
-using TRANSFORM_VECTOR = xr_vector<Fmatrix>;
+using TRANSFORM_VECTOR = xr_vector<Fmatrix>; 
 using TRANSFORM_I = TRANSFORM_VECTOR::iterator;
 
 static TRANSFORM_VECTOR bones_bind_forms;
@@ -295,7 +296,11 @@ shell_root CPHShellSplitterHolder::ElementSingleSplit(const element_fracture &sp
 				IKinematics* K = m_pShell->PKinematics();
 				dVector3 safe_pos1, safe_pos2;
 				dQuaternion safe_q1, safe_q2;
-				CPhysicsElement* el1=cast_PhysicsElement(split_elem.first),*el2=joint->PSecond_element();
+				//CPhysicsElement* el1=cast_PhysicsElement(split_elem.first),*el2=joint->PSecond_element();
+				VERIFY(smart_cast<CPHElement*>(joint->PSecond_element()));
+
+				CPHElement* el1=(split_elem.first),*el2= static_cast<CPHElement*>( joint->PSecond_element() );
+
 				dBodyID body1=el1->get_body(), body2=el2->get_body();
 				dVectorSet(safe_pos1,dBodyGetPosition(body1));
 				dVectorSet(safe_pos2,dBodyGetPosition(body2));
@@ -306,8 +311,8 @@ shell_root CPHShellSplitterHolder::ElementSingleSplit(const element_fracture &sp
 				//m_pShell->PlaceBindToElForms();
 				
 				K->LL_GetBindTransform(bones_bind_forms);
-				el1->SetTransform(bones_bind_forms[el1->m_SelfID]);
-				el2->SetTransform(bones_bind_forms[el2->m_SelfID]);
+				el1->SetTransform(bones_bind_forms[el1->m_SelfID], mh_unspecified );
+				el2->SetTransform(bones_bind_forms[el2->m_SelfID], mh_unspecified );
 				joint->ReattachFirstElement(split_elem.first);
 
 				dVectorSet(const_cast<dReal*>(dBodyGetPosition(body1)),safe_pos1);
@@ -389,7 +394,11 @@ void CPHShellSplitterHolder::SplitElement(u16 aspl,PHSHELL_PAIR_VECTOR &out_shel
 	for(;i!=e;++i)
 	{
 		out_shels.push_back(ElementSingleSplit(*i,E));
-		VERIFY(dBodyStateValide(out_shels.back().first->get_ElementByStoreOrder(0)->get_body()));
+		CPhysicsElement* ee = out_shels.back().first->get_ElementByStoreOrder(0);
+		VERIFY( ee );
+		VERIFY( smart_cast<CPHElement *>(ee) );
+		CPHElement * e_ = static_cast<CPHElement *> (ee);
+		VERIFY(dBodyStateValide(e_->get_body()));
 	}
 
 	if(!E->FracturesHolder()) m_splitters.erase(spl_i);//delete splitter if the element no longer have fractures

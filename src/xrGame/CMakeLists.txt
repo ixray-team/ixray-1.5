@@ -9,7 +9,6 @@ file(GLOB_RECURSE XGM_SOURCE_ALL_FILES
     "*.h"
     "../xrServerEntities/*.*"
     "../xrGameSpy/gamespy/md5c.c"
-    "../xrPhysics/*.cpp"
 )
 file(GLOB_RECURSE XGM_SOURCE_AI_FILES
     "ai/*.*"
@@ -143,9 +142,9 @@ target_compile_definitions(xrGame PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 
 # Linker list
 target_link_libraries(xrGame PUBLIC xrEngine)
+target_link_libraries(xrGame PUBLIC xrPhysics)
 target_link_libraries(xrGame PUBLIC crypto)
 target_link_libraries(xrGame PUBLIC CxImage)
-target_link_libraries(xrGame PUBLIC ODE)
 
 # Move precompiled header
 file(GLOB_RECURSE GAME_SOURCE_ALL_C_FILES "*.c" "../xrGameSpy/gamespy/md5c.c")

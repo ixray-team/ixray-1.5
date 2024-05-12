@@ -1,15 +1,14 @@
 #ifndef D_TRI_COLLIDER_COMMON
 #define D_TRI_COLLIDER_COMMON
 
-#include "../Level.h"
-#include "../ode_include.h"
+
+//#include "../ode_include.h"
+#include "../../3rd party/ode/include/ode/common.h"
 #include "../ExtendedGeom.h"
 #include "dTriColliderMath.h"
 
 
 extern xr_vector< flags8 >			gl_cl_tries_state	;
-extern xr_vector<int>::iterator		I,E,B				;
-
 
 inline dContactGeom* CONTACT(dContactGeom* ptr, const int stride) {
 	const size_t count = stride / sizeof(dContact);

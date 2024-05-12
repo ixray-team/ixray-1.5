@@ -5,7 +5,7 @@
 
 using GEOM_STORAGE = xr_vector<CODEGeom*>;
 using GEOM_I = GEOM_STORAGE::iterator;
-using GEOM_CI = xr_vector<CODEGeom*>::const_iterator;
+using GEOM_CI = GEOM_STORAGE::const_iterator;
 
 struct SBoneShape;
 class IKinematics;
@@ -20,7 +20,7 @@ private:
 		dSpaceID				m_group;					//e					//bl
 protected:
 		Fvector					m_mass_center;				//e ??				//bl
-		CPhysicsShellHolder*	m_phys_ref_object;			//->to shell ??		//bl
+		IPhysicsShellHolder*	m_phys_ref_object;			//->to shell ??		//bl
 		float					m_volume;					//e ??				//bl
 		u16						ul_material;				//e ??				//bl
 		ContactCallbackFun*			contact_callback;		//->to shell ??		//bt
@@ -48,14 +48,14 @@ public:
 		void						set_CallbackData						(void * cd);
 		void						*get_CallbackData						();
 		ObjectContactCallbackFun	*get_ObjectContactCallback				();
-		void						set_PhysicsRefObject					(CPhysicsShellHolder* ref_object);												//aux
-		CPhysicsShellHolder*		PhysicsRefObject						(){return m_phys_ref_object;}													//aux
+		void						set_PhysicsRefObject					(IPhysicsShellHolder* ref_object);												//aux
+		IPhysicsShellHolder*		PhysicsRefObject						(){return m_phys_ref_object;}													//aux
 		void						SetPhObjectInGeomData					(CPHObject* O);		
 #ifdef	DEBUG
 		void						dbg_draw								( float scale, u32 color, Flags32 flags )const;
 #endif
 		void						SetMaterial								(u16 m)		  ;
-		void						SetMaterial								(LPCSTR m){SetMaterial(GMLib.GetMaterialIdx(m));}								//aux
+		void						SetMaterial								(LPCSTR m){SetMaterial(GMLibrary().GetMaterialIdx(m));}								//aux
 	IC	CODEGeom*					Geom									(u16 num)		{R_ASSERT2 (num<m_geoms.size(),"out of range"); return m_geoms[num]; }
 	IC	const CODEGeom*				Geom									(u16 num) const	{R_ASSERT2 (num<m_geoms.size(),"out of range"); return m_geoms[num]; }
 		CODEGeom*					GeomByBoneID							(u16 bone_id);
@@ -76,7 +76,7 @@ const	Fvector&					local_mass_Center						()		{return m_mass_center;}											
 		void						setStaticForm							(const Fmatrix& form);
 		void						setPosition								(const Fvector& pos);
 		void						clear_cashed_tries						();
-		void						clear_motion_history					();
+		void						clear_motion_history					( bool set_unspecified );
 		void						get_mc_vs_transform						(Fvector& mc,const Fmatrix& m);
 protected:
 		void						build									();

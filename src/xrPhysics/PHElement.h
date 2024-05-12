@@ -5,12 +5,12 @@
 #include "Geometry.h"
 #include "phdefs.h"
 #include "PhysicsCommon.h"
-#include "PHSynchronize.h"
+#include "../xrserverentities/PHSynchronize.h"
 #include "PHDisabling.h"
 #include "PHGeometryOwner.h"
 #include "PHInterpolation.h"
 #include "PHFracture.h"
-
+#include "physics_scripted.h"
 #ifndef PH_ELEMENT
 #define PH_ELEMENT
 class CPHElement;
@@ -24,7 +24,8 @@ class CPHElement	:
 	public	CPhysicsElement ,
 	public	CPHSynchronize,
 	public	CPHDisablingFull,
-	public	CPHGeometryOwner
+	public	CPHGeometryOwner,
+	public	cphysics_scripted
 {
 	friend class CPHFracturesHolder;
 
@@ -101,8 +102,8 @@ public:
 	virtual void						set_CallbackData						(void * cd);
 	virtual	void						*get_CallbackData						();
 	virtual	ObjectContactCallbackFun	*get_ObjectContactCallback				();
-	virtual void						set_PhysicsRefObject					(CPhysicsShellHolder* ref_object);												//aux
-	virtual CPhysicsShellHolder*		PhysicsRefObject						(){return m_phys_ref_object;}													//aux
+	virtual void						set_PhysicsRefObject					(IPhysicsShellHolder* ref_object);												//aux
+	virtual IPhysicsShellHolder*		PhysicsRefObject						(){return m_phys_ref_object;}													//aux
 	virtual void						SetMaterial								(u16 m);																		//aux
 	virtual void						SetMaterial								(LPCSTR m){CPHGeometryOwner::SetMaterial(m);}									//aux
 	virtual u16							numberOfGeoms							()const;																				//aux
@@ -111,6 +112,7 @@ public:
 	virtual void						get_Extensions							(const Fvector& axis,float center_prg,float& lo_ext, float& hi_ext) const ;			//aux
 	virtual	void						get_MaxAreaDir							(Fvector& dir){CPHGeometryOwner::get_MaxAreaDir(dir);}
 	virtual float						getRadius								();
+	virtual	void						GetPointVel								( Fvector	 &res_vel, const Fvector & point ) const;
 ////////////////////////////////////////////////////Mass/////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 private:
@@ -155,15 +157,20 @@ public:																																				//
 ////////////////////////////////////////////////Updates///////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			bool						AnimToVel								( float dt, float l_limit,float a_limit );
-			void						BoneGlPos								(Fmatrix &m, const CBoneInstance* B)const;
-			void						ToBonePos								(const CBoneInstance* B);
+			//void						BoneGlPos								(Fmatrix &m, const CBoneInstance* B)const;
+			void						BoneGlPos								(Fmatrix &m, const Fmatrix &BoneTransform)const;
+			void						ToBonePos								(const CBoneInstance* B, motion_history_state history_state );
+			void						ToBonePos								(const Fmatrix &BoneTransform, motion_history_state history_state );
+	IC		void						ActivatingPos							(const Fmatrix &BoneTransform);
+	IC		void						CalculateBoneTransform					( Fmatrix &bone_transform )const;
+			
 #ifdef		DEBUG
 	virtual void						dbg_draw_velocity						( float scale, u32 color );
 	virtual void						dbg_draw_force							( float scale, u32 color );
 	virtual void						dbg_draw_geometry						( float scale, u32 color, Flags32 flags = Flags32().assign( 0 ) ) const;
 #endif
 			void						SetBoneCallbackOverwrite				(bool v);
-			void						BonesCallBack							(CBoneInstance* B);																//called from updateCL visual influent
+			void		_BCL			BonesCallBack							(CBoneInstance* B);																//called from updateCL visual influent
 			void						StataticRootBonesCallBack				(CBoneInstance* B);
 			void						PhDataUpdate							(dReal step);																	//ph update
 			void						PhTune									(dReal step);																	//ph update
@@ -194,7 +201,7 @@ public:																																				//
 	virtual void						applyImpulse					(const Fvector& dir, float val);//aux
 	virtual void						applyImpulseVsMC				(const Fvector& pos,const Fvector& dir, float val);										//
 	virtual void						applyImpulseVsGF				(const Fvector& pos,const Fvector& dir, float val);										//
-	virtual void						applyGravityAccel				(const Fvector& accel);
+	virtual void		_BCL			applyGravityAccel				(const Fvector& accel);
 	virtual void						getForce						(Fvector& force);
 	virtual void						getTorque						(Fvector& torque);
 	virtual void						get_LinearVel					(Fvector& velocity) const;															//aux
@@ -213,15 +220,15 @@ public:																																				//
 	virtual	void						net_Export						(NET_Packet& P)				  ;
 ///////////////////////////////////////////////////Position///////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	virtual void						SetTransform					(const Fmatrix& m0);															//
-	virtual void						TransformPosition				(const Fmatrix &form);
+	virtual void						SetTransform					(const Fmatrix& m0, motion_history_state history_state  );															//
+	virtual void						TransformPosition				(const Fmatrix &form, motion_history_state history_state );
 	virtual void						getQuaternion					(Fquaternion& quaternion);														//
 	virtual void						setQuaternion					(const Fquaternion& quaternion);												//
 	virtual void						SetGlobalPositionDynamic		(const Fvector& position);														//
 	virtual void						GetGlobalPositionDynamic		(Fvector* v);																	//
 	virtual void						cv2obj_Xfrom					(const Fquaternion& q,const Fvector& pos, Fmatrix& xform);						//
 	virtual void						cv2bone_Xfrom					(const Fquaternion& q,const Fvector& pos, Fmatrix& xform);						//
-	virtual void						InterpolateGlobalTransform		(Fmatrix* m);																	//called UpdateCL vis influent
+	virtual void		_BCL			InterpolateGlobalTransform		(Fmatrix* m);																	//called UpdateCL vis influent
 	virtual void						InterpolateGlobalPosition		(Fvector* v);																	//aux
 	virtual void						GetGlobalTransformDynamic		(Fmatrix* m) const ;																	//aux
 IC			void						InverceLocalForm				(Fmatrix&)	;
@@ -233,11 +240,11 @@ IC			void						MulB43InverceLocalForm			(Fmatrix&) const;
 			CPHShell*					PHShell							();
 	virtual void						set_ParentElement				(CPhysicsElement* p){ m_parent_element=(CPHElement*)p; }							//aux
 #ifdef	DEBUG
-	CPHElement*							parent_element					(){ return m_parent_element; }
+	CPhysicsElement*					parent_element					(){ return m_parent_element; }
 #endif
 	void								SetShell						(CPHShell* p);																	//aux
-	virtual	dBodyID						get_body				()		{return m_body;};																//aux
-	virtual	const dBodyID				get_bodyConst			()const	{return m_body;};																//aux
+	virtual	dBodyID						get_body				()		{return m_body;}																//aux
+	virtual	const dBodyID				get_bodyConst			()const	{return m_body;}																//aux
 //////////////////////////////////////////////////////Breakable//////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	IC CPHFracturesHolder*				FracturesHolder							(){return m_fratures_holder;}											//aux
@@ -271,7 +278,15 @@ IC			void						MulB43InverceLocalForm			(Fmatrix&) const;
 	//		bool						CheckBreakConsistent					()
 	CPHElement										();																						//aux
 	virtual ~CPHElement								();																						//aux
+private:
+	virtual	iphysics_scripted			&get_scripted							() { return *this ;}
+public:
 };
+
+
+
+
+
 
 IC CPHElement* cast_PHElement(CPhysicsElement* e){return static_cast<CPHElement*>(static_cast<CPhysicsElement*>(e));}
 IC CPHElement* cast_PHElement(void* e){return static_cast<CPHElement*>(static_cast<CPhysicsElement*>(e));}

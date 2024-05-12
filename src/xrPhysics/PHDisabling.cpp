@@ -2,9 +2,9 @@
 #include "PHDisabling.h"
 #include "PhysicsCommon.h"
 #include "Physics.h"
-#include "mathutils.h"
+#include "mathutilsode.h"
 #ifdef	DEBUG
-#include "phdebug.h"
+#include "debug_output.h"
 #endif
 
 extern CPHWorld* ph_world;

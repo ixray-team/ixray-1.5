@@ -17,9 +17,12 @@
 
 		void	BodyCutForce				(dBodyID body,float l_limit,float w_limit)					;
 		void	dBodyAngAccelFromTorqu		(const dBodyID body, dReal* ang_accel, const dReal* torque)	;
-		float	E_NlS						(dBodyID body,const dReal* norm,float norm_sign)					;
+//	float	E_NlS						(dBodyID body,const dReal* norm,float norm_sign)					;
 		float	E_NLD						(dBodyID b1,dBodyID b2,const dReal* norm);
-		float	E_NL						(dBodyID b1,dBodyID b2,const dReal* norm);
+
+
+//	float E_NL( dBodyID b1, dBodyID b2, const dReal* norm );
+
 		void	ApplyGravityAccel			(dBodyID body,const dReal* accel);
 const	dReal	fix_ext_param				=10000.f;
 const	dReal	fix_mass_param				=100000000.f;

@@ -9,9 +9,9 @@ namespace ALife {
 	enum EHitType;
 };
 #ifdef DEBUG
-#include "PHDebug.h"
+#include "debug_output.h"
 #endif
-
+class ICollisionHitCallback;
 
 class CPHSimpleCharacter : 
 	public CPHCharacter,
@@ -37,11 +37,12 @@ protected:
 			IC	const Fvector&			HitPos						()				const					{return cast_fv(m_damege_contact.geom.pos);}
 				void					Reinit						()										;
 				dContact				m_damege_contact;
-				SCollisionHitCallback	*m_hit_callback;
+				ICollisionHitCallback	*m_hit_callback;
 				u16						m_obj_id;
 				float					m_dmc_signum;
 				enum{ctStatic,ctObject}	m_dmc_type;
 				ALife::EHitType			m_hit_type;
+				bool					is_initiated;
 		mutable	float					m_contact_velocity;
 	};
 #ifdef	DEBUG
@@ -148,6 +149,7 @@ public:
 	virtual		EEnvironment	 		CheckInvironment				()			;
 	virtual		void			 		GroundNormal					(Fvector &norm)		;
 	virtual		const ICollisionDamageInfo	*CollisionDamageInfo ()const {return this;}
+	virtual			  ICollisionDamageInfo	*CollisionDamageInfo (){return this;}
 private:
 	virtual		float			 	ContactVelocity				()const				{return m_collision_damage_info.ContactVelocity();}
 	virtual		void			 	HitDir							(Fvector& dir)const	{return m_collision_damage_info.HitDir(dir);}
@@ -155,9 +157,11 @@ private:
 	virtual		u16				 	DamageInitiatorID				()const				;
 	virtual		CObject			 	*DamageInitiator				()const				;
 	virtual		ALife::EHitType	 	HitType							()const				{return m_collision_damage_info.m_hit_type; };
-	
+	virtual		void				SetInitiated					();
+	virtual		bool				IsInitiated						()const				;
+	virtual		bool				GetAndResetInitiated			()					;
 	virtual		void				SetHitType						(ALife::EHitType type){ m_collision_damage_info.m_hit_type = type; };
-	virtual SCollisionHitCallback	*HitCallback					()const				;
+	virtual ICollisionHitCallback	*HitCallback					()const				;
 	virtual		void				Reinit							()					{m_collision_damage_info.Reinit();};
 public:
 	//Creating
@@ -178,7 +182,7 @@ private:
 static			void		TestRestrictorContactCallbackFun	(bool& do_colide,bool bo1,dContact& c,SGameMtl* material_1,SGameMtl* material_2);
 public:
 	virtual		ObjectContactCallbackFun* ObjectContactCallBack	();
-	void					SetStaticContactCallBack			(ContactCallbackFun* calback);
+	virtual		void		SetStaticContactCallBack			(ContactCallbackFun* calback);
 	virtual		void		SwitchOFFInitContact				()					;
 	virtual		void		SwitchInInitContact					()					;
 	virtual		void		SetAcceleration						(Fvector accel)		;
@@ -191,7 +195,7 @@ public:
 	virtual		void		GetSmothedVelocity					(Fvector& vvel)		;
 	virtual		void		SetVelocity							(Fvector vel)		;
 	virtual		void		SetAirControlFactor					(float factor)		{m_air_control_factor=factor;}
-	virtual		void		SetElevator							(CClimableObject* climable){m_elevator_state.SetElevator(climable);};
+	virtual		void		SetElevator							(IClimableObject* climable){m_elevator_state.SetElevator(climable);};
 	virtual	CElevatorState	*ElevatorState						()					;
 	virtual		void		SetCollisionDamageFactor			(float f)			{m_collision_damage_factor=f;}
 	virtual		void		GetPosition							(Fvector& vpos)	;
@@ -216,9 +220,11 @@ public:
 	virtual		float		&FrictionFactor						()					{return m_friction_factor;}
 	virtual		void		SetMas								(dReal mass)		;
 	virtual		float		Mass								()					{return m_mass;};
-	virtual		void		SetPhysicsRefObject					(CPhysicsShellHolder* ref_object);
+	virtual		void		SetPhysicsRefObject					(IPhysicsShellHolder* ref_object);
 	virtual		void		SetNonInteractive					(bool v);	
-
+	virtual		bool		IsEnabled							()					{ if(!b_exist)return false; return !!dBodyIsEnabled(m_body);}
+	virtual		void		GetBodyPosition						(Fvector& vpos)		{ VERIFY(b_exist); vpos = cast_fv(dBodyGetPosition(m_body));  }
+		const Fvector		&BodyPosition						()const				{VERIFY(b_exist && m_body); return cast_fv(dBodyGetPosition(m_body)); } 
 	//virtual		void		CaptureObject						(dBodyID body,const dReal* anchor);
 	//virtual		void		CapturedSetPosition					(const dReal* position);
 	//virtual		void		doCaptureExist						(bool&	do_exist);
@@ -234,13 +240,20 @@ private:
 
 			u16			RetriveContactBone					();
 			void		SafeAndLimitVelocity				();
-			void		UpdateStaticDamage					(dContact* c,SGameMtl* tri_material,bool bo1);
+virtual		void		UpdateStaticDamage					(dContact* c,SGameMtl* tri_material,bool bo1);
 			void		UpdateDynamicDamage					(dContact* c,u16 obj_material_idx,dBodyID b,bool bo1);
 IC			void 		FootProcess							(dContact* c,bool &do_collide ,bool bo);
 IC			void		foot_material_update				(u16	tri_material,u16	foot_material_idx);
 			static void	TestPathCallback(bool& do_colide,bool bo1,dContact& c,SGameMtl * /*material_1*/,SGameMtl * /*material_2*/);
 virtual		void		Collide								();
-			void		OnStartCollidePhase					();				
+			void		OnStartCollidePhase					();
+private:
+	virtual	void		Freeze							()			{ CPHObject::Freeze();		}
+	virtual	void		UnFreeze						()			{ CPHObject::UnFreeze();	}
+	virtual	void		step							(float dt)	{ CPHObject::step( dt ); }
+	virtual	void		collision_disable				()			{ CPHObject::collision_disable(); }
+	virtual	void		collision_enable				()			{ CPHObject::collision_enable(); }
+	virtual	void		NetRelcase						( IPhysicsShellHolder* O );
 protected:
 virtual	void	get_Box								( Fvector&	sz, Fvector& c )const;
 	protected:
@@ -256,6 +269,6 @@ const dReal def_dumping_rate=20.1f;
 
 IC bool ignore_material( u16 material_idx )
 {
-		SGameMtl* material=GMLib.GetMaterialByIdx( material_idx );
+		SGameMtl* material=GMLibrary().GetMaterialByIdx( material_idx );
 		return !!material->Flags.test( SGameMtl::flActorObstacle );
 }

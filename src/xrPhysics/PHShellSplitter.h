@@ -1,9 +1,9 @@
 #ifndef PHSHELL_SPLITTER_H
 #define PHSHELL_SPLITTER_H
 #include "PHDefs.h"
+//#include "PHObject.h"
 #include "PHFracture.h"
-#include "PHUpdateObject.h"
-
+#include "phupdateobject.h"
 class CPHShellSplitter;
 
 class CPHShell;

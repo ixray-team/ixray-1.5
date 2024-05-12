@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "PHDynamicData.h"
 #include "Physics.h"
-#include "../xrPhysics/tri-colliderknoopc/dTriList.h"
+#include "tri-colliderknoopc/dTriList.h"
 #include "PHJointDestroyInfo.h"
 ///////////////////////////////////////////////////////////////
 ///#pragma warning(disable:4995)
@@ -21,9 +21,11 @@
 const float hinge2_spring=20000.f;
 const float hinge2_damping=1000.f;
 
-IC dBodyID body_for_joint(CPhysicsElement* e)
+IC dBodyID body_for_joint(CPhysicsElement* ee)
 {
-	 return e->isFixed() ? 0 : e->get_body();//return e->get_body();//
+	VERIFY(smart_cast<CPHElement *>(ee));
+	CPHElement * e = static_cast<CPHElement *> (ee);
+	return e->isFixed() ? 0 : e->get_body();//return e->get_body();//
 }
 IC void SwapLimits(float &lo,float &hi)
 {
@@ -439,9 +441,49 @@ void CPHJoint::SetAxisDir(const float x,const float y,const float z,const int ax
 {
 	int ax=axis_num;
 	 LimitAxisNum(ax);
-	 if(-1==ax) return;
+	 //if(-1==ax) return;
+	VERIFY( -1 != ax );
 	axes[ax].vs=vs_global;
 	axes[ax].direction.set(x,y,z);
+
+	SetAxisDirDynamic( axes[ax].direction, axis_num );
+
+}
+
+void CPHJoint::SetAxisDirDynamic(const Fvector& orientation,const int axis_num)
+{
+	VERIFY( axis_num>=0 );
+	VERIFY( axis_num<=2 );
+
+	switch(eType){
+
+						case hinge2:
+									switch( axis_num )
+									{
+										case 0:		dJointSetHinge2Axis1 (m_joint, orientation[0], orientation[1], orientation[2] );break;
+										case 1:		dJointSetHinge2Axis2 (m_joint, orientation[0], orientation[1], orientation[2] );break;
+										default:	NODEFAULT;
+									}
+									break;
+						case slider:
+									switch( axis_num )
+									{
+
+										case 0:		dJointSetSliderParam(m_joint,dParamFMax ,axes[0].force);break;
+										case 1:		dJointSetAMotorParam(m_joint1,dParamFMax ,axes[1].force);break;
+										default:	NODEFAULT;
+									}
+									break;
+						case ball:	
+									break;
+						case hinge:		
+									dJointSetHingeAxis( m_joint, orientation[0], orientation[1], orientation[2] );
+									break;
+						case full_control:
+									dJointSetAMotorAxis (m_joint1, axis_num, 1, orientation[0], orientation[1], orientation[2] );
+									break;
+						default: R_ASSERT2( false, "type not supported" );
+	}
 }
 
 void CPHJoint::SetAxisDirVsFirstElement(const float x,const float y,const float z,const int axis_num)
@@ -465,7 +507,8 @@ void CPHJoint::SetAxisDirVsSecondElement(const float x,const float y,const float
 
 void CPHJoint::SetLimits(const float low, const float high, const int axis_num)
 {
-	if(!(pFirst_element&&pSecond_element))return;
+	if(!(pFirst_element&&pSecond_element))
+		return;
 
 	int ax=axis_num;
 	LimitAxisNum(ax);
@@ -496,7 +539,8 @@ void CPHJoint::SetLimits(const float low, const float high, const int axis_num)
 	axes[ax].zero=zer;
 	//m2.invert();
 	//axes[ax].zero_transform.set(m2);
-	if(bActive)SetLimitsActive(axis_num);
+	if(bActive)
+		SetLimitsActive(axis_num);
 }
 
 
@@ -784,7 +828,142 @@ void CPHJoint::SetVelocityActive(const int axis_num)
 							break;
 	}
 }
+void CPHJoint::SetLoLimitDynamic(int axis_num, float limit )
+{
+		
+	VERIFY( axis_num>=0 );
+	VERIFY( axis_num<=2 );
+	VERIFY( bActive );
+	switch(eType){
 
+						case hinge2:
+								VERIFY( axis_num == 0 );
+								//axes[0].low = limit;
+								VERIFY( m_joint );
+								dJointSetHinge2Param( m_joint,dParamLoStop ,limit );
+								break;
+						case slider:
+							VERIFY( axis_num <= 1 );
+							switch(axis_num)
+									{
+										case 0:				//axes[0].low = limit;
+															VERIFY( m_joint );
+															dJointSetSliderParam(m_joint,dParamLoStop ,limit);
+															break;
+										case 1:				//axes[1].low = limit;
+															VERIFY( m_joint1 );
+															dJointSetAMotorParam(m_joint1, dParamLoStop ,limit);
+															break;									
+										default:			NODEFAULT;
+									}
+									break;
+						case ball:					
+									break;
+						case hinge:	
+								//axes[0].low = limit;
+								VERIFY( m_joint );
+								dJointSetHingeParam( m_joint, dParamLoStop , limit );
+									break;
+						case full_control:
+							switch(axis_num)
+							{
+										case 0:	//axes[0].low = limit;
+												VERIFY( m_joint1 );
+												dJointSetAMotorParam(m_joint1,dParamLoStop ,limit);
+												break;
+										case 1:	//axes[1].low = limit;
+												VERIFY( m_joint1 );
+												dJointSetAMotorParam(m_joint1,dParamLoStop2 ,limit);
+												break;
+										case 2:	//axes[2].low = limit;
+												VERIFY( m_joint1 );
+												dJointSetAMotorParam(m_joint1,dParamLoStop3 ,limit);
+												break;
+										default:			NODEFAULT;
+							}
+							break;
+							default:			R_ASSERT2( false, "type is not supported" );
+	}
+}
+
+
+void CPHJoint::SetHiLimitDynamic(int axis_num, float limit )
+{
+		
+	VERIFY( axis_num>=0 );
+	VERIFY( axis_num<=2 );
+	VERIFY( bActive );
+	switch(eType){
+
+						case hinge2:
+								VERIFY( axis_num == 0 );
+								VERIFY( m_joint );
+								//axes[0].high = limit;
+								dJointSetHinge2Param( m_joint,dParamHiStop ,limit );
+								break;
+						case slider:
+							VERIFY( axis_num <= 1 );
+							switch(axis_num)
+									{
+										case 0:				//axes[0].high = limit;
+															VERIFY( m_joint );
+															dJointSetSliderParam(m_joint,dParamHiStop ,limit);
+															break;
+										case 1:				//axes[1].high = limit;
+															VERIFY( m_joint1 );
+															dJointSetAMotorParam(m_joint1, dParamHiStop ,limit);
+															break;									
+										default:			NODEFAULT;
+									}
+									break;
+						case ball:					
+									break;
+						case hinge:	
+									//axes[0].high = limit;
+									VERIFY( m_joint );
+									dJointSetHingeParam( m_joint, dParamHiStop , limit );
+									break;
+						case full_control:
+							switch(axis_num)
+							{
+										case 0:	//axes[0].high = limit;
+												VERIFY( m_joint1 );
+												dJointSetAMotorParam(m_joint1,dParamHiStop ,limit);
+												break;
+										case 1:	//axes[1].high = limit;
+												VERIFY( m_joint1 );
+												dJointSetAMotorParam(m_joint1,dParamHiStop2 ,limit);
+												break;
+										case 2:	//axes[2].high = limit;
+												VERIFY( m_joint1 );
+												dJointSetAMotorParam(m_joint1,dParamHiStop3 ,limit);
+												break;
+										default:			NODEFAULT;
+							}
+							break;
+							default:			R_ASSERT2( false, "type is not supported" );
+	}
+}
+
+/*
+float CPHJoint::GetAxisAngle(int axis_num)
+{
+	float ret=dInfinity;
+	switch(eType){
+						case hinge2:				ret= dJointGetHinge2Angle1(m_joint);break;
+						case ball:					ret= dInfinity;break;
+						case hinge:					ret= dJointGetHingeAngle(m_joint);break;
+						case full_control:			ret= dJointGetAMotorAngle(m_joint1,axis_num);break;
+						case slider:				
+							switch (axis_num){
+								case 0:	ret= dJointGetSliderPosition(m_joint);break;
+								case 1: ret= dJointGetAMotorAngle(m_joint1,0);break;
+							};break;
+						default: R_ASSERT2( false, "type not supported" ); break;
+	
+					}
+}
+*/
 void CPHJoint::SetLimitsActive(int axis_num)
 {
 	switch(eType){
@@ -806,6 +985,7 @@ void CPHJoint::SetLimitsActive(int axis_num)
 							dJointSetSliderParam(m_joint,dParamHiStop ,axes[0].high);
 							dJointSetAMotorParam(m_joint1,dParamLoStop ,axes[1].low);
 							dJointSetAMotorParam(m_joint1,dParamHiStop ,axes[1].high);
+							break;
 						case 0:				dJointSetSliderParam(m_joint,dParamLoStop ,axes[0].low);
 											dJointSetSliderParam(m_joint,dParamHiStop ,axes[0].high);break;
 						case 1:				dJointSetAMotorParam(m_joint1,dParamLoStop ,axes[1].low);
@@ -823,11 +1003,12 @@ void CPHJoint::SetLimitsActive(int axis_num)
 							switch(axis_num){
 						case -1:
 							dJointSetAMotorParam(m_joint1,dParamLoStop ,axes[0].low);
-							dJointSetAMotorParam(m_joint1,dParamLoStop ,axes[0].low);
+							dJointSetAMotorParam(m_joint1,dParamHiStop ,axes[0].high);
 							dJointSetAMotorParam(m_joint1,dParamLoStop2 ,axes[1].low);
 							dJointSetAMotorParam(m_joint1,dParamHiStop2 ,axes[1].high);
+							dJointSetAMotorParam(m_joint1, dParamLoStop3,axes[2].low);
 							dJointSetAMotorParam(m_joint1,dParamHiStop3 ,axes[2].high);
-							dJointSetAMotorParam(m_joint1,dParamHiStop3 ,axes[2].high);
+								break;
 						case 0:dJointSetAMotorParam(m_joint1,dParamLoStop ,axes[0].low);
 							   dJointSetAMotorParam(m_joint1,dParamHiStop ,axes[0].high);
 								break;
@@ -840,6 +1021,48 @@ void CPHJoint::SetLimitsActive(int axis_num)
 							}
 							break;
 	}
+}
+
+float	CPHJoint::GetAxisAngleRate( int axis_num )
+{
+	
+	float ret=0.f;
+	VERIFY( axis_num>=0 );
+	VERIFY( axis_num<=2 );
+	VERIFY( bActive );
+
+	switch(eType){
+						case hinge2:				
+											VERIFY(m_joint);
+											VERIFY( axis_num<=1 );
+											if( axis_num == 0 )		
+												ret= dJointGetHinge2Angle1Rate(m_joint);
+											else
+												ret= dJointGetHinge2Angle2Rate(m_joint);
+											break;
+
+						case ball:					ret= 0.f;break;
+						case hinge:					VERIFY(m_joint);
+													ret= dJointGetHingeAngleRate(m_joint);
+													break;
+						case full_control:			VERIFY(m_joint1);
+													ret= dJointGetAMotorAngleRate(m_joint1,axis_num);
+													break;
+						case slider:				
+													switch (axis_num)
+													{
+														case 0:		VERIFY(m_joint);
+																	ret= dJointGetSliderPositionRate(m_joint);
+																	break;
+														case 1:		VERIFY(m_joint1);
+																	ret= dJointGetAMotorAngleRate(m_joint1,0);
+																	break;
+													};break;
+						default: R_ASSERT2( false, "type not supported" ); break;
+	
+					}
+	return	ret;// body_for_joint(pFirst_element) ? ret : -
+
 }
 
 float CPHJoint::GetAxisAngle(int axis_num)
@@ -855,9 +1078,12 @@ float CPHJoint::GetAxisAngle(int axis_num)
 								case 0:	ret= dJointGetSliderPosition(m_joint);break;
 								case 1: ret= dJointGetAMotorAngle(m_joint1,0);break;
 							};break;
+						default: R_ASSERT2( false, "type not supported" ); break;
+	
 					}
 	return	ret;// body_for_joint(pFirst_element) ? ret : -
 }
+
 void CPHJoint::LimitAxisNum(int &axis_num)
 {
 	if(axis_num<-1) 
@@ -1038,6 +1264,38 @@ void CPHJoint::SetAxisSDfactorsActive(int axis_num)
 
 	}
 }
+
+
+
+void CPHJoint::SetJointFudgefactorActive(float factor)
+{
+	VERIFY( bActive );	
+	switch(eType)
+	{
+		case hinge2:		VERIFY(m_joint);
+							dJointSetHinge2Param( m_joint, dParamFudgeFactor, factor );
+							break	;
+		case ball:			break	;
+		case hinge:			VERIFY(m_joint);
+							dJointSetHingeParam( m_joint,dParamFudgeFactor ,factor );
+							break;
+
+		case full_control:	VERIFY(m_joint1);
+							dJointSetAMotorParam( m_joint1,dParamFudgeFactor, factor );
+							dJointSetAMotorParam(m_joint1,dParamFudgeFactor2, factor );
+							dJointSetAMotorParam(m_joint1,dParamFudgeFactor3, factor );
+							break;
+
+		case slider:		VERIFY(m_joint);
+							dJointSetSliderParam( m_joint,dParamFudgeFactor, factor );
+							VERIFY(m_joint1);
+							dJointSetAMotorParam( m_joint1, dParamFudgeFactor ,factor );
+							break	;
+							
+	}
+}
+
+
 void CPHJoint::GetJointSDfactors(float& spring_factor,float& damping_factor)
 {
 spring_factor =SPRING(m_cfm,m_erp);
@@ -1180,9 +1438,10 @@ void CPHJoint::GetAxisDirDynamic(int num,Fvector& axis)
 										else	dJointGetHinge2Axis1 (m_joint,result);
 				break;
 			case full_control:			dJointGetAMotorAxis (m_joint1,num,result);
-				 break;
+				break;
 			case slider:				dJointGetSliderAxis(m_joint,result);
-			
+				break;
+			default:					R_ASSERT2(false, "type not supported");
 		}
 	axis.set(result[0],result[1],result[2]);
 }
@@ -1201,6 +1460,9 @@ void CPHJoint::GetAnchorDynamic(Fvector& anchor_)
 	case full_control:			dJointGetBallAnchor (m_joint,result);
 		break;
 	case slider:				R_ASSERT2(false,"position of slider joint is undefinite");
+		break;
+	default:				R_ASSERT2(false,"type not supported");
+		break;
 	}
 	anchor_.set(result[0],result[1],result[2]);
 }
@@ -1278,4 +1540,13 @@ void CPHJoint::SetShell(CPHShell* p)
 void CPHJoint::ClearDestroyInfo()
 {
 	xr_delete(m_destroy_info);
+}
+
+bool CPHJoint::IsWheelJoint				()
+{
+	return dJointGetType(GetDJoint())==dJointTypeHinge2;
+}
+bool CPHJoint::IsHingeJoint				()
+{
+	return dJointGetType(GetDJoint())==dJointTypeHinge;
 }

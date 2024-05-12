@@ -2,7 +2,7 @@
 #define GEOMETRY_H 
 #include "PhysicsCommon.h"
 #include "ExtendedGeom.h"
-
+#include "mathutilsode.h"
 #include "../xrEngine/iphysicsgeometry.h"
 
 //this is equivalent dMULTIPLYOP0_333 whith consequent transposion of A
@@ -23,7 +23,7 @@ inline void dMULTIPLY3_333(dReal *A, const dReal *B, const dReal *C)
 
 class CGameObject;
 class CPHObject;
-class CODEGeom:
+class XRPHYSICS_API CODEGeom:
 public IPhysicsGeometry
 {
 protected:
@@ -127,7 +127,7 @@ virtual			void		set_local_form		(const Fmatrix& form)												=0;
 				void		remove_obj_contact_cb(ObjectContactCallbackFun* occb)									;
 				void		set_callback_data	(void *cd)															;
 				void		*get_callback_data	()																	;
-				void		set_ref_object		(CPhysicsShellHolder* ro)											;
+				void		set_ref_object		(IPhysicsShellHolder* ro)											;
 				void		set_ph_object		(CPHObject* o)														;
 				
 	//build/destroy
@@ -139,7 +139,7 @@ public:
 	static		void		get_final_tx		( dGeomID g, const dReal* &p, const dReal*	&R,dReal * bufV, dReal* bufM );
 				void		build				( const Fvector& ref_point )										;
 	virtual		void		set_build_position	( const Fvector& ref_point )										;//for build geom
-				void		clear_motion_history();
+				void		clear_motion_history( bool set_unspecified );
 				void		move_local_basis	( const Fmatrix& inv_new_mul_old )									;
 				void		destroy				()																	;
 							CODEGeom			()																	;
@@ -187,6 +187,7 @@ virtual const	Fvector&	local_center		()																	;
 	virtual		void		set_local_form		(const Fmatrix& form)												;
 	virtual		dGeomID		create				()																	;
 	virtual		void		set_build_position	(const Fvector& ref_point)											;
+
 private:
 #ifdef	DEBUG
 	virtual		void		dbg_draw			( float scale, u32 color, Flags32 flags ) const;
@@ -208,6 +209,7 @@ virtual const	Fvector&	local_center		()																	;
 	virtual		void		set_local_form		(const Fmatrix& form)												;
 	virtual		dGeomID		create				()																	;
 	virtual		void		set_build_position	(const Fvector& ref_point)											;
+				void		set_radius			( float r )															;
 	private:
 #ifdef	DEBUG
 	virtual		void		dbg_draw			( float scale, u32 color, Flags32 flags ) const;

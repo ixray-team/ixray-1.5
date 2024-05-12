@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "PHJointDestroyInfo.h"
 #include "PhysicsCommon.h"
-#include "MathUtils.h"
+#include "mathutilsode.h"
+#include "console_vars.h"
 CPHJointDestroyInfo::CPHJointDestroyInfo(float break_force,float break_torque)
 {
 	//m_bone_id=bone_id;
@@ -16,7 +17,7 @@ CPHJointDestroyInfo::CPHJointDestroyInfo(float break_force,float break_torque)
 
 bool CPHJointDestroyInfo::Update()
 {
-	dReal sq_breack_force=m_sq_break_force/phBreakCommonFactor;
+	dReal sq_breack_force=m_sq_break_force/ph_console::phBreakCommonFactor;
 	if(dDOT(m_joint_feedback.f1,m_joint_feedback.f1)>sq_breack_force)
 	{
 		m_breaked=true;

@@ -5,8 +5,9 @@
 
 #include "PHDefs.h"
 #include "PHImpact.h"
-#include "ode_include.h"
-
+//#include "ode_include.h"
+#include "../3rd party/ode/include/ode/common.h"
+#include "../3rd party/ode/include/ode/mass.h"
 class CPHFracture;
 class CPHElement;
 
@@ -70,13 +71,13 @@ public:
 
 using FRACTURE_STORAGE = xr_vector<CPHFracture>;
 using FRACTURE_I = FRACTURE_STORAGE::iterator;
+using FRACTURE_RI = FRACTURE_STORAGE::reverse_iterator;
 
-typedef std::pair<CPHElement*,CShellSplitInfo>	element_fracture;
-using ELEMENT_PAIR_RI = xr_vector<element_fracture>::reverse_iterator;
-using FRACTURE_RI = xr_vector<CPHFracture>::reverse_iterator;
+using element_fracture = std::pair<CPHElement*,CShellSplitInfo>;
 
 using ELEMENT_PAIR_VECTOR = xr_vector<element_fracture>;
 using ELEMENT_PAIR_I = ELEMENT_PAIR_VECTOR::iterator;
+using ELEMENT_PAIR_RI = ELEMENT_PAIR_VECTOR::reverse_iterator;
 
 class CPHFracturesHolder 			//stored in CPHElement
 {

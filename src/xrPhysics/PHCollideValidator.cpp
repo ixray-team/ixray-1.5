@@ -11,8 +11,8 @@ void CPHCollideValidator::Init()
 	freeGroupID=0;
 	NonTypeFlags.set(cbNCGroupObject,TRUE);
 
-	ClassFlags.set(cbClassDynamic|cbClassCharacter|cbClassRagDoll|cbClassAnimated,TRUE);
-	ClassNCFlags.set(cbNCClassCharacter|cbNCClassDynamic|cbNCClassRagDoll|cbNCClassAnimated,TRUE);
+	ClassFlags.set(cbClassDynamic|cbClassCharacter|cbClassSmall|cbClassRagDoll|cbClassAnimated,TRUE);
+	ClassNCFlags.set(cbNCClassCharacter|cbNCClassSmall|cbNCClassDynamic|cbNCClassRagDoll|cbNCClassAnimated,TRUE);
 
 }
 CGID CPHCollideValidator::RegisterGroup()
@@ -113,4 +113,9 @@ void	CPHCollideValidator::		SetClassSmall				(CPHObject& obj)
 void	CPHCollideValidator::		SetClassSmallNotCollide		(CPHObject& obj)
 {
 	obj.collide_class_bits().set(cbNCClassSmall,TRUE);
+}
+
+CGID			RegisterGroup				()
+{
+	return CPHCollideValidator::RegisterGroup();
 }

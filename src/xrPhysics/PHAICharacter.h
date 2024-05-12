@@ -22,6 +22,7 @@ public:
 	virtual		bool		ForcedPhysicsControl				(){return m_forced_physics_control;}
 	virtual		void		Create								(dVector3 sizes)																									;
 private:
+	virtual		void		UpdateStaticDamage					(dContact* c,SGameMtl* tri_material,bool bo1){}
 	//virtual		EEnvironment CheckInvironment					();
 #ifdef DEBUG
 	virtual		void		OnRender							()																													;

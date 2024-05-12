@@ -3,8 +3,10 @@
 #include "Physics.h"
 #include "PHElement.h"
 #include "PHShell.h"
-#include "../Include/xrRender/Kinematics.h"
+#include "console_vars.h"
 
+#include "../Include/xrRender/Kinematics.h"
+#include "ph_valid_ode.h"
 #include "../xrEngine/bone.h"
 
 #pragma warning(disable:4995)
@@ -69,7 +71,7 @@ element_fracture CPHFracturesHolder::SplitFromEnd(CPHElement* element,u16 fractu
 	Fmatrix shell_form;
 	element->PHShell()->GetGlobalTransformDynamic(&shell_form);
 	current_transtform.mulA_43	(shell_form);
-	new_element->SetTransform	(current_transtform);
+	new_element->SetTransform	(current_transtform, mh_unspecified );
 
 
 	//dBodyID new_element_body=new_element->get_body();
@@ -447,7 +449,7 @@ bool CPHFracture::Update(CPHElement* element)
 		{
 			Fvector force;
 			force.set(i_i->force);
-			force.mul(phRigidBreakWeaponFactor);
+			force.mul(ph_console::phRigidBreakWeaponFactor);
 			Fvector second_to_point;
 			second_to_point.sub(body_to_second,i_i->point);
 			//force.mul(30.f);
@@ -506,9 +508,9 @@ bool CPHFracture::Update(CPHElement* element)
 	//vtemp.crossproduct(first_in_bone,first_part_force);
 	//break_torque.sub(vtemp);
 #ifdef DBG_BREAK		
-	float btm_dbg=break_torque.magnitude()*phBreakCommonFactor/torque_factor;
+	float btm_dbg=break_torque.magnitude()*ph_console::phBreakCommonFactor/torque_factor;
 #endif
-	if(break_torque.magnitude()*phBreakCommonFactor>m_break_torque*torque_factor)
+	if(break_torque.magnitude()*ph_console::phBreakCommonFactor>m_break_torque*torque_factor)
 	{
 		//m_break_torque.set(second_part_torque);
 		m_pos_in_element.set(second_part_force);
@@ -534,7 +536,7 @@ bool CPHFracture::Update(CPHElement* element)
 	//vtemp.crossproduct(first_in_bone,first_part_torque);
 	//break_force.sub(vtemp);
 		
-	float bfm=break_force.magnitude()*phBreakCommonFactor;
+	float bfm=break_force.magnitude()*ph_console::phBreakCommonFactor;
 
 	if(m_break_force<bfm)
 	{

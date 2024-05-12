@@ -1,15 +1,15 @@
 #include "StdAfx.h"
 #include "PHDynamicData.h"
 #include "Physics.h"
-#include "../xrPhysics/tri-colliderknoopc/dTriList.h"
+#include "tri-colliderknoopc/dTriList.h"
 #include "PHShellSplitter.h"
 #include "PHFracture.h"
 #include "PHJointDestroyInfo.h"
 #include "PHCollideValidator.h"
-#include "Level.h"
-#include "physicsshellholder.h"
+//#include "Level.h"
+#include "iphysicsshellholder.h"
 #include "PhysicsShellAnimator.h"
-
+#include "../Include/xrRender/Kinematics.h"
 
 ///////////////////////////////////////////////////////////////
 ///#pragma warning(disable:4995)
@@ -59,7 +59,7 @@ void CPHShell::Activate(const Fmatrix &m0,float dt01,const Fmatrix &m2,bool disa
 		mXFORM = old_m;
 	}
 	m.invert();m.mulA_43		(mXFORM);
-	TransformPosition(m);
+	TransformPosition( m, mh_unspecified );
 	if(PKinematics())
 	{
 		SetCallbacks( );
@@ -233,7 +233,7 @@ void CPHShell::Deactivate(){
 	if (m_pPhysicsShellAnimatorC)
 	{
 		VERIFY( PhysicsRefObject( ) );
-		PhysicsRefObject( )->processing_deactivate();
+		PhysicsRefObject( )->ObjectProcessingDeactivate();
 		xr_delete<CPhysicsShellAnimator>(m_pPhysicsShellAnimatorC); 
 	}
 
@@ -286,4 +286,15 @@ void CPHShell::Deactivate(){
 	m_flags.set(flActive,FALSE);
 	m_traced_geoms.clear();
 	CPHObject::UnsetRayMotions();
+}
+
+#include "PHElementInline.h"
+
+void	CPHShell::ActivatingBonePoses( IKinematics &K )
+{
+	ELEMENT_I i, e;
+	i = elements.begin(); e=elements.end();
+	for( ; i!=e; ++i )
+		(*i)->ActivatingPos( K.LL_GetTransform( (*i)->m_SelfID ) );
+		
 }

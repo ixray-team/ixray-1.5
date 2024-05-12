@@ -2,7 +2,7 @@
 #include "PHItemList.h"
 
 class CPhysicsShell;
-class CPHUpdateObject 
+class XRPHYSICS_API CPHUpdateObject 
 {
 	DECLARE_PHLIST_ITEM(CPHUpdateObject)
 	bool				b_activated																	;

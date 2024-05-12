@@ -4,18 +4,18 @@
 #include "../Include/xrRender/KinematicsAnimated.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "PHDynamicData.h"
-#include "game_object_space.h"
-#include "PhysicsShellHolder.h"
+//#include "game_object_space.h"
+#include "IPhysicsShellHolder.h"
 #include "../xrEngine/bone.h"
 
 
 
 
-CPhysicsShellAnimator::CPhysicsShellAnimator( CPhysicsShell* _pPhysicsShell, CInifile const* ini, LPCSTR section ) : m_pPhysicsShell( _pPhysicsShell )
+CPhysicsShellAnimator::CPhysicsShellAnimator( CPhysicsShell* _pPhysicsShell, CInifile const* ini, LPCSTR section ) : m_pPhysicsShell( _pPhysicsShell ) 
 {
 	VERIFY( ini->section_exist( section ) );
-	CPhysicsShellHolder *obj = (*(_pPhysicsShell->Elements().begin()))->PhysicsRefObject();
-	m_StartXFORM.set( obj->XFORM() );
+	IPhysicsShellHolder *obj = (*(_pPhysicsShell->Elements().begin()))->PhysicsRefObject();
+	m_StartXFORM.set( obj->ObjectXFORM() );
 	bool all_bones = true;
 	if( ini->line_exist( section, "controled_bones" ) )
 	{
@@ -49,16 +49,16 @@ CPhysicsShellAnimator::~CPhysicsShellAnimator()
 }
 void	CPhysicsShellAnimator::	CreateJoints( LPCSTR controled )
 {
-		CPhysicsShellHolder *obj = (*(m_pPhysicsShell->Elements().begin()))->PhysicsRefObject();
+		IPhysicsShellHolder *obj = (*(m_pPhysicsShell->Elements().begin()))->PhysicsRefObject();
 		const u16 nb =( u16 )_GetItemCount( controled );
 		for(u16 i = 0 ; nb > i ; ++i )
 		{
 			string64 n;
 			_GetItem( controled, i, n );
 			u16 bid = m_pPhysicsShell->PKinematics()->LL_BoneID(n);
-			VERIFY2( bid != BI_NONE, make_string( "shell_animation - controled bone %s not found! object: %s, model: %s", n, obj->cName().c_str(), obj->cNameVisual().c_str() ) );
+			VERIFY2( bid != BI_NONE, make_string( "shell_animation - controled bone %s not found! object: %s, model: %s", n, obj->ObjectName(), obj->ObjectNameVisual()) );
 			CPHElement *e = smart_cast<CPHElement*>( m_pPhysicsShell->get_Element( bid ) );
-			VERIFY2( e, make_string( "shell_animation - controled bone %s has no physics collision! object: %s, model: %s", n, obj->cName().c_str(), obj->cNameVisual().c_str() ) );
+			VERIFY2( e, make_string( "shell_animation - controled bone %s has no physics collision! object: %s, model: %s", n, obj->ObjectName(), obj->ObjectNameVisual() ) );
 			CreateJoint( e );
 		}
 }

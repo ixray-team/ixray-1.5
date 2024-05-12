@@ -1,20 +1,22 @@
 #include "StdAfx.h"
 #include "PHDynamicData.h"
 #include "Physics.h"
-#include "../xrPhysics/tri-colliderknoopc/dTriList.h"
+#include "tri-colliderknoopc/dTriList.h"
 #include "PHFracture.h"
 #include "PHContactBodyEffector.h"
 #include "MathUtils.h"
 #include "matrix_utils.h"
-#include "PhysicsShellHolder.h"
-#include "game_object_space.h"
+#include "IPhysicsShellHolder.h"
+#include "ph_valid_ode.h"
+//#include "game_object_space.h"
 //#include "../Include/xrRender/Kinematics.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../Include/xrRender/KinematicsAnimated.h"
 #include "../3rd party/ode/ode/src/util.h"
+
 #ifdef DEBUG
-#	include "PHDebug.h"
-#	include "objectdump.h"
+#	include "debug_output.h"
+//#	include "objectdump.h"
 #endif // DEBUG
 
 ///////////////////////////////////////////////////////////////
@@ -231,8 +233,8 @@ void		CPHElement::Deactivate()
 	}
 }
 
-void CPHElement::SetTransform(const Fmatrix &m0){
-	VERIFY2(_valid(m0), make_string( "invalid_form_in_set_transform" ) + dbg_object_full_capped_dump_string( PhysicsRefObject() ) );
+void CPHElement::SetTransform(const Fmatrix &m0, motion_history_state history_state ){
+	VERIFY2(_valid(m0), make_string( "invalid_form_in_set_transform" ) + ( PhysicsRefObject()->dump(full_capped) ) );
 	VERIFY2(valid_pos( m0.c ),  dbg_valide_pos_string( m0.c, PhysicsRefObject(), "invalid_form_in_set_transform" ) );
 	Fvector mc;
 	CPHGeometryOwner::get_mc_vs_transform(mc,m0);
@@ -249,7 +251,8 @@ void CPHElement::SetTransform(const Fmatrix &m0){
 	VERIFY2(dBodyGetLinearVel(m_body),"not valide safe velocity");
 	m_flags.set(flUpdate,TRUE);
 	m_shell->spatial_move();
-	CPHGeometryOwner::clear_motion_history();
+	if( history_state != mh_not_clear )
+		CPHGeometryOwner::clear_motion_history( mh_unspecified == history_state );
 }
 
 void CPHElement::getQuaternion(Fquaternion& quaternion)
@@ -287,7 +290,7 @@ void CPHElement::SetGlobalPositionDynamic(const Fvector& position)
 	m_shell->spatial_move();
 }
 
-void CPHElement::TransformPosition(const Fmatrix &form)
+void CPHElement::TransformPosition(const Fmatrix &form, motion_history_state history_state  )
 {
 	if(!isActive())return;
 	VERIFY(_valid(form));
@@ -305,6 +308,8 @@ void CPHElement::TransformPosition(const Fmatrix &form)
 	m_body_interpolation.ResetPositions();
 	m_body_interpolation.ResetRotations();
 	m_flags.set(flUpdate,TRUE);
+	if( history_state != mh_not_clear )
+		clear_motion_history( mh_unspecified == history_state );
 	m_shell->spatial_move();
 }
 CPHElement::~CPHElement	()
@@ -329,7 +334,7 @@ void CPHElement::Activate(const Fmatrix &transform,const Fvector& lin_vel,const 
 	VERIFY(!isActive());
 	mXFORM.set(transform);
 	Start();
-	SetTransform(transform);
+	SetTransform(transform, mh_unspecified );
 
 	dBodySetLinearVel(m_body,lin_vel.x,lin_vel.y,lin_vel.z);
 
@@ -403,9 +408,9 @@ void CPHElement::PhDataUpdate(dReal step){
 	//b_enabled_onstep=!!dBodyIsEnabled(m_body);
 	//VERIFY_BOUNDARIES2(cast_fv(dBodyGetPosition(m_body)),phBoundaries,PhysicsRefObject(),"PhDataUpdate begin, body position");
 #ifdef DEBUG
-	if(ph_dbg_draw_mask.test(phDbgDrawMassCenters))
+	if(debug_output().ph_dbg_draw_mask().test(phDbgDrawMassCenters))
 	{
-		DBG_DrawPoint(cast_fv(dBodyGetPosition(m_body)), 0.03f, color_xrgb(255, 0, 0));
+		debug_output().DBG_DrawPoint(cast_fv(dBodyGetPosition(m_body)), 0.03f, color_xrgb(255, 0, 0));
 	}
 #endif
 	
@@ -434,10 +439,10 @@ void CPHElement::PhDataUpdate(dReal step){
 		Msg("x  %f,%f,%f",dBodyGetRotation(m_body)[0],dBodyGetRotation(m_body)[4],dBodyGetRotation(m_body)[8]);
 		Msg("y  %f,%f,%f",dBodyGetRotation(m_body)[1],dBodyGetRotation(m_body)[5],dBodyGetRotation(m_body)[9]);
 		Msg("z  %f,%f,%f",dBodyGetRotation(m_body)[2],dBodyGetRotation(m_body)[6],dBodyGetRotation(m_body)[10]);
-		CPhysicsShellHolder* ph=PhysicsRefObject();
-		Msg("name visual %s",*ph->cNameVisual());
-		Msg("name obj %s",ph->Name());
-		Msg("name section %s",*ph->cNameSect());
+		IPhysicsShellHolder* ph=PhysicsRefObject();
+		Msg("name visual %s",ph->ObjectNameVisual());
+		Msg("name obj %s",ph->ObjectName());
+		Msg("name section %s",ph->ObjectNameSect());
 		VERIFY2(0,"bad angular velocity");
 	}
 #endif
@@ -608,9 +613,9 @@ void	CPHElement::applyImpulseVsMC(const Fvector& pos,const Fvector& dir, float v
 	if( dbg_draw_ph_force_apply )
 	{
 		Fvector draw_pos; draw_pos.add( cast_fv( dBodyGetPosition( m_body ) ), pos ); 
-		DBG_OpenCashedDraw();
-		DBG_DrawLine(draw_pos, Fvector().add(draw_pos, dir), color_xrgb(255, 0, 0));
-		DBG_ClosedCashedDraw( 50000 );
+		debug_output().DBG_OpenCashedDraw();
+		debug_output().DBG_DrawLine(draw_pos, Fvector().add(draw_pos, dir), color_xrgb(255, 0, 0));
+		debug_output().DBG_ClosedCashedDraw( 50000 );
 	}
 #endif
 	dBodyAddForceAtRelPos(m_body, impulse.x,impulse.y,impulse.z,pos.x, pos.y,pos.z);
@@ -626,9 +631,9 @@ void	CPHElement::applyImpulseVsGF(const Fvector& pos,const Fvector& dir, float v
 #ifdef DEBUG
 	if( dbg_draw_ph_force_apply )
 	{
-		DBG_OpenCashedDraw();
-		DBG_DrawLine(pos, Fvector().add(pos, dir), color_xrgb(255, 05, 0));
-		DBG_ClosedCashedDraw( 50000 );
+		debug_output().DBG_OpenCashedDraw();
+		debug_output().DBG_DrawLine(pos, Fvector().add(pos, dir), color_xrgb(255, 05, 0));
+		debug_output().DBG_ClosedCashedDraw( 50000 );
 	}
 #endif
 	/////////////////////////////////////////////////////////////////////////
@@ -675,16 +680,16 @@ void	CPHElement::	applyImpulseTrace		(const Fvector& pos, const Fvector& dir, fl
 		body_pos.set(0.f,0.f,0.f);
 	}
 #ifdef DEBUG
-	if(ph_dbg_draw_mask.test(phHitApplicationPoints))
+	if(debug_output().ph_dbg_draw_mask().test(phHitApplicationPoints))
 	{
-		DBG_OpenCashedDraw();
+		debug_output().DBG_OpenCashedDraw();
 		Fvector dbg_position;dbg_position.set(body_pos);
 		dMULTIPLY0_331 (cast_fp(dbg_position),dBodyGetRotation(m_body),cast_fp(body_pos));
 		dbg_position.add(cast_fv(dBodyGetPosition(m_body)));
-		DBG_DrawPoint(dbg_position, 0.01f, color_xrgb(255, 255, 255));
-		DBG_DrawLine(cast_fv(dBodyGetPosition(m_body)), dbg_position, color_xrgb(255, 255, 255));
-		DBG_DrawLine(dbg_position, Fvector().add(dbg_position, Fvector().mul(dir, 0.4f)), color_xrgb(255, 0, 255));
-		DBG_ClosedCashedDraw(10000);
+		debug_output().DBG_DrawPoint(dbg_position, 0.01f, color_xrgb(255, 255, 255));
+		debug_output().DBG_DrawLine(cast_fv(dBodyGetPosition(m_body)), dbg_position, color_xrgb(255, 255, 255));
+		debug_output().DBG_DrawLine(dbg_position, Fvector().add(dbg_position, Fvector().mul(dir, 0.4f)), color_xrgb(255, 0, 255));
+		debug_output().DBG_ClosedCashedDraw(10000);
 	}
 #endif	
 	applyImpulseVsMC(body_pos,dir,val);
@@ -750,7 +755,7 @@ void CPHElement::build(bool disable){
 	//	if(place_current_forms)
 	{
 
-		SetTransform(mXFORM);
+		SetTransform(mXFORM, mh_unspecified );
 	}
 
 	m_body_interpolation.SetBody(m_body);
@@ -768,7 +773,7 @@ void CPHElement::RunSimulation(const Fmatrix& start_from)
 	{
 		Fmatrix globe;
 		globe.mul(start_from,mXFORM);
-		SetTransform(globe);
+		SetTransform(globe, mh_unspecified );
 	}
 	//dVectorSet(m_safe_position,dBodyGetPosition(m_body));
 	//dQuaternionSet(m_safe_quaternion,dBodyGetQuaternion(m_body));
@@ -799,7 +804,7 @@ void CPHElement::StataticRootBonesCallBack(CBoneInstance* B)
 		Fmatrix global_transform;
 		//if(m_parent_element)
 		global_transform.mul_43(m_shell->mXFORM,mXFORM);
-		SetTransform(global_transform);
+		SetTransform(global_transform, mh_unspecified );
 
 		FillInterpolation();
 		//bActivating=false;
@@ -848,10 +853,11 @@ void CPHElement::StataticRootBonesCallBack(CBoneInstance* B)
 
 }
 
-void CPHElement::BoneGlPos(Fmatrix &m, const CBoneInstance* B) const
+//void CPHElement::BoneGlPos(Fmatrix &m, const CBoneInstance* B) const
+void CPHElement::BoneGlPos(Fmatrix &m, const Fmatrix &BoneTransform) const
 {
 	VERIFY(m_shell);
-	m.mul_43(m_shell->mXFORM, B->mTransform);
+	m.mul_43(m_shell->mXFORM, BoneTransform);
 }
 
 void CPHElement::GetAnimBonePos(Fmatrix &bp)
@@ -894,10 +900,10 @@ bool CPHElement::AnimToVel( float dt, float l_limit, float a_limit )
 //
 //	Fmatrix bp;BoneGlPos(bp,BI);
 //
-	CPhysicsShellHolder	*ph = PhysicsRefObject();
+	IPhysicsShellHolder	*ph = PhysicsRefObject();
 	VERIFY(ph);
 	Fmatrix bpl;GetAnimBonePos(bpl);
-	Fmatrix bp;bp.mul_43(ph->XFORM(),bpl);
+	Fmatrix bp;bp.mul_43(ph->ObjectXFORM(),bpl);
 	//BoneGlPos(bp,BI);
 
 	Fmatrix cp;
@@ -934,19 +940,23 @@ bool CPHElement::AnimToVel( float dt, float l_limit, float a_limit )
 	//set_AngularVel(aw);
 	return ret;
 }
-
-void CPHElement::ToBonePos(const CBoneInstance* B)
+void	CPHElement::ToBonePos(const Fmatrix &BoneTransform, motion_history_state history_state )
 {
-	VERIFY2( !ph_world->Processing(), *PhysicsRefObject()->cNameSect() );
-	VERIFY( _valid( B->mTransform ) );
+	VERIFY2( !ph_world->Processing(), PhysicsRefObject()->ObjectNameSect() );
+	VERIFY( _valid( BoneTransform ) );
 	VERIFY( !m_shell->dSpace()->lock_count );
 
 	//mXFORM.set( B->mTransform );
 	
 	//Fmatrix global_transform;
-	BoneGlPos( mXFORM, B );
-	SetTransform( mXFORM );
+	BoneGlPos( mXFORM, BoneTransform );
+	SetTransform( mXFORM, history_state );
 	FillInterpolation( );
+}
+void CPHElement::ToBonePos(const CBoneInstance* B, motion_history_state history_state )
+{
+	VERIFY( B );
+	ToBonePos(B->mTransform, history_state );
 }
 
 void	CPHElement::SetBoneCallbackOverwrite( bool v )
@@ -956,9 +966,11 @@ void	CPHElement::SetBoneCallbackOverwrite( bool v )
 	m_shell->PKinematics()->LL_GetBoneInstance(m_SelfID).set_callback_overwrite (v);
 }
 
+
+
 void CPHElement::BonesCallBack( CBoneInstance* B )
 {
-	Fmatrix parent;
+	
 	VERIFY ( isActive() );
 	VERIFY( _valid( m_shell->mXFORM ) );
 	//VERIFY2(fsimilar(DET(B->mTransform),1.f,DET_CHECK_EPS),"Bones callback receive 0 matrix");
@@ -967,26 +979,18 @@ void CPHElement::BonesCallBack( CBoneInstance* B )
 
 	if( m_flags.test( flActivating ) )
 	{
-		ToBonePos( B );
-		m_flags.set( flActivating, FALSE );
-		if( !m_parent_element ) 
-		{
-			m_shell->m_object_in_root.set( B->mTransform );
-			m_shell->m_object_in_root.invert( );
-			m_shell->SetNotActivating( );
-		}
+		ActivatingPos(B->mTransform);
 		B->set_callback_overwrite( TRUE );
-		//VERIFY2(fsimilar(DET(B->mTransform),1.f,DET_CHECK_EPS),"Bones callback returns 0 matrix");
-		VERIFY_RMATRIX( B->mTransform );
-		VERIFY( valid_pos( B->mTransform.c, phBoundaries ) );
-		return;
 	}
 
 	VERIFY_RMATRIX( B->mTransform );
 	VERIFY( valid_pos( B->mTransform.c, phBoundaries ) );
 
-	parent.invert		( m_shell->mXFORM );
-	B->mTransform.mul_43( parent, mXFORM );
+	CalculateBoneTransform( B->mTransform );
+
+//	Fmatrix parent;
+//	parent.invert		( m_shell->mXFORM );
+//	B->mTransform.mul_43( parent, mXFORM );
 
 	VERIFY_RMATRIX( B->mTransform );
 	VERIFY( valid_pos( B->mTransform.c, phBoundaries ) );
@@ -994,7 +998,7 @@ void CPHElement::BonesCallBack( CBoneInstance* B )
 
 }
 
-void CPHElement::set_PhysicsRefObject(CPhysicsShellHolder* ref_object)
+void CPHElement::set_PhysicsRefObject(IPhysicsShellHolder* ref_object)
 {
 	CPHGeometryOwner::set_PhysicsRefObject(ref_object);
 }
@@ -1492,7 +1496,7 @@ void CPHElement::PresetActive()
 	//m_start_time=Device.fTimeGlobal;
 	Fmatrix global_transform;
 	global_transform.mul_43(m_shell->mXFORM, mXFORM);
-	SetTransform(global_transform);
+	SetTransform(global_transform, mh_unspecified );
 
 	if(!m_parent_element) 
 	{
@@ -1622,6 +1626,14 @@ void CPHElement::ClearDestroyInfo()
 	xr_delete(m_fratures_holder);
 }
 
+void CPHElement::GetPointVel( Fvector	 &res_vel, const Fvector & point ) const
+{
+	dVector3 res;
+	//Fvector	 res_vel;
+	dBodyGetPointVel(get_bodyConst(),point.x,point.y,point.z,res);
+	CopyMemory (&res_vel,res,sizeof(Fvector));
+}
+
 #ifdef DEBUG
 
 void CPHElement::dbg_draw_velocity	( float scale, u32 color )
@@ -1634,8 +1646,8 @@ void CPHElement::dbg_draw_velocity	( float scale, u32 color )
 	VERIFY( m_body );
 	dVector3 res;
 	dBodyGetPointVel( m_body, bone.c.x, bone.c.y, bone.c.z, res );
-	DBG_DrawPoint( bone.c, 0.01f, color );
-	DBG_DrawLine( bone.c,  Fvector().add( bone.c, cast_fv( res ).mul( scale ) ) , color );
+	debug_output().DBG_DrawPoint( bone.c, 0.01f, color );
+	debug_output().DBG_DrawLine( bone.c,  Fvector().add( bone.c, cast_fv( res ).mul( scale ) ) , color );
 	//m_shell->PKinematics()->LL_GetTransform()
 }
 
@@ -1664,8 +1676,8 @@ void CPHElement::dbg_draw_force	( float scale, u32 color )
 	VERIFY( m_body );
 	dVector3 res;
 	dBodyGetPointForce( m_body, bone.c.x, bone.c.y, bone.c.z, res );
-	DBG_DrawPoint( bone.c, 0.01f, color );
-	DBG_DrawLine( bone.c,  Fvector().add( bone.c, cast_fv( res ).mul( scale ) ) , color );
+	debug_output().DBG_DrawPoint( bone.c, 0.01f, color );
+	debug_output().DBG_DrawLine( bone.c,  Fvector().add( bone.c, cast_fv( res ).mul( scale ) ) , color );
 }
 
 void	CPHElement::	dbg_draw_geometry( float scale, u32 color, Flags32 flags /*= Flags32().assign( 0 )*/ ) const

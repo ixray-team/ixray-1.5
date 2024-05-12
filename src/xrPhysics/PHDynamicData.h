@@ -3,9 +3,10 @@
 //////////////////////////////////////////////////////////////////////
 
 
-#include "ode_include.h"
+//#include "ode_include.h"
+//#include "../3rd party/ode/include/ode/common.h"
 #include "PHInterpolation.h"
-#include "MathUtils.h"
+#include "MathUtilsOde.h"
 #if !defined(AFX_PHDynamicData_H__ACC01646_B581_4639_B78C_30311432021B__INCLUDED_)
 #define AFX_PHDynamicData_H__ACC01646_B581_4639_B78C_30311432021B__INCLUDED_
 

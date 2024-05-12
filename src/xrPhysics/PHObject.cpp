@@ -5,8 +5,9 @@
 #include "PHMoveStorage.h"
 #include "dRayMotions.h"
 #include "PHCollideValidator.h"
+#include "console_vars.h"
 #ifdef DEBUG
-#include "phdebug.h"
+#include "debug_output.h"
 #endif
 extern CPHWorld* ph_world;
 
@@ -48,7 +49,7 @@ void CPHObject::put_in_recently_deactivated()
 {
 	VERIFY(!m_flags.test(st_activated)&&!m_flags.test(st_freezed));
 	if(m_flags.test(st_recently_deactivated))return;
-	m_check_count=u8(ph_tri_clear_disable_count);
+	m_check_count=u8(ph_console::ph_tri_clear_disable_count);
 	m_flags.set(st_recently_deactivated,TRUE);
 	ph_world->AddRecentlyDisabled(this);
 }
@@ -92,11 +93,11 @@ void CPHObject::Collide()
 				dir.mul(1.f/magnitude);
 				g_SpatialSpacePhysic->q_ray(ph_world->r_spatial,0,STYPE_PHYSIC,*from,dir,magnitude);//|ISpatial_DB::O_ONLYFIRST
 #ifdef DEBUG
-				if(ph_dbg_draw_mask.test(phDbgDrawRayMotions))
+				if(debug_output().ph_dbg_draw_mask().test(phDbgDrawRayMotions))
 				{
-					DBG_OpenCashedDraw();
-					DBG_DrawLine(*from, Fvector().add(*from, Fvector().mul(dir, magnitude)), color_xrgb(0, 255, 0));
-					DBG_ClosedCashedDraw(30000);
+					debug_output().DBG_OpenCashedDraw();
+					debug_output().DBG_DrawLine(*from, Fvector().add(*from, Fvector().mul(dir, magnitude)), color_xrgb(0, 255, 0));
+					debug_output().DBG_ClosedCashedDraw(30000);
 				}
 
 #endif

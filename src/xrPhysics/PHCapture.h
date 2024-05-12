@@ -2,32 +2,35 @@
 #ifndef PH_CAPTURE_H
 #define PH_CAPTURE_H
 
-#include "PHUpdateObject.h"
-#include "gameobject.h"
-#include "physicsshellholder.h"
+//#include "phobject.h"
+#include "phupdateobject.h"
+//#include "gameobject.h"
+//#include "physicsshellholder.h"
 #include "phisland.h"
 #include "../3rd party/ode/include/ode/common.h"
-
-class	CPhysicShellHolder;
+#include "iphcapture.h"
+class	IPhysicsShellHolder;
 class	CPHCharacter;
 class	CPhysicsElement;
-struct	CPHCaptureBoneCallback;
-class CPHCapture : public CPHUpdateObject
+struct	NearestToPointCallback;
+class CPHCapture : 
+	public CPHUpdateObject,
+	public IPHCapture
 {
 public:
-					CPHCapture	(CPHCharacter     *a_character,CPhysicsShellHolder	  *a_taget_object, CPHCaptureBoneCallback* cb /*=0*/);
-					CPHCapture	(CPHCharacter     *a_character,CPhysicsShellHolder	  *a_taget_object,u16 a_taget_elemrnt);
+					CPHCapture	(CPHCharacter     *a_character,IPhysicsShellHolder	  *a_taget_object, NearestToPointCallback* cb /*=0*/);
+					CPHCapture	(CPHCharacter     *a_character,IPhysicsShellHolder	  *a_taget_object,u16 a_taget_elemrnt);
 virtual				~CPHCapture	();
 
 bool				Failed		(){return e_state == cstFree;}
 
 void				Release		();
-void				RemoveConnection(CObject* O);
+void				RemoveConnection(IPhysicsShellHolder* O);
 
 protected:
 CPHCharacter		*m_character;
 CPhysicsElement*	m_taget_element;
-CPhysicsShellHolder*	m_taget_object;
+IPhysicsShellHolder*	m_taget_object;
 dJointID			m_joint;
 dJointID			m_ajoint;
 dJointFeedback		m_joint_feedback;
