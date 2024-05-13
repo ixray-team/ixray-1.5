@@ -6,6 +6,7 @@
 //	Description : Memory manager
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "memory_manager.h"
 #include "visual_memory_manager.h"
@@ -325,10 +326,7 @@ void CMemoryManager::make_object_visible_somewhen	(const CEntityAlive *enemy)
 {
 	squad_mask_type				mask = stalker().agent_manager().member().mask(&stalker());
 	MemorySpace::CVisibleObject	*obj = visual().visible_object(enemy);
-//	if (obj) {
-//		Msg						("------------------------------------------------------");
-//		Msg						("[%6d] make_object_visible_somewhen [%s] = %x",Device.dwTimeGlobal,*enemy->cName(),obj->m_squad_mask.get());
-//	}
+
 	bool						prev = obj ? obj->visible(mask) : false;
 	visual().add_visible_object	(enemy,.001f,true);
 	MemorySpace::CVisibleObject	*obj1 = object().memory().visual().visible_object(enemy);

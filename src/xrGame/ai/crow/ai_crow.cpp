@@ -11,7 +11,6 @@
 #include "../../../xrPhysics/physicsshell.h"
 #include "../../../xrPhysics/phvalide.h"
 #include "ai_crow.h"
-#include "../../hudmanager.h"
 #include "../../level.h"
 #include "../../../Include/xrRender/RenderVisual.h"
 #include "../../../Include/xrRender/Kinematics.h"
@@ -246,6 +245,9 @@ void CAI_Crow::state_DeathFall()
 		m_pPhysicsShell->get_LinearVel(velocity);
 		if(velocity.y>-0.001f) st_target = eDeathDead;
 	}
+	else
+		st_target = eDeathDead;
+
 	if (bPlayDeathIdle){
 		smart_cast<IKinematicsAnimated*>(Visual())->PlayCycle	(m_Anims.m_death_idle.GetRandom());
 		bPlayDeathIdle		= false;

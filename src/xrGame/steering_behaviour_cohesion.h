@@ -16,7 +16,8 @@ class CAI_Rat;
 
 namespace steering_behaviour {
 
-class cohesion final : public base {
+class cohesion final : public base
+{
 public:
 	cohesion(const cohesion& other) = delete;
 	cohesion& operator =(const cohesion& other) = delete;

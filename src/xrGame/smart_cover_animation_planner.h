@@ -21,7 +21,8 @@ namespace smart_cover {
 class cover;
 class target_selector;
 
-class animation_planner final : public CActionPlannerScript<CAI_Stalker> {
+class animation_planner final : public CActionPlannerScript<CAI_Stalker>
+{
 private:
 	typedef CActionPlannerScript<CAI_Stalker> inherited;
 

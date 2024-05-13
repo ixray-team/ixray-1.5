@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "pch_script.h"
 #include "fs_registrator.h"
 #include "../xrcore/LocatorApi.h"
@@ -24,7 +25,7 @@ class FS_file_list{
 	xr_vector<LPSTR>*	m_p;
 public :
 				FS_file_list	(xr_vector<LPSTR>* p):m_p(p)	{ }
-	u32			Size			()								{ return (u32)m_p->size();}
+	u32			Size			()								{ return m_p->size();}
 	LPCSTR		GetAt			(u32 idx)						{ return m_p->at(idx);}
 	void		Free			()								{ FS.file_list_close(m_p);};
 };
@@ -92,7 +93,7 @@ public:
 	};
 	FS_file_list_ex		(LPCSTR path, u32 flags, LPCSTR mask);
 
-	u32			Size()						{return (u32)m_file_items.size();}
+	u32			Size()						{return m_file_items.size();}
 	FS_item		GetAt(u32 idx)				{return m_file_items[idx];}
 	void		Sort(u32 flags);
 };
@@ -111,7 +112,7 @@ FS_file_list_ex::FS_file_list_ex(LPCSTR path, u32 flags, LPCSTR mask)
 		m_file_items.push_back	(FS_item());
 		FS_item& itm			= m_file_items.back();
 		ZeroMemory				(itm.name,sizeof(itm.name));
-		strcat					(itm.name,it->name.c_str());
+		xr_strcat					(itm.name,it->name.c_str());
 		itm.modif				= (u32)it->time_write;
 		itm.size				= it->size;
 	}

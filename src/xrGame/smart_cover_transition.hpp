@@ -17,7 +17,8 @@ namespace transitions {
 
 class animation_action;
 
-class action final {
+class action final
+{
 
 public:
 	typedef xr_vector<animation_action *> Animations;

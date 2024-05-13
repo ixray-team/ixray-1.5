@@ -13,7 +13,8 @@
 
 struct SRotation;
 
-class animation_offsets final {
+class animation_offsets final
+{
 private:
 	class anim_id_predicate {
 

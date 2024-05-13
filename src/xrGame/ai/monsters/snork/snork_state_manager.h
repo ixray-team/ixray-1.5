@@ -3,7 +3,9 @@
 
 class CSnork;
 
-class CStateManagerSnork : public CMonsterStateManager<CSnork> {
+class CStateManagerSnork : public CMonsterStateManager<CSnork> 
+{
+private:
 	typedef CMonsterStateManager<CSnork> inherited;
 
 public:

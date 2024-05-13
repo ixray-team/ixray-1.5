@@ -208,15 +208,6 @@ void CWalmarkManager::Load (LPCSTR section)
 
 	for (int k=0; k<cnt; ++k)
 		m_wallmarks->AppendMark(_GetItem(wallmarks_name,k,tmp));
-
-	/*
-	ref_shader	s;
-	for (int k=0; k<cnt; ++k)
-	{
-		s.create ("effects\\wallmark",_GetItem(wallmarks_name,k,tmp));
-		m_wallmarks.push_back	(s);
-	}
-	*/
 }
 
 

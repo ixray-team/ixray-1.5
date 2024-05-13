@@ -5,6 +5,7 @@
 //	Description : Transition class for smart_cover
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "smart_cover_transition.hpp"
 #include "smart_cover_transition_animation.hpp"
@@ -49,13 +50,13 @@ bool action::applicable			() const
 	return						(functor(m_precondition_params.c_str()));
 }
 
-void action::load_animations(luabind::object const& table) {
+void action::load_animations	(luabind::object const &table)
+{
 	luabind::iterator it(table), end;
 	const size_t count = luabind::distance(it, end);
 	m_animations.reserve(count);
 
-	while (it != end)
-	{
+	while (it != end) {
 		auto tmp = *it;
 		const Fvector pos = parse_fvector(tmp, "position");
 		const shared_str anim_id = parse_string(tmp, "animation");

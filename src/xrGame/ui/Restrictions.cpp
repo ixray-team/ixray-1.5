@@ -149,7 +149,7 @@ RESTR CRestrictions::GetRestr(const shared_str& item)
 	ptrdiff_t n				= strchr(item.c_str(),':') - item.c_str();
 	if( n>0 )
 	{
-		strncpy			(_name, item.c_str(), n );
+		strncpy_s		(_name, item.c_str(), n );
 		_name[n]		= 0;
 		_cnt			= sscanf(item.c_str()+n+1,"%d", &ret.n);
 	}

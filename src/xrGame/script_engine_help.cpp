@@ -9,6 +9,7 @@
 #include "stdafx.h"
 #include "pch_script.h"
 
-void print_help(lua_State* L) {
+void print_help(lua_State* L)
+{
 	Msg("! Release build doesn't support lua-help :(");
 }

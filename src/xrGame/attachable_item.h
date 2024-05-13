@@ -18,7 +18,6 @@ private:
 	Fmatrix						m_offset;
 	u16							m_bone_id;
 	bool						m_enabled;
-//	bool						m_auto_attach;
 #ifdef DEBUG
 	bool						m_valid;
 #endif
@@ -37,7 +36,7 @@ public:
 	virtual	void				afterAttach				();
 	virtual	void				afterDetach				();
 	IC		CInventoryItem		&item					() const;
-	IC		CPhysicsShellHolder	&object					() const;
+			CPhysicsShellHolder	&object					() const;
 	IC		shared_str			bone_name				() const;
 	IC		u16					bone_id					() const;
 	IC		void				set_bone_id				(u16 bone_id);

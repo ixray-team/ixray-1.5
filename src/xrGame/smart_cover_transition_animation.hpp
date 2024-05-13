@@ -14,7 +14,8 @@ namespace smart_cover {
 
 namespace transitions {
 
-class animation_action final {
+class animation_action final
+{
 private:
 	Fvector									m_position;
 	shared_str								m_animation_id;

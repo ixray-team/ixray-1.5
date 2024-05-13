@@ -35,6 +35,7 @@ IC	float			CALifeTimeManager::normal_time_factor	() const
 	return						(m_normal_time_factor);
 }
 
-IC void CALifeTimeManager::change_game_time(u32 value) {
+IC	void			CALifeTimeManager::change_game_time		(u32 value)
+{
 	m_game_time += value;
 }

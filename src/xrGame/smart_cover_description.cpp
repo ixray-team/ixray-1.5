@@ -5,6 +5,7 @@
 //	Description : Smart cover description class
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "smart_cover_description.h"
 #include "ai_space.h"
@@ -123,11 +124,9 @@ void description::load_loopholes	(shared_str const &table_id)
 	luabind::iterator it(loopholes), end;
 	const size_t count = luabind::distance(it, end);
 	m_loopholes.reserve(count);
-	while (it != end)
-	{
+	while (it != end) {
 		const luabind::object& table = *it;
-		if (luabind::type(table) != LUA_TTABLE)
-		{
+		if (luabind::type(table) != LUA_TTABLE) {
 			VERIFY(luabind::type(table) != LUA_TNIL);
 			continue;
 		}
@@ -202,11 +201,9 @@ void description::load_transitions	(shared_str const &table_id)
 		);
 	VERIFY						(result);
 	
-	for (luabind::iterator I(transitions), E; I != E; ++I)
-	{
+	for (luabind::iterator I(transitions), E; I != E; ++I) {
 		luabind::object table = *I;
-		if (luabind::type(table) != LUA_TTABLE)
-		{
+		if (luabind::type(table) != LUA_TTABLE) {
 			VERIFY(luabind::type(table) != LUA_TNIL);
 			continue;
 		}
@@ -231,8 +228,8 @@ void description::load_actions	(luabind::object const &table, description::Actio
 {
 	luabind::object				actions;
 	parse_table					(table, "actions", actions);
-	for (luabind::iterator I(actions), E; I != E; ++I)
-	{
+
+	for (luabind::iterator I(actions), E; I != E; ++I) {
 		luabind::object tmp = *I;
 		transitions::action* action = xr_new<transitions::action>(tmp);
 		result.push_back(action);

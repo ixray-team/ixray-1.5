@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+#include "pch_script.h"
 #include "smart_cover_object.h"
 #include "../xrServerEntities/xrServer_Objects_ALife.h"
 #include "level.h"

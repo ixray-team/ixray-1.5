@@ -18,7 +18,7 @@
 	CAttachableItem*	CAttachableItem::m_dbgItem = NULL;
 #endif
 
-IC	CPhysicsShellHolder &CAttachableItem::object	() const
+CPhysicsShellHolder &CAttachableItem::object	() const
 {
 	return				(item().object());
 }
@@ -55,7 +55,6 @@ void CAttachableItem::reload			(LPCSTR section)
 
 void CAttachableItem::OnH_A_Chield		() 
 {
-//	VERIFY							(m_valid);
 	const CInventoryOwner			*inventory_owner = smart_cast<const CInventoryOwner*>(object().H_Parent());
 	if (inventory_owner && inventory_owner->attached(&item()))
 		object().setVisible			(true);
@@ -63,20 +62,17 @@ void CAttachableItem::OnH_A_Chield		()
 
 void CAttachableItem::renderable_Render	()
 {
-//	VERIFY							(m_valid);
 	::Render->set_Transform			(&object().XFORM());
 	::Render->add_Visual			(object().Visual());
 }
 
 void CAttachableItem::OnH_A_Independent	()
 {
-//	VERIFY							(m_valid);
-	enable							(false/*m_auto_attach*/);
+	enable							(false);
 }
 
 void CAttachableItem::enable			(bool value)
 {
-//	VERIFY							(m_valid);
 	if (!object().H_Parent()) 
 	{
 		m_enabled			= value;
@@ -86,7 +82,6 @@ void CAttachableItem::enable			(bool value)
 	if (value && !enabled() && object().H_Parent()) {
 		CGameObject			*game_object = smart_cast<CGameObject*>(object().H_Parent());
 		CAttachmentOwner	*owner = smart_cast<CAttachmentOwner*>(game_object);
-//		VERIFY				(owner);
 		if (owner) {
 			m_enabled			= value;
 			owner->attach		(&item());
@@ -97,7 +92,6 @@ void CAttachableItem::enable			(bool value)
 	if (!value && enabled() && object().H_Parent()) {
 		CGameObject			*game_object = smart_cast<CGameObject*>(object().H_Parent());
 		CAttachmentOwner	*owner = smart_cast<CAttachmentOwner*>(game_object);
-//		VERIFY				(owner);
 		if (owner) {
 			m_enabled			= value;
 			owner->detach		(&item());
@@ -108,7 +102,6 @@ void CAttachableItem::enable			(bool value)
 
 bool  CAttachableItem::can_be_attached	() const
 {
-//	VERIFY							(m_valid);
 	if (!item().m_pInventory)
 		return				(false);
 

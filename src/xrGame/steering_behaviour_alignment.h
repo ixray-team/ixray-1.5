@@ -16,7 +16,8 @@ class CAI_Rat;
 
 namespace steering_behaviour {
 
-class alignment final : public base {
+class alignment final : public base
+{
 public:
 	alignment(const alignment& other) = delete;
 	alignment& operator =(const alignment& other) = delete;

@@ -2,6 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "ai_debug.h"
 #include "CustomMonster.h"
@@ -46,6 +47,7 @@
 #include "alife_object_registry.h"
 #include "client_spawn_manager.h"
 #include "moving_object.h"
+#include "level_path_manager.h"
 
 // Lain: added
 #include "../xrEngine/IGame_Level.h"

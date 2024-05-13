@@ -15,11 +15,8 @@
 
 namespace smart_cover{
 
-class action final {
-public:
-	action(const action& other) = delete;
-	action& operator =(const action& other) = delete;
-
+class action final
+{
 private:
 	class animation_predicate {
 
@@ -41,6 +38,8 @@ private:
 	Fvector					m_target_position;
 
 public:
+	action(const action& other) = delete;
+	action& operator=(const action& other) = delete;
 							action				(luabind::object const &description);
 							~action				();
 	IC	bool		const	&movement			() const;
