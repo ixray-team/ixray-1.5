@@ -41,36 +41,36 @@ struct priority {
 		);
 	}
 
-	IC	static bool predicate					(const moving_object *_0, const moving_object *_1)
+	IC	static bool predicate					(const moving_object *object0, const moving_object *object1)
 	{
-		if (standing(_0)) {
-			if (standing(_1))
-				return			(_0 < _1);
+		if (standing(object0)) {
+			if (standing(object1))
+				return			(object0 < object1);
 
 			return				(false);
 		}
 
-		if (standing(_1))
+		if (standing(object1))
 			return				(true);
 
-		return					(_0 < _1);
+		return					(object0 < object1);
 	}
 
-	IC	static bool predicate2					(const moving_objects::COLLISION_TIME &_0, const moving_objects::COLLISION_TIME &_1)
+	IC	static bool predicate2					(const moving_objects::COLLISION_TIME &time0, const moving_objects::COLLISION_TIME &time1)
 	{
-		if (_0.first < _1.first)
+		if (time0.first < time1.first)
 			return				(true);
 
-		if (_1.first < _0.first)
+		if (time1.first < time0.first)
 			return				(false);
 
-		if (predicate(_0.second.second.first,_1.second.second.first))
+		if (predicate(time0.second.second.first,time1.second.second.first))
 			return				(true);
 
-		if (predicate(_1.second.second.first,_0.second.second.first))
+		if (predicate(time1.second.second.first,time0.second.second.first))
 			return				(false);
 
-		return					(predicate(_0.second.second.second,_1.second.second.second));
+		return					(predicate(time0.second.second.second,time1.second.second.second));
 	}
 };
 
@@ -162,7 +162,7 @@ void moving_objects::fill_nearest_moving		(moving_object *object)
 		m_nearest_moving.end()
 	);
 
-	u32							size = (u32)m_nearest_moving.size();
+	size_t size = m_nearest_moving.size();
 	moving_object				**temp = (moving_object**)_alloca(size*sizeof(moving_object*));
 	std::copy					(m_nearest_moving.begin(),m_nearest_moving.end(),temp);
 	std::sort					(temp, temp + size);
@@ -208,7 +208,7 @@ void moving_objects::generate_emitters			()
 	}
 #endif // DEBUG
 
-	u32							size = (u32)m_collision_emitters.size();
+	u32							size = m_collision_emitters.size();
 	m_collision_emitters.resize	(size + m_nearest_moving.size());
 
 	m_collision_emitters.erase	(
@@ -306,7 +306,7 @@ bool moving_objects::fill_collisions			(moving_object *object, const Fvector &ob
 	}
 
 	{
-		u32							collision_count = (u32)m_collisions.size();
+		u32							collision_count = m_collisions.size();
 		COLLISION_TIME				*collisions = (COLLISION_TIME*)_alloca(collision_count*sizeof(COLLISION_TIME));
 		std::copy					(m_collisions.begin(), m_collisions.end(), collisions);
 		COLLISION_TIME				*I_ = collisions;
@@ -458,7 +458,7 @@ void moving_objects::resolve_collisions			()
 
 	m_previous_collisions		= m_collisions;
 
-	u32							collidee_count = (u32)m_collisions.size()*2 + (u32)m_visited_emitters.size();
+	u32							collidee_count = m_collisions.size()*2 + m_visited_emitters.size();
 	moving_object				**collidees = (moving_object **)_alloca(collidee_count*sizeof(moving_object*));
 	{
 		moving_object			**J = collidees;

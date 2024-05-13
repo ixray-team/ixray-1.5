@@ -1,6 +1,9 @@
 #pragma once
 #include "PHReqComparer.h"
-
+#include "phcommander.h"
+#include "script_engine.h"
+#include "script_space_forward.h"
+#include "script_callback_ex.h"
 //template<>
 //IC bool compare_safe(const functor<>& f1,const functor<>& f2)
 //{
@@ -21,8 +24,7 @@ public:
 	virtual bool 			is_true							()										;
 	virtual bool 			obsolete						()								const	;
 	virtual bool			compare							(const	CPHReqComparerV* v)		const	{return v->compare(this);}
-	virtual bool			compare(const	CPHScriptCondition* v)	const
-	{
+	virtual bool			compare							(const	CPHScriptCondition*v)	const {
 		const auto& lhs = static_cast<const luabind::adl::object&>(*m_lua_function);
 		const auto& rhs = static_cast<const luabind::adl::object&>(*v->m_lua_function);
 		return lhs == rhs;

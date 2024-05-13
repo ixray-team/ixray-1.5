@@ -64,8 +64,9 @@ struct CCloner {
 		std::queue<T1, T2> _1 = __1;
 		std::queue<T1, T2> _2;
 
-		for (; !_1.empty(); _1.pop())
+		for (; !_1.empty(); _1.pop()) {
 			_2.push(_1.front());
+		}
 
 		while (!__2.empty())
 			__2.pop();

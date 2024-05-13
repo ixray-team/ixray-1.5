@@ -1,5 +1,8 @@
 #ifndef PH_GEOMETRY_OWNER_H
 #define PH_GEOMETRY_OWNER_H
+
+#include "stdafx.h"
+
 #include "Geometry.h"
 #include "../xrEngine/gamemtllib.h"
 

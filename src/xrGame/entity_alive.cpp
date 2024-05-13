@@ -107,15 +107,6 @@ void CEntityAlive::LoadBloodyWallmarks (LPCSTR section)
 	
 	int cnt		=_GetItemCount(wallmarks_name);
 	
-	/*
-	ref_shader	s;
-	for (int k=0; k<cnt; ++k)
-	{
-		s.create ("effects\\wallmark",_GetItem(wallmarks_name,k,tmp));
-		m_pBloodMarksVector->push_back	(s);
-	}
-	*/
-
 	for (int k=0; k<cnt; ++k)	
 		(*m_pBloodMarksVector)->AppendMark(_GetItem(wallmarks_name,k,tmp));
 
@@ -272,7 +263,6 @@ void CEntityAlive::HitImpulse	(float /**amount/**/, Fvector& /**vWorldDir/**/, F
 	//	m_PhysicMovementControl->vExternalImpulse.mad	(vWorldDir,Q);
 }
 
-//void CEntityAlive::Hit(float P, Fvector &dir,CObject* who, s16 element,Fvector position_in_object_space, float impulse, ALife::EHitType hit_type, float AP)
 void	CEntityAlive::Hit							(SHit* pHDS)
 {
 	SHit HDS = *pHDS;
@@ -733,18 +723,19 @@ CPHSoundPlayer* CEntityAlive::ph_sound_player()
 	}
 }
 
-SCollisionHitCallback*	CEntityAlive::	get_collision_hit_callback		()
+ICollisionHitCallback*	CEntityAlive::	get_collision_hit_callback		()
 {
   CCharacterPhysicsSupport *cs=character_physics_support();
   if(cs)return cs->get_collision_hit_callback();
   else return nullptr;
 }
 
-bool					CEntityAlive::	set_collision_hit_callback		(SCollisionHitCallback *cc)
+void					CEntityAlive::	set_collision_hit_callback		(ICollisionHitCallback *cc)
 {
 	CCharacterPhysicsSupport* cs=character_physics_support();
-	if(cs)return cs->set_collision_hit_callback(cc);
-	else return false;
+	if(cs)
+		cs->set_collision_hit_callback(cc);
+
 }
 
 void CEntityAlive::net_Relcase	(CObject *object)

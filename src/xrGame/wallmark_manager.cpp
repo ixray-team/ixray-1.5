@@ -110,7 +110,7 @@ void CWalmarkManager::StartWorkflow()
 	CDB::RESULT*	R_begin                 = XRC.r_begin();
 	CDB::RESULT*    R_end                   = XRC.r_end();
 //.	Triangle		ntri;
-//.	float			ndist					= dInfinity;
+//.	float			ndist					= phInfinity;
 //.	Fvector			npoint;
 	u32				wm_count	= 0;
 
@@ -177,8 +177,6 @@ void CWalmarkManager::StartWorkflow()
 
 		if(dist <= m_trace_dist )
 		{
-			//ref_shader wallmarkShader = m_wallmarks[::Random.randI( m_wallmarks.size())];
-			//::Render->add_StaticWallmark(wallmarkShader, end_point, m_wallmark_size, _t, V_array);
 			::Render->add_StaticWallmark(&*m_wallmarks, end_point, m_wallmark_size, _t, V_array);
 			++wm_count;
 		}else
@@ -198,19 +196,9 @@ void CWalmarkManager::StartWorkflow()
 	DBG_ClosedCashedDraw	(10000);
 */
 }
-/*
-void CWalmarkManager::PlaceWallmarks(const Fvector& start_pos,CObject* ignore_obj)
-{
-	if(m_wallmarks)
-			PlaceWallmarks(start_pos,m_trace_dist,m_wallmark_size,*m_wallmarks,ignore_obj);
-}
-*/
 
 void CWalmarkManager::Load (LPCSTR section)
 {
-//.	m_trace_dist	= pSettings->r_float(section,"dist");
-//.	m_wallmark_size	= pSettings->r_float(section,"size");
-	
 	//кровавые отметки на стенах
 	string256	tmp;
 	LPCSTR wallmarks_name = pSettings->r_string(section, "wallmarks"); 

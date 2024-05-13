@@ -8,12 +8,15 @@
 #include "ParticlesObject.h"
 #include "../xrPhysics/PhysicsShell.h"
 #include "../xrPhysics/extendedgeom.h"
+#include "../xrPhysics/calculatetriangle.h"
+#include "../xrPhysics/tri-colliderknoopc/dctriangle.h"
+
 #include "level.h"
 #include "xrMessages.h"
 #include "../xrEngine/gamemtllib.h"
-#include "../xrPhysics/tri-colliderknoopc/dTriList.h"
+//#include "tri-colliderknoopc/dTriList.h"
 #include "../Include/xrRender/RenderVisual.h"
-#include "../xrPhysics/CalculateTriangle.h"
+//#include "CalculateTriangle.h"
 #include "actor.h"
 #ifdef DEBUG
 #include "PHDebug.h"
@@ -187,8 +190,8 @@ void CCustomRocket::ObjectContactCallback(bool& do_colide,bool bo1,dContact& c ,
 
 	dxGeomUserData *l_pUD1 = NULL;
 	dxGeomUserData *l_pUD2 = NULL;
-	l_pUD1 = retrieveGeomUserData(c.geom.g1);
-	l_pUD2 = retrieveGeomUserData(c.geom.g2);
+	l_pUD1 = PHRetrieveGeomUserData(c.geom.g1);
+	l_pUD2 = PHRetrieveGeomUserData(c.geom.g2);
 
 	SGameMtl* material=0;
 	CCustomRocket *l_this = l_pUD1 ? smart_cast<CCustomRocket*>(l_pUD1->ph_ref_object) : NULL;
@@ -225,6 +228,10 @@ void CCustomRocket::ObjectContactCallback(bool& do_colide,bool bo1,dContact& c ,
 		if(l_this->m_pOwner) 
 		{
 			Fvector l_pos; l_pos.set(l_this->Position());
+			dxGeomUserData *l_pMYU = bo1 ? l_pUD1 :  l_pUD2;
+			VERIFY( l_pMYU );
+			if( l_pMYU->last_pos[0]!=-dInfinity )
+					l_pos = cast_fv(l_pMYU->last_pos);
 #ifdef DEBUG
 			bool corrected_pos=false;
 #endif
@@ -242,7 +249,7 @@ void CCustomRocket::ObjectContactCallback(bool& do_colide,bool bo1,dContact& c ,
 					{	//. desync?
 						velocity.normalize();
 						Triangle neg_tri;
-						CalculateTriangle(l_pUD->neg_tri,g,neg_tri);
+						CalculateTriangle(l_pUD->neg_tri,g,neg_tri,Level().ObjectSpace.GetStaticVerts());
 						float cosinus=velocity.dotproduct(*((Fvector*)neg_tri.norm));
 						VERIFY(_valid(neg_tri.dist));
 						float dist=neg_tri.dist/cosinus;

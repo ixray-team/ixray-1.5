@@ -10,7 +10,7 @@
 //T_ID, T_INDEX -	тип индекса и id
 
 //ITEM_DATA		-	структура с полями id и index типа T_ID и T_INDEX,
-//					обязательно имеет конструктор с параметрами (T_INDEX index, T_ID id, LPCSTR r1, ..., LPCSTR rN)
+//					обязательно имеет конструктор с параметрами (T_INDEX index, T_ID id, const char* r1, ..., const char* rN)
 //					N = ITEM_REC_NUM - число доп. параметров в ITEM_DATA 
 
 //T_INIT		-	класс где определена статическая InitIdToIndex
@@ -41,13 +41,10 @@ protected:
 			char* id_str_lwr = xr_strdup(id_str);
 			strlwr(id_str_lwr);
 
-			if constexpr (!isNum)
-			{
+			if constexpr (!isNum) {
 				ITEM_DATA item_data(T_INDEX(m_pItemDataVector->size()), T_ID(id_str));
 				m_pItemDataVector->push_back(item_data);
-			}
-			else 
-			{
+			} else {
 				string64 buf1;
 				const char* rec1 = _GetItem(cfgRecord, k + 1, buf1);
 				ITEM_DATA item_data(T_INDEX(m_pItemDataVector->size()), T_ID(id_str), rec1);
@@ -113,8 +110,7 @@ TEMPLATE_SPECIALIZATION
 const typename ITEM_DATA* CSINI_IdToIndex::GetById (const T_ID& str_id, bool no_assert)
 {
     auto it = m_pItemDataVector->begin();
-	for(;
-		m_pItemDataVector->end() != it; it++)
+	for(; m_pItemDataVector->end() != it; it++)
 	{
 		if(!xr_strcmp((*it).id, str_id))
 			break;

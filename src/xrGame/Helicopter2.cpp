@@ -3,15 +3,16 @@
 #include "level.h"
 #include "script_game_object.h"
 #include "script_game_object_impl.h"
-#include "game_object_space.h"
+//#include "game_object_space.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "../xrEngine/LightAnimLibrary.h"
-#include "../xrPhysics/PhysicsShell.h"
+//#include "../xrPhysics/PhysicsShell.h"
 #include "script_callback_ex.h"
 #include "ai/stalker/ai_stalker.h"
 #include "CustomZone.h"
 #include "../xrPhysics/MathUtils.h"
 #include "actor.h"
+#include "physics_game.h"
 
 bool CHelicopter::isObjectVisible			(CObject* O)
 {
@@ -267,7 +268,7 @@ void CollisionCallbackDead(bool& do_colide,bool bo1,dContact& c,SGameMtl* materi
 {	
 	do_colide=true; 
 
-	CHelicopter *l_this		= bo1 ? smart_cast<CHelicopter*>(retrieveGeomUserData(c.geom.g1)->ph_ref_object) : smart_cast<CHelicopter*>(retrieveGeomUserData(c.geom.g2)->ph_ref_object);
+	CHelicopter *l_this		= bo1 ? smart_cast<CHelicopter*>(PHRetrieveGeomUserData(c.geom.g1)->ph_ref_object) : smart_cast<CHelicopter*>(PHRetrieveGeomUserData(c.geom.g2)->ph_ref_object);
 
 	if(l_this&& !l_this->m_exploded)
 		l_this->m_ready_explode=true;

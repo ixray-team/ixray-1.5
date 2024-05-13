@@ -49,8 +49,9 @@
 
 // Lain: added
 #include "../xrEngine/IGame_Level.h"
-
-#include "ai_object_location_impl.h"
+#include "../xrCore/_vector3d_ext.h"
+#include "debug_text_tree.h"
+#include "../xrPhysics/IPHWorld.h"
 
 #ifdef DEBUG
 #	include "debug_renderer.h"
@@ -85,7 +86,10 @@ void CCustomMonster::SAnimState::Create(IKinematicsAnimated* K, LPCSTR base)
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CCustomMonster::CCustomMonster()
+CCustomMonster::CCustomMonster() //:
+	// this is non-polymorphic call of the virtual function cast_entity_alive
+	// just to remove warning C4355 if we use this instead
+	//Feel::Vision				( cast_game_object() ) 
 {
 	m_sound_user_data_visitor	= 0;
 	m_memory_manager			= 0;
@@ -322,7 +326,7 @@ void CCustomMonster::shedule_Update	( u32 DT )
 	float dt			= float(DT)/1000.f;
 	// *** general stuff
 	if (g_Alive()) {
-		if (g_mt_config.test(mtAiVision))
+		if ( false && g_mt_config.test(mtAiVision) )
 #ifndef DEBUG
 			Device.seqParallel.push_back	(fastdelegate::FastDelegate0<>(this,&CCustomMonster::Exec_Visibility));
 #else // DEBUG
@@ -371,7 +375,7 @@ void CCustomMonster::shedule_Update	( u32 DT )
 			//////////////////////////////////////
 			//Fvector C; float R;
 			//////////////////////////////////////
-			// Ñ Îëåñÿ - ÏÈÂÎ!!!! (Äèìå :-))))
+			// Ð¡ ÐžÐ»ÐµÑÑ - ÐŸÐ˜Ð’Ðž!!!! (Ð”Ð¸Ð¼Ðµ :-))))
 			// m_PhysicMovementControl->GetBoundingSphere	(C,R);
 			//////////////////////////////////////
 			//Center(C);
@@ -581,8 +585,14 @@ void CCustomMonster::eye_pp_s0			( )
 
 	const MonsterSpace::SBoneRotation		&rotation = head_orientation();
 
+	VERIFY									(_valid(rotation.current.yaw));
+	VERIFY									(_valid(m_fEyeShiftYaw));
+	VERIFY									(_valid(rotation.current.pitch));
+
 	eye_matrix.setHPB						(-rotation.current.yaw + m_fEyeShiftYaw,-rotation.current.pitch,0);
 	eye_matrix.c.add						(X.c,m_tEyeShift);
+
+	VERIFY									(_valid(eye_matrix));
 }
 
 void CCustomMonster::update_range_fov	(float &new_range, float &new_fov, float start_range, float start_fov)
@@ -832,12 +842,12 @@ void CCustomMonster::PitchCorrection()
 	Fvector position_on_plane;
 	P.project(position_on_plane,Position());
 
-	// íàõîäèì ïðîåêöèþ òî÷êè, ëåæàùåé íà âåêòîðå òåêóùåãî íàïðàâëåíèÿ
+	// Ð½Ð°Ñ…Ð¾Ð´Ð¸Ð¼ Ð¿Ñ€Ð¾ÐµÐºÑ†Ð¸ÑŽ Ñ‚Ð¾Ñ‡ÐºÐ¸, Ð»ÐµÐ¶Ð°Ñ‰ÐµÐ¹ Ð½Ð° Ð²ÐµÐºÑ‚Ð¾Ñ€Ðµ Ñ‚ÐµÐºÑƒÑ‰ÐµÐ³Ð¾ Ð½Ð°Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ñ
 	Fvector dir_point, proj_point;
 	dir_point.mad(position_on_plane, Direction(), 1.f);
 	P.project(proj_point,dir_point);
 	
-	// ïîëó÷àåì èñêîìûé âåêòîð íàïðàâëåíèÿ
+	// Ð¿Ð¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ð¸ÑÐºÐ¾Ð¼Ñ‹Ð¹ Ð²ÐµÐºÑ‚Ð¾Ñ€ Ð½Ð°Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¸Ñ
 	Fvector target_dir;
 	target_dir.sub(proj_point,position_on_plane);
 
@@ -1133,7 +1143,7 @@ void CCustomMonster::OnRender()
 				const DetailPathManager::STravelPathPoint&	N2 = path[I];	Fvector	P2; P2.set(N2.position); P2.y+=0.1f;
 				if (!fis_zero(P1.distance_to_sqr(P2),EPS_L))
 					Level().debug_renderer().draw_line			(Fidentity,P1,P2,color0);
-				if ((path.size() - 1) == I) // ïåñëåäíèé box?
+				if ((path.size() - 1) == I) // Ð¿ÐµÑÐ»ÐµÐ´Ð½Ð¸Ð¹ box?
 					Level().debug_renderer().draw_aabb			(P1,radius0,radius0,radius0,color1);
 				else 
 					Level().debug_renderer().draw_aabb			(P1,radius0,radius0,radius0,color2);
@@ -1243,4 +1253,32 @@ void CCustomMonster::destroy_anim_mov_ctrl	()
 
 	NET_Last.o_model				= movement().m_body.current.yaw;
 	NET_Last.o_torso.pitch			= movement().m_body.current.pitch;
+}
+
+void CCustomMonster::ForceTransform(const Fmatrix& m)
+{
+	character_physics_support()->ForceTransform( m );
+	const float block_damage_time_seconds = 2.f;
+	if(!IsGameTypeSingle())
+		character_physics_support()->movement()->BlockDamageSet( u64( block_damage_time_seconds/fixed_step ) );
+}
+
+Fvector	CCustomMonster::spatial_sector_point	( )
+{
+	//if ( g_Alive() )
+	//	return						inherited::spatial_sector_point( );
+
+	//if ( !animation_movement() )
+		return						inherited::spatial_sector_point( ).add( Fvector().set(0.f, Radius()*.5f, 0.f) );
+
+	//IKinematics* const kinematics	= smart_cast<IKinematics*>(Visual());
+	//VERIFY							(kinematics);
+	//u16 const root_bone_id			= kinematics->LL_BoneID("bip01_spine");
+
+	//Fmatrix local;
+	//kinematics->Bone_GetAnimPos		( local, root_bone_id, u8(-1), false );
+
+	//Fmatrix result;
+	//result.mul_43					( XFORM(), local );
+	//return							result.c;
 }

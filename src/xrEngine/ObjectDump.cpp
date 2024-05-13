@@ -1,8 +1,9 @@
 #include "stdafx.h"
-
+#include "../xrengine/xr_object.h"
 #ifdef DEBUG
+#include "ObjectDump.h"
 
-std::string dbg_object_base_dump_string( const CObject *obj )
+ENGINE_API std::string dbg_object_base_dump_string( const CObject *obj )
 {
 	if( !obj )
 		return make_string("object: NULL ptr");
@@ -12,7 +13,7 @@ std::string dbg_object_base_dump_string( const CObject *obj )
 						 obj->Visual() ? obj->cNameVisual().c_str() : "none" );
 }
 
-std::string dbg_object_poses_dump_string( const CObject *obj )
+ENGINE_API std::string dbg_object_poses_dump_string( const CObject *obj )
 {
 	if(!obj)
 		return std::string("");
@@ -28,7 +29,7 @@ std::string dbg_object_poses_dump_string( const CObject *obj )
 	return make_string( "\n XFORM: %s \n position stack : %s \n,  ", get_string(obj->XFORM()).c_str(), buf.c_str() );
 }
 
-std::string dbg_object_visual_geom_dump_string( const CObject *obj )
+ENGINE_API std::string dbg_object_visual_geom_dump_string( const CObject *obj )
 {
 	if( !obj || !obj->Visual() )
 			return std::string("");
@@ -58,7 +59,7 @@ std::string dbg_object_visual_geom_dump_string( const CObject *obj )
 	u32									dwFrame_UpdateCL;
 	u32									dwFrame_AsCrow;
 */
-std::string dbg_object_props_dump_string( const CObject *obj )
+ENGINE_API std::string dbg_object_props_dump_string( const CObject *obj )
 {
 	if( !obj )
 		return  std::string("");
@@ -74,7 +75,7 @@ std::string dbg_object_props_dump_string( const CObject *obj )
 		make_string( "\n dbg_update_cl: %d, dwFrame_UpdateCL: %d, dwFrame_AsCrow :%d, Device.dwFrame :%d, Device.dwTimeGlobal: %d  \n",
 		obj->dbg_update_cl, obj->dwFrame_UpdateCL, obj->dwFrame_AsCrow, Device.dwFrame, Device.dwTimeGlobal );
 }
-std::string dbg_object_full_dump_string( const CObject *obj )
+ENGINE_API std::string dbg_object_full_dump_string( const CObject *obj )
 {
 	return	dbg_object_base_dump_string( obj ) + 
 			dbg_object_props_dump_string( obj )+
@@ -82,7 +83,7 @@ std::string dbg_object_full_dump_string( const CObject *obj )
 			dbg_object_visual_geom_dump_string( obj );
 			 
 }
-std::string dbg_object_full_capped_dump_string( const CObject *obj )
+ENGINE_API std::string dbg_object_full_capped_dump_string( const CObject *obj )
 {
 	return	std::string("\n object dump: \n" ) +
 			dbg_object_full_dump_string( obj );

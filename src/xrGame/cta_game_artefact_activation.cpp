@@ -19,7 +19,7 @@
 #include "level.h"
 #include "ai_object_location.h"
 #include "xrServer_Objects_ALife_Monsters.h"
-#include "../xrPhysics/phworld.h"
+#include "../xrPhysics/IPHWorld.h"
 #include "restriction_space.h"
 #include "../xrEngine/IGame_Persistent.h"
 
@@ -37,7 +37,7 @@ void CtaArtefactActivation::UpdateActivation()
 	if (!IsInProgress())
 		return;
 
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	m_cur_state_time				+=	Device.fTimeDelta;
 	if(m_cur_state_time				>=	m_activation_states[int(m_cur_activation_state)].m_time){
 		m_cur_activation_state		=	(EActivationStates)(int)(m_cur_activation_state+1);

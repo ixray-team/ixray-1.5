@@ -1,9 +1,9 @@
+#include "stdafx.h"
 #include "pch_script.h"
 #include "Actor_Flags.h"
 #include "hudmanager.h"
 #ifdef DEBUG
-#	include "../xrPhysics/ode_include.h"
-#	include "../xrEngine/StatGraph.h"
+
 #	include "PHDebug.h"
 #endif // DEBUG
 #include "alife_space.h"
@@ -39,7 +39,7 @@
 #include "ai_space.h"
 #include "trade.h"
 #include "inventory.h"
-#include "../xrPhysics/Physics.h"
+//#include "Physics.h"
 #include "level.h"
 #include "GamePersistent.h"
 #include "game_cl_base.h"
@@ -48,7 +48,7 @@
 #include "string_table.h"
 #include "usablescriptobject.h"
 #include "../xrEngine/cl_intersect.h"
-#include "../xrPhysics/ExtendedGeom.h"
+//#include "ExtendedGeom.h"
 #include "alife_registry_wrappers.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "artefact.h"
@@ -76,6 +76,7 @@ const float		respawn_auto	= 7.f;
 
 static float IReceived = 0;
 static float ICoincidenced = 0;
+extern float cammera_into_collision_shift ;
 
 //if we are not current control entity we use this value
 const float	CActor::cam_inert_value = 0.7f;
@@ -94,7 +95,7 @@ Flags32			psActorFlags={/*AF_DYNAMIC_MUSIC|*/AF_GODMODE_RT};
 
 
 
-CActor::CActor() : CEntityAlive()
+CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 {
 	encyclopedia_registry	= xr_new<CEncyclopediaRegistryWrapper	>();
 	game_news_registry		= xr_new<CGameNewsRegistryWrapper		>();
@@ -255,7 +256,19 @@ void CActor::reload	(LPCSTR section)
 		memory().reload			(section);
 	m_location_manager->reload	(section);
 }
-
+void set_box(LPCSTR section, CPHMovementControl &mc, u32 box_num )
+{
+	Fbox	bb;Fvector	vBOX_center,vBOX_size;
+	// m_PhysicMovementControl: BOX
+	string64 buff, buff1;
+	strconcat( sizeof(buff), buff, "ph_box",_itoa( box_num, buff1, 10 ),"_center" );
+	vBOX_center= pSettings->r_fvector3	(section, buff	);
+	strconcat( sizeof(buff), buff, "ph_box",_itoa( box_num, buff1, 10 ),"_size" );
+	vBOX_size	= pSettings->r_fvector3	(section, buff);
+	vBOX_size.y += cammera_into_collision_shift/2.f;
+	bb.set	(vBOX_center,vBOX_center); bb.grow(vBOX_size);
+	mc.SetBox		(box_num,bb);
+}
 void CActor::Load	(LPCSTR section )
 {
 	// Msg						("Loading actor: %s",section);
@@ -276,6 +289,9 @@ void CActor::Load	(LPCSTR section )
 
 	// m_PhysicMovementControl: General
 	//m_PhysicMovementControl->SetParent		(this);
+
+
+	/*
 	Fbox	bb;Fvector	vBOX_center,vBOX_size;
 	// m_PhysicMovementControl: BOX
 	vBOX_center= pSettings->r_fvector3	(section,"ph_box2_center"	);
@@ -294,6 +310,13 @@ void CActor::Load	(LPCSTR section )
 	vBOX_size	= pSettings->r_fvector3	(section,"ph_box0_size"		);
 	bb.set	(vBOX_center,vBOX_center); bb.grow(vBOX_size);
 	character_physics_support()->movement()->SetBox		(0,bb);
+	*/
+	
+
+
+	
+	
+	
 
 	//// m_PhysicMovementControl: Foots
 	//Fvector	vFOOT_center= pSettings->r_fvector3	(section,"ph_foot_center"	);
@@ -308,14 +331,16 @@ void CActor::Load	(LPCSTR section )
 	character_physics_support()->movement()->SetCrashSpeeds	(cs_min,cs_max);
 	character_physics_support()->movement()->SetMass		(mass);
 	if(pSettings->line_exist(section,"stalker_restrictor_radius"))
-		character_physics_support()->movement()->SetActorRestrictorRadius(CPHCharacter::rtStalker,pSettings->r_float(section,"stalker_restrictor_radius"));
+		character_physics_support()->movement()->SetActorRestrictorRadius(rtStalker,pSettings->r_float(section,"stalker_restrictor_radius"));
 	if(pSettings->line_exist(section,"stalker_small_restrictor_radius"))
-		character_physics_support()->movement()->SetActorRestrictorRadius(CPHCharacter::rtStalkerSmall,pSettings->r_float(section,"stalker_small_restrictor_radius"));
+		character_physics_support()->movement()->SetActorRestrictorRadius(rtStalkerSmall,pSettings->r_float(section,"stalker_small_restrictor_radius"));
 	if(pSettings->line_exist(section,"medium_monster_restrictor_radius"))
-		character_physics_support()->movement()->SetActorRestrictorRadius(CPHCharacter::rtMonsterMedium,pSettings->r_float(section,"medium_monster_restrictor_radius"));
+		character_physics_support()->movement()->SetActorRestrictorRadius(rtMonsterMedium,pSettings->r_float(section,"medium_monster_restrictor_radius"));
 	character_physics_support()->movement()->Load(section);
 
-	
+	set_box( section, *character_physics_support()->movement(), 2 );
+	set_box( section, *character_physics_support()->movement(), 1 );
+	set_box( section, *character_physics_support()->movement(), 0 );
 
 	m_fWalkAccel				= pSettings->r_float(section,"walk_accel");	
 	m_fJumpSpeed				= pSettings->r_float(section,"jump_speed");
@@ -810,11 +835,18 @@ void CActor::g_Physics			(Fvector& _accel, float jump, float dt)
 	character_physics_support()->movement()->bSleep				=false;
 	}
 
-	if (Local() && g_Alive()) {
+	if (Local() && g_Alive()) 
+	{
 		if (character_physics_support()->movement()->gcontact_Was)
 			Cameras().AddCamEffector		(xr_new<CEffectorFall> (character_physics_support()->movement()->gcontact_Power));
-		if (!fis_zero(character_physics_support()->movement()->gcontact_HealthLost))	{
-			const ICollisionDamageInfo* di=character_physics_support()->movement()->CollisionDamageInfo();
+
+		if (!fis_zero(character_physics_support()->movement()->gcontact_HealthLost))	
+		{
+			VERIFY( character_physics_support() );
+			VERIFY( character_physics_support()->movement() );
+			ICollisionDamageInfo* di=character_physics_support()->movement()->CollisionDamageInfo();
+			VERIFY( di );
+			bool b_hit_initiated =  di->GetAndResetInitiated();
 			Fvector hdir;di->HitDir(hdir);
 			SetHitInfo(this, NULL, 0, Fvector().set(0, 0, 0), hdir);
 			//				Hit	(m_PhysicMovementControl->gcontact_HealthLost,hdir,di->DamageInitiator(),m_PhysicMovementControl->ContactBone(),di->HitPos(),0.f,ALife::eHitTypeStrike);//s16(6 + 2*::Random.randI(0,2))
@@ -966,22 +998,6 @@ void CActor::UpdateCL	()
 	Fmatrix							trans;
 	if(cam_Active() == cam_FirstEye())
 	{
-/*
-		CCameraBase* C = cam_Active();
-		Fvector vRight, vNormal, vDirection, vPosition;
-
-		vNormal					= C->vNormal; 
-		vNormal.normalize		();
-		vDirection				= C->vDirection;
-		vDirection.normalize	();
-
-		vRight.crossproduct		(vNormal,vDirection);
-		vNormal.crossproduct	(vDirection,vRight);
-
-		vPosition				= C->vPosition;
-
-		trans.set				(vRight, vNormal, vDirection, vPosition);
-*/
 		Cameras().hud_camera_Matrix		(trans);
 	}else
 		Cameras().camera_Matrix			(trans);
@@ -1480,14 +1496,16 @@ void CActor::SetPhPosition(const Fmatrix &transform)
 
 void CActor::ForceTransform(const Fmatrix& m)
 {
-	if( !g_Alive() )
-				return;
-	VERIFY(_valid(m));
-	XFORM().set( m );
-	if( character_physics_support()->movement()->CharacterExist() )
-			character_physics_support()->movement()->EnableCharacter();
-	character_physics_support()->set_movement_position( m.c );
-	character_physics_support()->movement()->SetVelocity( 0, 0, 0 );
+	//if( !g_Alive() )
+	//			return;
+	//VERIFY(_valid(m));
+	//XFORM().set( m );
+	//if( character_physics_support()->movement()->CharacterExist() )
+	//		character_physics_support()->movement()->EnableCharacter();
+	//character_physics_support()->set_movement_position( m.c );
+	//character_physics_support()->movement()->SetVelocity( 0, 0, 0 );
+
+	character_physics_support()->ForceTransform( m );
 	const float block_damage_time_seconds = 2.f;
 	if(!IsGameTypeSingle())
 		character_physics_support()->movement()->BlockDamageSet( u64( block_damage_time_seconds/fixed_step ) );
@@ -1683,24 +1701,6 @@ float	CActor::HitArtefactsOnBelt(float hit_power, ALife::EHitType hit_type)
 	clamp(hit_power, 0.0f, flt_max);
 
 	return hit_power;
-
-/*
-	float res_hit_power_k		= 1.0f;
-	float _af_count				= 0.0f;
-
-	for(TIItemContainer::iterator it = inventory().m_belt.begin(); 
-		inventory().m_belt.end() != it; ++it) 
-	{
-		CArtefact*	artefact = smart_cast<CArtefact*>(*it);
-		if(artefact){
-			res_hit_power_k	+= artefact->m_ArtefactHitImmunities.AffectHit(1.0f, hit_type);
-			_af_count		+= 1.0f;
-		}
-	}
-	res_hit_power_k			-= _af_count;
-
-	return					res_hit_power_k * hit_power;
-*/
 }
 
 float CActor::GetProtection_ArtefactsOnBelt( ALife::EHitType hit_type )

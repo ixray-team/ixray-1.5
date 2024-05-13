@@ -1053,7 +1053,8 @@ bool CSE_ALifeObject::interactive			() const
 	);
 }
 
-void CSE_ALifeObject::use_ai_locations(bool value) {
+void CSE_ALifeObject::use_ai_locations		(bool value)
+{
 	m_flags.set(flUsedAI_Locations, BOOL(value));
 }
 
@@ -2426,6 +2427,7 @@ CSE_ALifeObjectClimable::CSE_ALifeObjectClimable	(LPCSTR caSection) : CSE_Shape(
 	//m_health					= 100.f;
 	//m_flags.set					(flUseSwitches,FALSE);
 	//m_flags.set					(flSwitchOffline,FALSE);
+	material  = "materials\\fake_ladders";
 }
 
 CSE_ALifeObjectClimable::~CSE_ALifeObjectClimable	()
@@ -2445,6 +2447,8 @@ void CSE_ALifeObjectClimable::STATE_Read		(NET_Packet	&tNetPacket, u16 size)
 	if(m_wVersion>99)
 		inherited2::STATE_Read		(tNetPacket,size);
 	cform_read(tNetPacket);
+	if(m_wVersion>126)
+		tNetPacket.r_stringZ( material );
 }
 
 void CSE_ALifeObjectClimable::STATE_Write	(NET_Packet	&tNetPacket)
@@ -2452,6 +2456,7 @@ void CSE_ALifeObjectClimable::STATE_Write	(NET_Packet	&tNetPacket)
 	//inherited1::STATE_Write		(tNetPacket);
 	inherited2::STATE_Write		(tNetPacket);
 	cform_write(tNetPacket);
+	tNetPacket.w_stringZ( material );
 }
 
 void CSE_ALifeObjectClimable::UPDATE_Read	(NET_Packet	&tNetPacket)
@@ -2473,6 +2478,12 @@ void CSE_ALifeObjectClimable::FillProps		(LPCSTR pref, PropItemVec& values)
 	//inherited1::FillProps			(pref,values);
 	inherited2::FillProps			(pref,values);
 	//PHelper().CreateFloat		(values, PrepareKey(pref,*s_name,"Health"),			&m_health,			0.f, 100.f);
+}
+
+void CSE_ALifeObjectClimable::set_additional_info(void* info)
+{
+	LPCSTR material_name = (LPCSTR)info;
+	material				= material_name;
 }
 #endif // #ifndef XRGAME_EXPORTS
 

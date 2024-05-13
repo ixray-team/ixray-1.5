@@ -454,7 +454,7 @@ void CLevel::IR_OnKeyboardHold(int key)
 	// Lain: added
 	if ( key == DIK_UP )
 	{
-		static uint time = Device.dwTimeGlobal;
+		static u32 time = Device.dwTimeGlobal;
 		if ( Device.dwTimeGlobal - time > 20 )
 		{
 			if ( CBaseMonster* pBM = smart_cast<CBaseMonster*>(CurrentEntity()) )
@@ -466,7 +466,7 @@ void CLevel::IR_OnKeyboardHold(int key)
 	}
 	else if ( key == DIK_DOWN )
 	{
-		static uint time = Device.dwTimeGlobal;
+		static u32 time = Device.dwTimeGlobal;
 		if ( Device.dwTimeGlobal - time > 20 )
 		{
 			if ( CBaseMonster* pBM = smart_cast<CBaseMonster*>(CurrentEntity()) )

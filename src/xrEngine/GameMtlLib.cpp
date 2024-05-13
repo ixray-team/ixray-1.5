@@ -3,8 +3,22 @@
 #pragma hdrstop
 
 #include "GameMtlLib.h"
+//#include "../include/xrapi/xrapi.h"
 
 CGameMtlLibrary GMLib;
+//CSound_manager_interface*	Sound = NULL;
+#ifdef	_EDITOR
+CGameMtlLibrary*			PGMLib = NULL;
+#endif
+CGameMtlLibrary::	CGameMtlLibrary		()
+	{
+	    material_index 		= 0;
+	    material_pair_index = 0;
+#ifndef _EDITOR
+        material_count	    = 0;
+#endif
+		PGMLib = &GMLib;
+    }
 
 void SGameMtl::Load(IReader& fs)
 {

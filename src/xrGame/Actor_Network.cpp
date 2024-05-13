@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "pch_script.h"
 #include "actor.h"
 #include "Actor_Flags.h"
@@ -10,7 +11,8 @@
 
 #include "ActorEffector.h"
 
-#include "../xrPhysics/PHWorld.h"
+#include "../xrphysics/iPHWorld.h"
+#include "../xrphysics/actorcameracollision.h"
 #include "level.h"
 #include "xr_level_controller.h"
 #include "game_cl_base.h"
@@ -43,7 +45,7 @@
 #include "../xrengine/xr_collide_form.h"
 #ifdef DEBUG
 #	include "debug_renderer.h"
-#	include "../xrPhysics/Physics.h"
+#	include "../xrPhysics/phvalide.h"
 #endif
 
 int			g_cl_InterpolationType		= 0;
@@ -65,19 +67,19 @@ CActor*			Actor()
 void	CActor::ConvState(u32 mstate_rl, string128 *buf)
 {
 	xr_strcpy(*buf,"");
-	if (isActorAccelerated(mstate_rl, IsZoomAimingMode()))		strcat(*buf,"Accel ");
-	if (mstate_rl&mcCrouch)		strcat(*buf,"Crouch ");
-	if (mstate_rl&mcFwd)		strcat(*buf,"Fwd ");
-	if (mstate_rl&mcBack)		strcat(*buf,"Back ");
-	if (mstate_rl&mcLStrafe)	strcat(*buf,"LStrafe ");
-	if (mstate_rl&mcRStrafe)	strcat(*buf,"RStrafe ");
-	if (mstate_rl&mcJump)		strcat(*buf,"Jump ");
-	if (mstate_rl&mcFall)		strcat(*buf,"Fall ");
-	if (mstate_rl&mcTurn)		strcat(*buf,"Turn ");
-	if (mstate_rl&mcLanding)	strcat(*buf,"Landing ");
-	if (mstate_rl&mcLLookout)	strcat(*buf,"LLookout ");
-	if (mstate_rl&mcRLookout)	strcat(*buf,"RLookout ");
-	if (m_bJumpKeyPressed)		strcat(*buf,"+Jumping ");
+	if (isActorAccelerated(mstate_rl, IsZoomAimingMode()))		xr_strcat(*buf,"Accel ");
+	if (mstate_rl&mcCrouch)		xr_strcat(*buf,"Crouch ");
+	if (mstate_rl&mcFwd)		xr_strcat(*buf,"Fwd ");
+	if (mstate_rl&mcBack)		xr_strcat(*buf,"Back ");
+	if (mstate_rl&mcLStrafe)	xr_strcat(*buf,"LStrafe ");
+	if (mstate_rl&mcRStrafe)	xr_strcat(*buf,"RStrafe ");
+	if (mstate_rl&mcJump)		xr_strcat(*buf,"Jump ");
+	if (mstate_rl&mcFall)		xr_strcat(*buf,"Fall ");
+	if (mstate_rl&mcTurn)		xr_strcat(*buf,"Turn ");
+	if (mstate_rl&mcLanding)	xr_strcat(*buf,"Landing ");
+	if (mstate_rl&mcLLookout)	xr_strcat(*buf,"LLookout ");
+	if (mstate_rl&mcRLookout)	xr_strcat(*buf,"RLookout ");
+	if (m_bJumpKeyPressed)		xr_strcat(*buf,"+Jumping ");
 };
 //--------------------------------------------------------------------
 void CActor::net_Export	(NET_Packet& P)					// export to server
@@ -473,7 +475,7 @@ void		CActor::net_Import_Physic			( NET_Packet& P)
 			}
 			else
 			{
-				VERIFY(valid_pos(N_A.State.position,phBoundaries));
+				VERIFY(valid_pos(N_A.State.position,ph_boundaries()));
 				NET_A.push_back			(N_A);
 				if (NET_A.size()>5) NET_A.pop_front();
 			};
@@ -737,12 +739,12 @@ void CActor::net_Destroy	()
 
 	Engine.Sheduler.Unregister	(this);
 
-	if(	CActor::actor_camera_shell && 
-		CActor::actor_camera_shell->get_ElementByStoreOrder( 0 )->PhysicsRefObject() 
+	if(	actor_camera_shell && 
+		actor_camera_shell->get_ElementByStoreOrder( 0 )->PhysicsRefObject() 
 			== 
 		this
 		) 
-		destroy_physics_shell( CActor::actor_camera_shell );
+		destroy_physics_shell( actor_camera_shell );
 }
 
 void CActor::net_Relcase	(CObject* O)
@@ -901,7 +903,7 @@ void CActor::PH_B_CrPr		()	// actions & operations before physic correction-pred
 	//just set last update data for now
 //	if (!m_bHasUpdate) return;	
 	if (CrPr_IsActivated()) return;
-	if (CrPr_GetActivationStep() > ph_world->m_steps_num) return;
+	if (CrPr_GetActivationStep() > physics_world()->StepsNum()) return;
 
 	if (g_Alive())
 	{
@@ -1124,7 +1126,7 @@ void	CActor::CalculateInterpolationParams()
 	float lV0 = State0.linear_vel.magnitude();
 	float lV1 = State1.linear_vel.magnitude();
 
-	u32		ConstTime = u32((fixed_step - ph_world->m_frame_time)*1000)+ Level().GetInterpolationSteps()*u32(fixed_step*1000);
+	u32		ConstTime = u32((fixed_step - physics_world()->FrameTime())*1000)+ Level().GetInterpolationSteps()*u32(fixed_step*1000);
 
 	m_dwIStartTime = m_dwILastUpdateTime;
 	
@@ -1293,20 +1295,20 @@ void		CActor::UpdatePosStack	( u32 Time0, u32 Time1 )
 	SPHNetState		State;
 	pSyncObj->get_State(State);
 
-	if (!SMemoryPosStack.empty() && SMemoryPosStack.back().u64WorldStep >= ph_world->m_steps_num)
+	if (!SMemoryPosStack.empty() && SMemoryPosStack.back().u64WorldStep >= physics_world()->m_steps_num)
 	{
 		xr_deque<SMemoryPos>::iterator B = SMemoryPosStack.begin();
 		xr_deque<SMemoryPos>::iterator E = SMemoryPosStack.end();
-		xr_deque<SMemoryPos>::iterator I = std::lower_bound(B,E,u64(ph_world->m_steps_num-1));
+		xr_deque<SMemoryPos>::iterator I = std::lower_bound(B,E,u64(physics_world()->m_steps_num-1));
 		if (I != E) 
 		{
 			I->SState = State;
-			I->u64WorldStep = ph_world->m_steps_num;
+			I->u64WorldStep = physics_world()->m_steps_num;
 		};
 	}
 	else		
 	{
-		SMemoryPosStack.push_back(SMemoryPos(Time0, Time1, ph_world->m_steps_num, State));
+		SMemoryPosStack.push_back(SMemoryPos(Time0, Time1, physics_world()->m_steps_num, State));
 		if (SMemoryPosStack.front().dwTime0 < (Level().timeServer() - 2000)) SMemoryPosStack.pop_front();
 	};
 };

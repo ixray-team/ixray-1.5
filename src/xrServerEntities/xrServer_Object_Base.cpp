@@ -158,8 +158,7 @@ CSE_Motion* CSE_Abstract::motion			()
 
 CInifile &CSE_Abstract::spawn_ini			()
 {
-	if (!m_ini_file)
-	{
+	if (!m_ini_file) {
 		IReader temp(
 			(void*)(*(m_ini_string)),
 			m_ini_string.size()

@@ -16,14 +16,15 @@
 #include "level.h"
 #include "../xrEngine/cl_intersect.h"
 
-#include "../xrPhysics/elevatorstate.h"
+//#include "elevatorstate.h"
 #include "CharacterPhysicsSupport.h"
 #include "EffectorShot.h"
 
 #include "PHMovementControl.h"
-
-extern BOOL dbg_draw_camera_collision;
-void	collide_camera( CCameraBase & camera, float _viewport_near  );
+#include "../xrPhysics/ielevatorstate.h"
+#include "../xrPhysics/actorcameracollision.h"
+#include "IKLimbsController.h"
+#include "GamePersistent.h"
 
 ENGINE_API extern float psHUD_FOV;
 ENGINE_API extern float psHUD_FOV_def;
@@ -76,8 +77,8 @@ void CActor::camUpdateLadder(float dt)
 		cam_yaw								+= delta * _min(dt*10.f,1.f) ;
 	}
 
-	CElevatorState* es = character_physics_support()->movement()->ElevatorState();
-	if(es && es->State()==CElevatorState::clbClimbingDown)
+	IElevatorState* es = character_physics_support()->movement()->ElevatorState();
+	if(es && es->State()==clbClimbingDown)
 	{
 		float &cam_pitch					= cameras[eacFirstEye]->pitch;
 		const float ldown_pitch				= cameras[eacFirstEye]->lim_pitch.y;
@@ -94,11 +95,11 @@ void CActor::cam_UnsetLadder()
 	C->lim_yaw[1]			= 0;
 	C->bClampYaw			= false;
 }
-float CActor::CameraHeight()
-{
+float cammera_into_collision_shift = 0.05f;
+float CActor::CameraHeight() {
 	Fvector						R;
-	character_physics_support()->movement()->Box().getsize		(R);
-	return						m_fCamHeightFactor*R.y;
+	character_physics_support()->movement()->Box().getsize(R);
+	return						m_fCamHeightFactor * (R.y - cammera_into_collision_shift);
 }
 
 IC float viewport_near(float& w, float& h)
@@ -135,15 +136,17 @@ ICF BOOL test_point( const Fvector	&pt, xrXRC& xrc,  const Fmatrix33& mat, const
 	return FALSE;
 }
 
-bool test_camera_box( const Fvector &box_size, const Fmatrix &xform );
-IC bool test_point( const Fvector	&pt, const Fmatrix33& mat, const Fvector& ext  )
+
+IC bool test_point( const Fvector	&pt, const Fmatrix33& mat, const Fvector& ext, CActor* actor  )
 {
 	Fmatrix fmat = Fidentity;
 	fmat.i.set( mat.i );
 	fmat.j.set( mat.j );
 	fmat.k.set( mat.k );
 	fmat.c.set( pt ); 
-	return test_camera_box( ext, fmat );
+	//IPhysicsShellHolder * ve = smart_cast<IPhysicsShellHolder*> ( Level().CurrentEntity() ) ;
+	VERIFY( actor );
+	return test_camera_box( ext, fmat, actor );
 }
 
 #ifdef	DEBUG
@@ -248,7 +251,7 @@ void	CActor::cam_Lookout	( const Fmatrix &xform, float camera_height )
 				Fvector	ext		= {w,h,VIEWPORT_NEAR/2};
 				Fvector				pt;
 				calc_gl_point	( pt, xform, radius, alpha );
-				if ( test_point( pt, mat, ext  ) )
+				if ( test_point( pt, mat, ext, this  ) )
 				{
 					da			= PI/1000.f;
 					if (!fis_zero(r_torso.roll))
@@ -258,7 +261,7 @@ void	CActor::cam_Lookout	( const Fmatrix &xform, float camera_height )
 					{
 						Fvector				pt_;
 						calc_gl_point( pt_, xform, radius, angle );
-						if (test_point( pt_, mat,ext )) 
+						if (test_point( pt_, mat,ext, this )) 
 							{ bIntersect=TRUE; break; } 
 					}
 					valid_angle	= bIntersect?angle:alpha;
@@ -273,6 +276,16 @@ void	CActor::cam_Lookout	( const Fmatrix &xform, float camera_height )
 			r_torso.roll = 0.f;
 		}
 }
+#ifdef	DEBUG
+BOOL ik_cam_shift = true;
+float ik_cam_shift_tolerance = 0.2f;
+float ik_cam_shift_speed = 0.01f;
+#else
+static const BOOL	ik_cam_shift = true;
+static const float	ik_cam_shift_tolerance = 0.2f;
+static const float	ik_cam_shift_speed = 0.01f;
+#endif
+
 void CActor::cam_Update(float dt, float fFOV)
 {
 	if (m_holder)
@@ -302,7 +315,27 @@ void CActor::cam_Update(float dt, float fFOV)
 	if( (mstate_real & mcClimb) && (cam_active!=eacFreeLook) )
 		camUpdateLadder(dt);
 	on_weapon_shot_update();
-	Fvector point		= {0,CameraHeight(),0}; 
+	float y_shift =0;
+	
+	if( GamePersistent().GameType() != eGameIDSingle && ik_cam_shift && character_physics_support() && character_physics_support()->ik_controller() )
+	{
+		y_shift = character_physics_support()->ik_controller()->Shift();
+		float cam_smooth_k = 1.f;
+		if(_abs(y_shift-current_ik_cam_shift)>ik_cam_shift_tolerance)
+		{
+
+			cam_smooth_k = 1.f - ik_cam_shift_speed * dt/0.01f;
+
+		}
+
+		if(_abs(y_shift)<ik_cam_shift_tolerance/2.f)
+			cam_smooth_k = 1.f - ik_cam_shift_speed * 1.f/0.01f * dt;
+		clamp( cam_smooth_k, 0.f, 1.f );
+		current_ik_cam_shift = cam_smooth_k * current_ik_cam_shift + y_shift * ( 1.f - cam_smooth_k );
+	} else
+		current_ik_cam_shift = 0;
+
+	Fvector point		= {0,CameraHeight() + current_ik_cam_shift,0}; 
 	Fvector dangle		= {0,0,0};
 	Fmatrix				xform;
 	xform.setXYZ		(0,r_torso.yaw,0);
@@ -324,7 +357,7 @@ void CActor::cam_Update(float dt, float fFOV)
 	float flCurrentPlayerY	= xform.c.y;
 
 	// Smooth out stair step ups
-	if ((character_physics_support()->movement()->Environment()==peOnGround) && (flCurrentPlayerY-fPrevCamPos>0)){
+	if ((character_physics_support()->movement()->Environment()==CPHMovementControl::peOnGround) && (flCurrentPlayerY-fPrevCamPos>0)){
 		fPrevCamPos			+= dt*1.5f;
 		if (fPrevCamPos > flCurrentPlayerY)
 			fPrevCamPos		= flCurrentPlayerY;
@@ -350,8 +383,9 @@ void CActor::cam_Update(float dt, float fFOV)
 		cameras[eacFirstEye]->f_fov		= fFOV;
 	} 
 	if (Level().CurrentEntity() == this)
-		collide_camera( *cameras[eacFirstEye], _viewport_near );
-
+	{
+		collide_camera( *cameras[eacFirstEye], _viewport_near, this );
+	}
 	if( psActorFlags.test(AF_PSP) )
 	{
 		Cameras().UpdateFromCamera			(C);

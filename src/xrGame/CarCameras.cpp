@@ -1,10 +1,9 @@
 #include "stdafx.h"
 #pragma hdrstop
 #ifdef DEBUG
-#include "../xrPhysics/ode_include.h"
-#include "../xrEngine/StatGraph.h"
+
 #include "PHDebug.h"
-#include "../xrPhysics/phworld.h"
+#include "../xrPhysics/iphworld.h"
 #endif
 #include "alife_space.h"
 #include "hit.h"
@@ -23,7 +22,7 @@ bool CCar::HUDView() const
 
 void	CCar::cam_Update			(float dt, float fov)
 {
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	Fvector							P,Da;
 	Da.set							(0,0,0);
 	//bool							owner = !!Owner();

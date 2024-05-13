@@ -21,7 +21,7 @@
 #include "script_monster_hit_info.h"
 #include "script_entity_action.h"
 #include "action_planner.h"
-#include "../xrPhysics/PhysicsShell.h"
+#include "physics_shell_scripted.h"
 #include "helicopter.h"
 #include "HangingLamp.h"
 #include "holder_custom.h"
