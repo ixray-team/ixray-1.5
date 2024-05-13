@@ -5,7 +5,7 @@
 //	Author		: Dmitriy Iassenev
 //	Description : Base server game script export
 ////////////////////////////////////////////////////////////////////////////
-
+#include "stdafx.h"
 #include "pch_script.h"
 #include "game_sv_base.h"
 #include "xrMessages.h"
