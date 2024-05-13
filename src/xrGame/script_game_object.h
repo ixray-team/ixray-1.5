@@ -13,6 +13,12 @@
 #include "script_export_space.h"
 #include "xr_time.h"
 #include "character_info_defs.h"
+#include "game_graph_space.h"
+#include "game_location_selector.h"
+
+#include "gameobject.h"
+#include "ai_space.h"
+#include "script_engine.h"
 
 enum EPdaMsg;
 enum ESoundTypes;
@@ -126,13 +132,15 @@ struct CSightParams {
 
 class CScriptGameObject {
 	mutable CGameObject		*m_game_object;
+							CScriptGameObject		(CScriptGameObject const& game_object);
+
 public:
 
 							CScriptGameObject		(CGameObject *tpGameObject);
 	virtual					~CScriptGameObject		();
 							operator CObject*		();
 
-	IC		CGameObject			&object				() const;
+			CGameObject			&object				() const;
 			CScriptGameObject	*Parent				() const;
 			void				Hit					(CScriptHit *tLuaHit);
 			int					clsid				() const;
