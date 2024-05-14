@@ -3,20 +3,22 @@
 #define CMD_START	(1<<0)
 #define CMD_STOP	(1<<1)
 
-#define NO_ACTIVE_SLOT		0xffffffff
-#define KNIFE_SLOT			0
-#define PISTOL_SLOT			1
-#define RIFLE_SLOT			2
-#define GRENADE_SLOT		3
-#define APPARATUS_SLOT		4
-#define BOLT_SLOT			5
-#define OUTFIT_SLOT			6
-#define PDA_SLOT			7
-#define DETECTOR_SLOT		8
-#define TORCH_SLOT			9
-#define ARTEFACT_SLOT		10
-#define FLARE_SLOT			11
-//.#define SLOTS_TOTAL			12
+enum {
+	NO_ACTIVE_SLOT = 0xffffffff,
+	KNIFE_SLOT = 0,
+	PISTOL_SLOT,
+	RIFLE_SLOT,
+	GRENADE_SLOT,
+	APPARATUS_SLOT,
+	BOLT_SLOT,
+	OUTFIT_SLOT,
+	PDA_SLOT,
+	DETECTOR_SLOT,
+	TORCH_SLOT,
+	ARTEFACT_SLOT,
+	FLARE_SLOT,
+	LAST_SLOT = FLARE_SLOT
+};
 
 
 #define RUCK_HEIGHT			280
