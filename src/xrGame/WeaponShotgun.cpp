@@ -200,7 +200,7 @@ bool CWeaponShotgun::HaveCartridgeInInventory		(u8 cnt)
 
 	u32 ac = GetAmmoCount(m_ammoType);
 
-	if (ac == 0)
+	if (m_set_next_ammoType_on_reload != undefined_ammo_type || m_set_next_ammoType_on_reload == undefined_ammo_type && m_magazine.size() == 0 && ac == 0)
 	{
 		for (u8 i = 0; i < u8(m_ammoTypes.size()); ++i)
 		{

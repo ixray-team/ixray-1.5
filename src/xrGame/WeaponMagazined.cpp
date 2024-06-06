@@ -233,22 +233,30 @@ bool CWeaponMagazined::TryReload()
 			SwitchState			(eReload); 
 			return				true;
 		} 
-		else for(u32 i = 0; i < m_ammoTypes.size(); ++i) 
+		else if (m_set_next_ammoType_on_reload == undefined_ammo_type && iAmmoElapsed == 0 || m_set_next_ammoType_on_reload != undefined_ammo_type)
 		{
-			m_pAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny( *m_ammoTypes[i] ));
-			if(m_pAmmo) 
-			{ 
-				m_set_next_ammoType_on_reload = i; 
-				SetPending			(TRUE);
-				SwitchState			(eReload);
-				return				true;
+			for (u32 i = 0; i < m_ammoTypes.size(); ++i)
+			{
+				m_pAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny(*m_ammoTypes[i]));
+				if (m_pAmmo)
+				{
+					m_set_next_ammoType_on_reload = i;
+					SetPending(TRUE);
+					SwitchState(eReload);
+					return true;
+				}
 			}
 		}
+		else
+			m_set_next_ammoType_on_reload = undefined_ammo_type;
 
 	}
 	
 	if(GetState()!=eIdle)
 		SwitchState(eIdle);
+
+	bAmmotypeKeyPressed = false;
+	bReloadKeyPressed = false;
 
 	return false;
 }
