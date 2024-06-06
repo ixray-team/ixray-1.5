@@ -47,19 +47,20 @@ public:
 	virtual void	OnShot			();
 	virtual void	OnEvent			(NET_Packet& P, u16 type);
 	virtual void	ReloadMagazine	();
+	virtual void	UnloadMagazine(bool spawn_ammo = true);
 
 	virtual bool	Action			(s32 cmd, u32 flags);
 
 	virtual void	UpdateSounds	();
 
-	//переключение в режим подствольника
+	//РїРµСЂРµРєР»СЋС‡РµРЅРёРµ РІ СЂРµР¶РёРј РїРѕРґСЃС‚РІРѕР»СЊРЅРёРєР°
 	virtual bool	SwitchMode		();
 	void			PerformSwitchGL	();
 	void			OnAnimationEnd	(u32 state);
 
 	virtual bool	IsNecessaryItem	    (const shared_str& item_sect);
 
-	//виртуальные функции для проигрывания анимации HUD
+	//РІРёСЂС‚СѓР°Р»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ РїСЂРѕРёРіСЂС‹РІР°РЅРёСЏ Р°РЅРёРјР°С†РёРё HUD
 	virtual void	PlayAnimShow		();
 	virtual void	PlayAnimHide		();
 	virtual void	PlayAnimReload		();
@@ -77,8 +78,8 @@ private:
 	virtual	bool	install_upgrade_ammo_class	( LPCSTR section, bool test );
 	
 public:
-	//дополнительные параметры патронов 
-	//для подствольника
+	//РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹ РїР°С‚СЂРѕРЅРѕРІ 
+	//РґР»СЏ РїРѕРґСЃС‚РІРѕР»СЊРЅРёРєР°
 	CWeaponAmmo*			m_pAmmo2;
 	shared_str				m_ammoSect2;
 	xr_vector<shared_str>	m_ammoTypes2;
