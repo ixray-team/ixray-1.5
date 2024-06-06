@@ -166,15 +166,20 @@ void CHudItem::DeactivateItem()
 {
 	OnHiddenItem	();
 }
+
 void CHudItem::OnMoveToRuck(EItemPlace prev)
 {
 	SwitchState(eHidden);
 }
 
-void CHudItem::SendDeactivateItem	()
+void CHudItem::SendDeactivateItem()
 {
-	SendHiddenItem	();
+	if (GetState() == eHiding)
+		return;
+
+	SendHiddenItem();
 }
+
 void CHudItem::SendHiddenItem()
 {
 	if (!object().getDestroy())
