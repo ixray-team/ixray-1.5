@@ -74,7 +74,7 @@ CWeapon::CWeapon()
 	m_ef_main_weapon_type	= u32(-1);
 	m_ef_weapon_type		= u32(-1);
 	m_UIScope				= NULL;
-	m_set_next_ammoType_on_reload = u32(-1);
+	m_set_next_ammoType_on_reload = undefined_ammo_type;
 	m_crosshair_inertion	= 0.f;
 	m_cur_scope				= NULL;
 
@@ -542,7 +542,7 @@ BOOL CWeapon::net_Spawn		(CSE_Abstract* DC)
 	SetState						(E->wpn_state);
 	SetNextState					(E->wpn_state);
 	
-	m_DefaultCartridge.Load(*m_ammoTypes[m_ammoType], u8(m_ammoType));	
+	m_DefaultCartridge.Load(*m_ammoTypes[m_ammoType], m_ammoType);	
 	if(iAmmoElapsed) 
 	{
 		m_fCurrentCartirdgeDisp = m_DefaultCartridge.param_s.kDisp;
@@ -591,7 +591,7 @@ void CWeapon::net_Export(NET_Packet& P)
 	P.w_u8					(need_upd);
 	P.w_u16					(u16(iAmmoElapsed));
 	P.w_u8					(m_flagsAddOnState);
-	P.w_u8					((u8)m_ammoType);
+	P.w_u8					(m_ammoType);
 	P.w_u8					((u8)GetState());
 	P.w_u8					((u8)IsZoomed());
 }
@@ -698,10 +698,10 @@ void CWeapon::OnEvent(NET_Packet& P, u16 type)
 				P.r_u8();
 			u8 AmmoElapsed = P.r_u8();
 			u8 NextAmmo = P.r_u8();
-			if (NextAmmo == u8(-1))
-				m_set_next_ammoType_on_reload = u32(-1);
+			if (NextAmmo == undefined_ammo_type)
+				m_set_next_ammoType_on_reload = undefined_ammo_type;
 			else
-				m_set_next_ammoType_on_reload = u8(NextAmmo);
+				m_set_next_ammoType_on_reload = NextAmmo;
 
 			if (OnClient()) SetAmmoElapsed(int(AmmoElapsed));			
 			OnStateSwitch	(u32(state));
@@ -787,7 +787,7 @@ void CWeapon::OnHiddenItem ()
 //.	SetState					(eHidden);
 //.	SetNextState				(eHidden);
 
-	m_set_next_ammoType_on_reload = u32(-1);
+	m_set_next_ammoType_on_reload = undefined_ammo_type;
 }
 
 void CWeapon::SendHiddenItem()
@@ -814,7 +814,7 @@ void CWeapon::OnH_B_Chield		()
 	inherited::OnH_B_Chield		();
 
 	OnZoomOut					();
-	m_set_next_ammoType_on_reload	= u32(-1);
+	m_set_next_ammoType_on_reload	= undefined_ammo_type;
 }
 
 extern u32 hud_adj_mode;
@@ -1716,7 +1716,7 @@ void CWeapon::SetAmmoElapsed(int ammo_count)
 		if (uAmmo > m_magazine.size())
 		{
 			CCartridge			l_cartridge; 
-			l_cartridge.Load	(*m_ammoTypes[m_ammoType], u8(m_ammoType));
+			l_cartridge.Load	(*m_ammoTypes[m_ammoType], m_ammoType);
 			while (uAmmo > m_magazine.size())
 				m_magazine.push_back(l_cartridge);
 		}

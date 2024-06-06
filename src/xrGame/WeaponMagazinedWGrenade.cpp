@@ -93,7 +93,7 @@ BOOL CWeaponMagazinedWGrenade::net_Spawn(CSE_Abstract* DC)
 	iAmmoElapsed2	= weapon->a_elapsed_grenades.grenades_count;
 	m_ammoType2		= weapon->a_elapsed_grenades.grenades_type;
 
-	m_DefaultCartridge2.Load(*m_ammoTypes2[m_ammoType2], u8(m_ammoType2));
+	m_DefaultCartridge2.Load(*m_ammoTypes2[m_ammoType2], m_ammoType2);
 	
 	if (!IsGameTypeSingle())
 	{
@@ -721,7 +721,7 @@ void CWeaponMagazinedWGrenade::load(IReader &input_packet)
 	load_data					(sz, input_packet);
 
 	CCartridge					l_cartridge; 
-	l_cartridge.Load			(*m_ammoTypes2[m_ammoType2], u8(m_ammoType2));
+	l_cartridge.Load			(*m_ammoTypes2[m_ammoType2], m_ammoType2);
 
 	while (sz > (u32)m_magazine2.size())
 		m_magazine2.push_back(l_cartridge);

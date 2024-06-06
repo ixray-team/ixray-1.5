@@ -110,6 +110,7 @@ public:
 		eSubstateReloadInProcess,
 		eSubstateReloadEnd,
 	};
+	enum { undefined_ammo_type = u8(-1) };
 
 	IC BOOL					IsValid				()	const		{	return iAmmoElapsed;						}
 	// Does weapon need's update?
@@ -437,11 +438,11 @@ public:
 	u8						m_cur_scope;
 
 	CWeaponAmmo*			m_pAmmo;
-	u32						m_ammoType;
+	u8						m_ammoType;
 	shared_str				m_ammoName;
 	BOOL					m_bHasTracers;
 	u8						m_u8TracerColorID;
-	u32						m_set_next_ammoType_on_reload;
+	u8						m_set_next_ammoType_on_reload;
 	// Multitype ammo support
 	xr_vector<CCartridge>	m_magazine;
 	CCartridge				m_DefaultCartridge;
