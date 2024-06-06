@@ -300,10 +300,15 @@ void CHudItem::on_a_hud_attach()
 	}
 }
 
-u32 CHudItem::PlayHUDMotion(const shared_str& M, BOOL bMixIn, CHudItem*  W, u32 state)
+u32 CHudItem::PlayHUDMotion(const xr_string M, BOOL bMixIn, CHudItem*  W, u32 state, bool need_suffix)
 {
-	u32 anim_time					= PlayHUDMotion_noCB(M, bMixIn);
-	if (anim_time>0)
+	xr_string new_name = M;
+
+	if (need_suffix)
+		NeedAddSuffix(new_name);
+
+	u32 anim_time = PlayHUDMotion_noCB(new_name.c_str(), bMixIn);
+	if (anim_time > 0)
 	{
 		m_bStopAtEndAnimIsRunning = true;
 		m_dwMotionStartTm			= Device.dwTimeGlobal;
@@ -315,7 +320,6 @@ u32 CHudItem::PlayHUDMotion(const shared_str& M, BOOL bMixIn, CHudItem*  W, u32 
 	}
 	return anim_time;
 }
-
 
 u32 CHudItem::PlayHUDMotion_noCB(const shared_str& motion_name, BOOL bMixIn)
 {
@@ -338,6 +342,17 @@ u32 CHudItem::PlayHUDMotion_noCB(const shared_str& motion_name, BOOL bMixIn)
 		m_started_rnd_anim_idx				= 0;
 		return g_player_hud->motion_length	(motion_name, HudSection(), m_current_motion_def );
 	}
+}
+
+void CHudItem::AddSuffix(xr_string& M, const xr_string suffix, const xr_string test_suffix)
+{
+	xr_string new_name = M + suffix;
+	xr_string test_name = new_name + test_suffix;
+
+	if (isHUDAnimationExist(new_name.c_str()))
+		M = new_name;
+	else if (isHUDAnimationExist(test_name.c_str()))
+		M = test_name;
 }
 
 void CHudItem::StopCurrentAnimWithoutCallback()

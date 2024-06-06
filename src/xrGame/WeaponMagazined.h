@@ -28,6 +28,7 @@ protected:
 	ESoundTypes		m_eSoundShot;
 	ESoundTypes		m_eSoundEmptyClick;
 	ESoundTypes		m_eSoundReload;
+	ESoundTypes		m_eSoundClose;
 	// General
 	//кадр момента пересчета UpdateSounds
 	u32				dwUpdateSounds_Frame;
@@ -94,8 +95,6 @@ public:
 
 	virtual void	GetBriefInfo				(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count, string16& fire_mode);
 
-	bool			bMisfireReload;
-
 public:
 	virtual bool	SwitchMode				();
 	virtual bool	SingleShotMode			()			{return 1 == m_iQueueSize;}
@@ -144,15 +143,14 @@ protected:
 
 protected:
 	virtual bool	AllowFireWhileWorking() {return false;}
+	virtual void	NeedAddSuffix(xr_string& M);
 
 	//виртуальные функции для проигрывания анимации HUD
 	virtual void	PlayAnimShow		();
 	virtual void	PlayAnimHide		();
 	virtual void	PlayAnimReload		();
-	virtual void	PlayAnimIdle		();
 	virtual void	PlayAnimShoot		();
 	virtual void	PlayReloadSound		();
-	virtual void	PlayAnimAim			();
 
 	virtual	int		ShotsFired			() { return m_iShotNum; }
 	virtual float	GetWeaponDeterioration	();

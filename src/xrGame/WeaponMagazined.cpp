@@ -41,6 +41,7 @@ CWeaponMagazined::CWeaponMagazined(ESoundTypes eSoundType) : CWeapon()
 	m_eSoundShot				= ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING | eSoundType);
 	m_eSoundEmptyClick			= ESoundTypes(SOUND_TYPE_WEAPON_EMPTY_CLICKING | eSoundType);
 	m_eSoundReload				= ESoundTypes(SOUND_TYPE_WEAPON_RECHARGING | eSoundType);
+	m_eSoundClose				= ESoundTypes(SOUND_TYPE_WEAPON_RECHARGING | eSoundType);
 	
 	m_sSndShotCurrent			= NULL;
 	m_sSilencerFlameParticles	= m_sSilencerSmokeParticles = NULL;
@@ -49,7 +50,6 @@ CWeaponMagazined::CWeaponMagazined(ESoundTypes eSoundType) : CWeapon()
 	m_iShotNum					= 0;
 	m_iQueueSize				= WEAPON_ININITE_QUEUE;
 	m_bLockType					= false;
-	bMisfireReload				= false;
 }
 
 CWeaponMagazined::~CWeaponMagazined()
@@ -94,6 +94,9 @@ void CWeaponMagazined::Load	(LPCSTR section)
 	
 	if (WeaponSoundExist(section, "snd_reload_misfire") && isHUDAnimationExist("anm_reload_misfire"))
 		m_sounds.LoadSound(section, "snd_reload_misfire", "sndReloadMis", true, m_eSoundReload);
+
+	if (WeaponSoundExist(section, "snd_slose"))
+		m_sounds.LoadSound(section, "snd_close", "sndClose", false, m_eSoundClose);
 
 	m_sSndShotCurrent = "sndShot";
 		
@@ -646,11 +649,8 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 				bAmmotypeKeyPressed = false;
 			}
 
-			if (bMisfireReload)
-			{
+			if (IsMisfire() && isHUDAnimationExist("anm_reload_misfire"))
 				bMisfire = false;
-				bMisfireReload = false;
-			}
 			else
 				ReloadMagazine();
 			SwitchState(eIdle);
@@ -667,6 +667,21 @@ void CWeaponMagazined::OnAnimationEnd(u32 state)
 		break;
 	}
 	inherited::OnAnimationEnd(state);
+}
+
+void CWeaponMagazined::NeedAddSuffix(xr_string& M)
+{
+	if (IsZoomed())
+		AddSuffix(M, "_aim");
+
+	if (IsMisfire())
+		AddSuffix(M, "_misfire");
+
+	if (iAmmoElapsed == 0)
+		AddSuffix(M, "_empty");
+
+	if (iAmmoElapsed == 1)
+		AddSuffix(M, "_l");
 }
 
 void CWeaponMagazined::switch2_Idle	()
@@ -742,7 +757,7 @@ void CWeaponMagazined::switch2_Empty()
 
 void CWeaponMagazined::PlayReloadSound()
 {
-	if (m_sounds.FindSoundItem("sndReloadMis", false) && isHUDAnimationExist("anm_reload_misfire") && IsMisfire() && bMisfireReload)
+	if (m_sounds.FindSoundItem("sndReloadMis", false) && isHUDAnimationExist("anm_reload_misfire") && IsMisfire())
 		PlaySound("sndReloadMis", get_LastFP());
 	else if (m_sounds.FindSoundItem("sndReloadEmpty", false) && isHUDAnimationExist("anm_reload_empty") && iAmmoElapsed == 0)
 		PlaySound("sndReloadEmpty", get_LastFP());
@@ -763,7 +778,10 @@ void CWeaponMagazined::switch2_Hiding()
 	OnZoomOut();
 	CWeapon::FireEnd();
 	
-	PlaySound			("sndHide",get_LastFP());
+	if (m_sounds.FindSoundItem("sndClose", false) && iAmmoElapsed == 0)
+		PlaySound("sndClose", get_LastFP());
+	else
+		PlaySound("sndHide", get_LastFP());
 
 	PlayAnimHide		();
 	SetPending			(TRUE);
@@ -1088,31 +1106,7 @@ void CWeaponMagazined::PlayAnimHide()
 void CWeaponMagazined::PlayAnimReload()
 {
 	VERIFY(GetState() == eReload);
-
-	if (isHUDAnimationExist("anm_reload_misfire") && IsMisfire())
-	{
-		PlayHUDMotion("anm_reload_misfire", TRUE, this, GetState());
-		bMisfireReload = true;
-	}
-	else if (isHUDAnimationExist("anm_reload_empty") && iAmmoElapsed == 0)
-		PlayHUDMotion("anm_reload_empty", TRUE, this, GetState());
-	else
-		PlayHUDMotion("anm_reload", TRUE, this, GetState());
-}
-
-void CWeaponMagazined::PlayAnimAim()
-{
-	PlayHUDMotion("anm_idle_aim", TRUE, NULL, GetState());
-}
-
-void CWeaponMagazined::PlayAnimIdle()
-{
-	VERIFY(GetState()==eIdle);
-	if(IsZoomed())
-	{
-		PlayAnimAim();
-	}else
-		inherited::PlayAnimIdle();
+	PlayHUDMotion("anm_reload", TRUE, this, GetState());
 }
 
 void CWeaponMagazined::PlayAnimShoot()

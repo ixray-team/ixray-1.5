@@ -124,7 +124,9 @@ public:
 
 	virtual	void				UpdateXForm			()						= 0;
 
-	u32							PlayHUDMotion		(const shared_str& M, BOOL bMixIn, CHudItem*  W, u32 state);
+	u32							PlayHUDMotion		(const xr_string M, BOOL bMixIn, CHudItem*  W, u32 state, bool need_suffix = true);
+	virtual void				NeedAddSuffix		(xr_string& M) {}
+			void				AddSuffix			(xr_string& M, const xr_string suffix, const xr_string test_suffix = "");
 	u32							PlayHUDMotion_noCB	(const shared_str& M, BOOL bMixIn);
 	void						StopCurrentAnimWithoutCallback();
 

@@ -60,17 +60,9 @@ public:
 
 	virtual bool	IsNecessaryItem	    (const shared_str& item_sect);
 
-	//виртуальные функции для проигрывания анимации HUD
-	virtual void	PlayAnimShow		();
-	virtual void	PlayAnimHide		();
-	virtual void	PlayAnimReload		();
-	virtual void	PlayAnimIdle		();
-	virtual void	PlayAnimShoot		();
-	virtual void	PlayAnimModeSwitch	();
-	virtual void	PlayAnimBore		();
-	virtual void	PlayAnimIdleMoving	();
-	virtual void	PlayAnimIdleSprint	();
-	virtual void	PlayAnimAim			();
+	virtual void	NeedAddSuffix(xr_string& M);
+
+	virtual void	PlayAnimModeSwitch();
 	
 private:
 	virtual	void	net_Spawn_install_upgrades	( Upgrades_type saved_upgrades );

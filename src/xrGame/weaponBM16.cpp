@@ -21,138 +21,27 @@ void CWeaponBM16::PlayReloadSound()
 
 void CWeaponBM16::PlayAnimShoot()
 {
-	switch( m_magazine.size() )
-	{
-	case 1:
-		PlayHUDMotion("anm_shot_1",FALSE,this,GetState());
-		break;
-	case 2:
-		PlayHUDMotion("anm_shot_2",FALSE,this,GetState());
-		break;
-	}
-}
-
-void CWeaponBM16::PlayAnimShow()
-{
-	switch( m_magazine.size() )
-	{
-	case 0:
-		PlayHUDMotion("anm_show_0",TRUE,this,GetState());
-		break;
-	case 1:
-		PlayHUDMotion("anm_show_1",TRUE,this,GetState());
-		break;
-	case 2:
-		PlayHUDMotion("anm_show_2",TRUE,this,GetState());
-		break;
-	}
-}
-
-void CWeaponBM16::PlayAnimHide()
-{
-	switch( m_magazine.size() )
-	{
-	case 0:
-		PlayHUDMotion("anm_hide_0",TRUE,this,GetState());
-		break;
-	case 1:
-		PlayHUDMotion("anm_hide_1",TRUE,this,GetState());
-		break;
-	case 2:
-		PlayHUDMotion("anm_hide_2",TRUE,this,GetState());
-		break;
-	}
-}
-
-void CWeaponBM16::PlayAnimBore()
-{
-	switch( m_magazine.size() )
-	{
-	case 0:
-		PlayHUDMotion("anm_bore_0",TRUE,this,GetState());
-		break;
-	case 1:
-		PlayHUDMotion("anm_bore_1",TRUE,this,GetState());
-		break;
-	case 2:
-		PlayHUDMotion("anm_bore_2",TRUE,this,GetState());
-		break;
-	}
+	PlayHUDMotion("anm_shot", true, this, eFire);
 }
 
 void CWeaponBM16::PlayAnimReload()
 {
-	bool b_both = HaveCartridgeInInventory(2);
-
-	VERIFY(GetState()==eReload);
-	if(m_magazine.size()==1 || !b_both)
-		PlayHUDMotion("anm_reload_1",TRUE,this,GetState());
+	if (m_magazine.size() == 1 || !HaveCartridgeInInventory(2))
+		PlayHUDMotion("anm_reload_1", true, this, eReload);
 	else
-		PlayHUDMotion("anm_reload_2",TRUE,this,GetState());
+		PlayHUDMotion("anm_reload_2", true, this, eReload);
 }
 
-void  CWeaponBM16::PlayAnimIdleMoving()
+void CWeaponBM16::NeedAddSuffix(xr_string& M)
 {
-	switch( m_magazine.size() )
-	{
-	case 0:
-		PlayHUDMotion("anm_idle_moving_0",TRUE,this,GetState());
-		break;
-	case 1:
-		PlayHUDMotion("anm_idle_moving_1",TRUE,this,GetState());
-		break;
-	case 2:
-		PlayHUDMotion("anm_idle_moving_2",TRUE,this,GetState());
-		break;
-	}
-}
+	xr_string ac;
+	ac = std::to_string(iAmmoElapsed);
 
-void  CWeaponBM16::PlayAnimIdleSprint()
-{
-	switch( m_magazine.size() )
-	{
-	case 0:
-		PlayHUDMotion("anm_idle_sprint_0",TRUE,this,GetState());
-		break;
-	case 1:
-		PlayHUDMotion("anm_idle_sprint_1",TRUE,this,GetState());
-		break;
-	case 2:
-		PlayHUDMotion("anm_idle_sprint_2",TRUE,this,GetState());
-		break;
-	}
-}
+	if (IsZoomed())
+		AddSuffix(M, "_aim", ac);
 
-void CWeaponBM16::PlayAnimIdle()
-{
-	if(TryPlayAnimIdle())	return;
+	if (IsMisfire())
+		AddSuffix(M, "_misfire", ac);
 
-	if(IsZoomed())
-	{
-		switch (m_magazine.size())
-		{
-		case 0:{
-			PlayHUDMotion("anm_idle_aim_0", TRUE, NULL, GetState());
-		}break;
-		case 1:{
-			PlayHUDMotion("anm_idle_aim_1", TRUE, NULL, GetState());
-		}break;
-		case 2:{
-			PlayHUDMotion("anm_idle_aim_2", TRUE, NULL, GetState());
-		}break;
-		};
-	}else{
-		switch (m_magazine.size())
-		{
-		case 0:{
-			PlayHUDMotion("anm_idle_0", TRUE, NULL, GetState());
-		}break;
-		case 1:{
-			PlayHUDMotion("anm_idle_1", TRUE, NULL, GetState());
-		}break;
-		case 2:{
-			PlayHUDMotion("anm_idle_2", TRUE, NULL, GetState());
-		}break;
-		};
-	}
+	 AddSuffix(M, "_", ac);
 }
