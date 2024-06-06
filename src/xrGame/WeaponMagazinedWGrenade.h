@@ -36,7 +36,7 @@ public:
 	virtual	float	CurrentZoomFactor		();
 	virtual	u8		GetCurrentHudOffsetIdx	();
 	virtual void	FireEnd					();
-			void	LaunchGrenade			();
+	virtual void	FireStart				();
 			void	LaunchGrenade_Correct	(Fvector3& v);
 	
 	virtual void	OnStateSwitch	(u32 S);
