@@ -180,23 +180,20 @@ void CWeaponMagazinedWGrenade::switch2_SwitchMode()
 
 void CWeaponMagazinedWGrenade::PerformSwitchGL()
 {
-	m_bGrenadeMode		= !m_bGrenadeMode;
+	m_bGrenadeMode = !m_bGrenadeMode;
 
-	iMagazineSize		= m_bGrenadeMode?1:iMagazineSize2;
+	iMagazineSize = m_bGrenadeMode ? 1 : iMagazineSize2;
 
-	m_ammoTypes.swap	(m_ammoTypes2);
+	m_ammoTypes.swap(m_ammoTypes2);
 
-	swap				(m_ammoType,m_ammoType2);
-	swap				(m_ammoName,m_ammoName2);
-	
-	swap				(m_DefaultCartridge, m_DefaultCartridge2);
+	swap(m_ammoType, m_ammoType2);
 
-	xr_vector<CCartridge> l_magazine;
-	while(m_magazine.size()) { l_magazine.push_back(m_magazine.back()); m_magazine.pop_back(); }
-	while(m_magazine2.size()) { m_magazine.push_back(m_magazine2.back()); m_magazine2.pop_back(); }
-	while(l_magazine.size()) { m_magazine2.push_back(l_magazine.back()); l_magazine.pop_back(); }
+	swap(m_DefaultCartridge, m_DefaultCartridge2);
+
+	m_magazine.swap(m_magazine2);
+
 	iAmmoElapsed = (int)m_magazine.size();
-
+	iAmmoElapsed2 = (int)m_magazine2.size();
 }
 
 bool CWeaponMagazinedWGrenade::Action(s32 cmd, u32 flags) 
