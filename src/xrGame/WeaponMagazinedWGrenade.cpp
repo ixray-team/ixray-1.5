@@ -303,7 +303,7 @@ void CWeaponMagazinedWGrenade::OnEvent(NET_Packet& P, u16 type)
 	}
 }
 
-void CWeaponMagazinedWGrenade::LaunchGrenade_Correct(Fvector3* v)
+void CWeaponMagazinedWGrenade::LaunchGrenade_Correct(Fvector3& v)
 {
 	Fvector3 camdir = Device.vCameraDirection;
 
@@ -313,7 +313,7 @@ void CWeaponMagazinedWGrenade::LaunchGrenade_Correct(Fvector3* v)
 	camdir.y = 1;
 	camdir.normalize();
 
-	*v = camdir;
+	v = camdir;
 }
 
 void  CWeaponMagazinedWGrenade::LaunchGrenade()
@@ -365,24 +365,12 @@ void  CWeaponMagazinedWGrenade::LaunchGrenade()
 				Fvector					Transference;
 				Transference.mul		(d, RQ.range);
 				Fvector					res[2];
-#ifdef		DEBUG
-//.				DBG_OpenCashedDraw();
-//.				DBG_DrawLine(p1, Fvector().add(p1, d), color_xrgb(255, 0, 0));
-#endif
-				u8 canfire0 = TransferenceAndThrowVelToThrowDir(Transference, 
-																CRocketLauncher::m_fLaunchSpeed, 
-																EffectiveGravity(), 
-																res);
-#ifdef DEBUG
-//.				if (canfire0 > 0) DBG_DrawLine(p1, Fvector().add(p1, res[0]), color_xrgb(0, 255, 0));
-//.				if (canfire0 > 1) DBG_DrawLine(p1, Fvector().add(p1, res[1]), color_xrgb(0, 0, 255));
-//.				DBG_ClosedCashedDraw(30000);
-#endif
+				u8 canfire0 = TransferenceAndThrowVelToThrowDir(Transference, CRocketLauncher::m_fLaunchSpeed, EffectiveGravity(), res);
 				
 				if (canfire0 != 0)
 					d = res[0];
 				else
-					LaunchGrenade_Correct(&d);
+					LaunchGrenade_Correct(d);
 			}
 		};
 		

@@ -37,7 +37,7 @@ public:
 	virtual	u8		GetCurrentHudOffsetIdx	();
 	virtual void	FireEnd					();
 			void	LaunchGrenade			();
-			void	LaunchGrenade_Correct	(Fvector3* v);
+			void	LaunchGrenade_Correct	(Fvector3& v);
 	
 	virtual void	OnStateSwitch	(u32 S);
 	
