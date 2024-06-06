@@ -59,7 +59,7 @@ bool CWeaponShotgun::Action(s32 cmd, u32 flags)
 	if (inherited::Action(cmd, flags))
 		return true;
 
-	if (m_bTriStateReload && cmd == kWPN_FIRE && flags & CMD_START && GetState() == eReload && (m_sub_state == eSubstateReloadInProcess || m_sub_state == eSubstateReloadBegin))//остановить перезарядку
+	if (m_bTriStateReload && cmd == kWPN_FIRE && flags & CMD_START && GetState() == eReload && (m_sub_state == eSubstateReloadInProcess || m_sub_state == eSubstateReloadBegin))//РѕСЃС‚Р°РЅРѕРІРёС‚СЊ РїРµСЂРµР·Р°СЂСЏРґРєСѓ
 	{
 		bStopReloadSignal = true;
 		return true;
@@ -192,28 +192,38 @@ void CWeaponShotgun::PlayAnimCloseWeapon()
 
 bool CWeaponShotgun::HaveCartridgeInInventory		(u8 cnt)
 {
-	if (unlimited_ammo()) return true;
-	m_pAmmo = NULL;
-	if(m_pInventory) 
+	if (unlimited_ammo())
+		return true;
+
+	if (!m_pInventory)
+		return false;
+
+	u32 ac = GetAmmoCount(m_ammoType);
+
+	if (ac == 0)
 	{
-		//попытаться найти в инвентаре патроны текущего типа 
-		m_pAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny(*m_ammoTypes[m_ammoType]));
-		
-		if(!m_pAmmo )
+		for (u8 i = 0; i < u8(m_ammoTypes.size()); ++i)
 		{
-			for(u32 i = 0; i < m_ammoTypes.size(); ++i) 
+			if (m_ammoType == i)
+				continue;
+
+			if (ac = GetAmmoCount(i) >= cnt)
 			{
-				//проверить патроны всех подходящих типов
-				m_pAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny(*m_ammoTypes[i]));
-				if(m_pAmmo) 
-				{ 
-					m_ammoType = i; 
-					break; 
-				}
+				m_set_next_ammoType_on_reload = i;
+				break;
 			}
+			else
+				m_set_next_ammoType_on_reload = u32(-1);
 		}
 	}
-	return (m_pAmmo!=NULL)&&(m_pAmmo->m_boxCurr>=cnt) ;
+
+	if (ac < cnt)
+	{
+		bAmmotypeKeyPressed = false;
+		bReloadKeyPressed = false;
+	}
+
+	return ac >= cnt;
 }
 
 u8 CWeaponShotgun::AddCartridge		(u8 cnt)
@@ -251,7 +261,7 @@ u8 CWeaponShotgun::AddCartridge		(u8 cnt)
 
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 
-	//выкинуть коробку патронов, если она пустая
+	//РІС‹РєРёРЅСѓС‚СЊ РєРѕСЂРѕР±РєСѓ РїР°С‚СЂРѕРЅРѕРІ, РµСЃР»Рё РѕРЅР° РїСѓСЃС‚Р°СЏ
 	if(m_pAmmo && !m_pAmmo->m_boxCurr && OnServer()) 
 		m_pAmmo->SetDropManual(TRUE);
 
