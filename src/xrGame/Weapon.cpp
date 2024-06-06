@@ -1149,6 +1149,42 @@ int CWeapon::GetSuitableAmmoTotal(bool use_item_to_spawn) const
 	return l_count + iAmmoCurrent;
 }
 
+int CWeapon::GetAmmoCount(u8 ammo_type) const
+{
+	VERIFY(m_pInventory);
+	R_ASSERT(ammo_type < m_ammoTypes.size());
+
+	return GetAmmoCount_forType(m_ammoTypes[ammo_type]);
+}
+
+int CWeapon::GetAmmoCount_forType(shared_str const& ammo_type) const
+{
+	int res = 0;
+
+	TIItemContainer::iterator itb = m_pInventory->m_belt.begin();
+	TIItemContainer::iterator ite = m_pInventory->m_belt.end();
+	for (; itb != ite; ++itb)
+	{
+		CWeaponAmmo* pAmmo = smart_cast<CWeaponAmmo*>(*itb);
+		if (pAmmo && (pAmmo->cNameSect() == ammo_type))
+		{
+			res += pAmmo->m_boxCurr;
+		}
+	}
+
+	itb = m_pInventory->m_ruck.begin();
+	ite = m_pInventory->m_ruck.end();
+	for (; itb != ite; ++itb)
+	{
+		CWeaponAmmo* pAmmo = smart_cast<CWeaponAmmo*>(*itb);
+		if (pAmmo && (pAmmo->cNameSect() == ammo_type))
+		{
+			res += pAmmo->m_boxCurr;
+		}
+	}
+	return res;
+}
+
 int CWeapon::GetCurrentTypeAmmoTotal() const
 {
 	int l_count = iAmmoElapsed;

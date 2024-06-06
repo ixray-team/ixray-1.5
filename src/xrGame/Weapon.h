@@ -398,6 +398,8 @@ public:
 	IC int					GetAmmoMagSize		()	const		{	return iMagazineSize;						}
 	int						GetSuitableAmmoTotal		(bool use_item_to_spawn = false)  const;
 	int						GetCurrentTypeAmmoTotal		()  const;
+	int						GetAmmoCount_forType(shared_str const& ammo_type) const;
+	int						GetAmmoCount(u8 ammo_type) const;
 
 	void					SetAmmoElapsed		(int ammo_count);
 
