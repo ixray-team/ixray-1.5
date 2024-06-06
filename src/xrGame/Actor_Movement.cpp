@@ -15,6 +15,7 @@
 #include "WeaponMagazined.h"
 #include "CharacterPhysicsSupport.h"
 #include "actoreffector.h"
+#include "player_hud.h"
 
 #ifdef DEBUG
 #include "phdebug.h"
@@ -592,10 +593,14 @@ bool CActor::CanMove()
 
 void CActor::StopAnyMove()
 {
-	mstate_wishful	&=		~mcAnyMove;
-	mstate_real		&=		~mcAnyMove;
-}
+	mstate_wishful &= ~mcAnyMove;
+	mstate_real	&= ~mcAnyMove;
 
+	if (this == Level().CurrentViewEntity())
+	{
+		g_player_hud->OnMovementChanged((EMoveCommand)0);
+	}
+}
 
 bool CActor::is_jump()
 {
