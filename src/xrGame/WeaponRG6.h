@@ -17,6 +17,8 @@ public:
 	virtual void	OnEvent					(NET_Packet& P, u16 type);
 protected:
 	virtual void	FireTrace				(const Fvector& P, const Fvector& D);
+	virtual void	UnloadMagazine			(bool spawn_ammo = true);
+	virtual void	ReloadMagazine			();
 	virtual u8		AddCartridge			(u8 cnt);
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
