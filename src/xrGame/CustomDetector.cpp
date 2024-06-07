@@ -66,7 +66,7 @@ void CCustomDetector::HideDetector(bool bFastMode)
 		return;
 	}
 	case CHUDState::EHudStates::eShowing: {
-		bool bClimb = ((Actor()->MovingState() & mcClimb) != 0);
+		bool bClimb = ((Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcClimb) != 0);
 		if (bClimb) {
 			StopCurrentAnimWithoutCallback();
 			SetState(eIdle);
@@ -232,8 +232,8 @@ void CCustomDetector::UpdateVisibility()
 		CWeapon* wpn			= smart_cast<CWeapon*>(i0->m_parent_hud_item);
 		if(wpn)
 		{
-			u32 state			= wpn->GetState();
-			bool bClimb			= ( (Actor()->MovingState()&mcClimb) != 0 );
+			u32 state = wpn->GetState();
+			bool bClimb	= ((Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcClimb) != 0);
 			if(bClimb || wpn->IsZoomed() || state==CWeapon::eReload || state==CWeapon::eSwitch)
 			{
 				HideDetector		(true);
@@ -243,8 +243,8 @@ void CCustomDetector::UpdateVisibility()
 	}else
 	if(m_bNeedActivation)
 	{
-		attachable_hud_item* i0_		= g_player_hud->attached_item(0);
-		bool bClimb					= ( (Actor()->MovingState()&mcClimb) != 0 );
+		attachable_hud_item* i0_ = g_player_hud->attached_item(0);
+		bool bClimb	= ((Actor()->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcClimb) != 0);
 		if(!bClimb)
 		{
 			CWeapon* wpn			= (i0_)?smart_cast<CWeapon*>(i0_->m_parent_hud_item) : NULL;
