@@ -198,6 +198,7 @@ CActor::CActor() : CEntityAlive()
 
 	m_location_manager		= xr_new<CLocationManager>(this);
 	m_block_sprint_counter	= 0;
+	bNeedBlockSprint		= false;
 }
 
 
@@ -895,6 +896,9 @@ void CActor::UpdateCL	()
 		psHUD_Flags.set( HUD_CROSSHAIR_RT2, true );
 		psHUD_Flags.set( HUD_DRAW_RT, true );
 	}
+
+	bNeedBlockSprint = !!(pWeapon != nullptr && pWeapon->NeedBlockSprint());
+
 	if(pWeapon )
 	{
 		if(pWeapon->IsZoomed())

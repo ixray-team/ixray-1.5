@@ -23,6 +23,7 @@
 #include "WeaponBinocularsVision.h"
 #include "ui/UIWindow.h"
 #include "ui/UIXmlInit.h"
+#include "WeaponKnife.h"
 
 #define WEAPON_REMOVE_TIME		60000
 #define ROTATION_TIME			0.25f
@@ -1985,4 +1986,9 @@ float CWeapon::GetHudFov() {
 	auto zoom = m_HudFovZoom ? m_HudFovZoom : (psHUD_FOV_def * Device.fFOV / g_fov);
 	base += (zoom - base) * m_zoom_params.m_fZoomRotationFactor;
 	return base;
+}
+
+bool CWeapon::NeedBlockSprint() const
+{
+	return !!(GetState() == eFire && smart_cast<CWeaponKnife*>(this) == nullptr);
 }

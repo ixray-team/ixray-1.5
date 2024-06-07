@@ -49,9 +49,6 @@ void CActor::IR_OnKeyboardPress(int cmd)
 		{
 			if( (mstate_wishful & mcLookout) && !IsGameTypeSingle() ) return;
 
-			u32 slot = inventory().GetActiveSlot();
-			if(inventory().ActiveItem() && (slot==RIFLE_SLOT || slot==PISTOL_SLOT) )
-				mstate_wishful &=~mcSprint;
 			//-----------------------------
 			if (OnServer())
 			{
@@ -393,10 +390,10 @@ void CActor::ActorUse()
 					TryToTalk();
 				}else
 
-				//обыск трупа
+				//РѕР±С‹СЃРє С‚СЂСѓРїР°
 				if(!Level().IR_GetKeyState(DIK_LSHIFT))
 				{
-					//только если находимся в режиме single
+					//С‚РѕР»СЊРєРѕ РµСЃР»Рё РЅР°С…РѕРґРёРјСЃСЏ РІ СЂРµР¶РёРјРµ single
 					CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
 					if(pGameSP)
 						pGameSP->StartCarBody(this, m_pPersonWeLookingAt );
