@@ -225,6 +225,10 @@ class_<CScriptGameObject> &script_register_game_object2(class_<CScriptGameObject
 			value("no_pda_msg",				int(ePdaMsgMax))
 		]
 
+		//Actor states
+		.def("get_movement_state",			&CScriptGameObject::GetActorMovementState)
+		.def("set_movement_state",			&CScriptGameObject::SetActorMovementState)
+
 		//CustomZone
 		.def("enable_anomaly",              &CScriptGameObject::EnableAnomaly)
 		.def("disable_anomaly",             &CScriptGameObject::DisableAnomaly)

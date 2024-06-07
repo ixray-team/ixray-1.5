@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////
-// script_game_object_inventory_owner.сpp :	функции для inventory owner
+// script_game_object_inventory_owner.СЃpp :	С„СѓРЅРєС†РёРё РґР»СЏ inventory owner
 //////////////////////////////////////////////////////////////////////////
 
 #include "pch_script.h"
@@ -368,7 +368,7 @@ void CScriptGameObject::MakeItemActive(CScriptGameObject* pItem)
 
 }
 
-//передаче вещи из своего инвентаря в инвентарь партнера
+//РїРµСЂРµРґР°С‡Рµ РІРµС‰Рё РёР· СЃРІРѕРµРіРѕ РёРЅРІРµРЅС‚Р°СЂСЏ РІ РёРЅРІРµРЅС‚Р°СЂСЊ РїР°СЂС‚РЅРµСЂР°
 void CScriptGameObject::TransferItem(CScriptGameObject* pItem, CScriptGameObject* pForWho)
 {
 	if (!pItem || !pForWho) {
@@ -383,13 +383,13 @@ void CScriptGameObject::TransferItem(CScriptGameObject* pItem, CScriptGameObject
 		return ;
 	}
 
-	// выбросить у себя 
+	// РІС‹Р±СЂРѕСЃРёС‚СЊ Сѓ СЃРµР±СЏ 
 	NET_Packet						P;
 	CGameObject::u_EventGen			(P,GE_TRADE_SELL, object().ID());
 	P.w_u16							(pIItem->object().ID());
 	CGameObject::u_EventSend		(P);
 
-	// отдать партнеру
+	// РѕС‚РґР°С‚СЊ РїР°СЂС‚РЅРµСЂСѓ
 	CGameObject::u_EventGen			(P,GE_TRADE_BUY, pForWho->object().ID());
 	P.w_u16							(pIItem->object().ID());
 	CGameObject::u_EventSend		(P);
@@ -703,7 +703,7 @@ void  CScriptGameObject::SwitchToTrade		()
 {
 	CActor* pActor = smart_cast<CActor*>(&object());	if(!pActor) return;
 
-	//только если находимся в режиме single
+	//С‚РѕР»СЊРєРѕ РµСЃР»Рё РЅР°С…РѕРґРёРјСЃСЏ РІ СЂРµР¶РёРјРµ single
 	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
 	if(!pGameSP) return;
 
@@ -717,7 +717,7 @@ void  CScriptGameObject::SwitchToUpgrade		()
 {
 	CActor* pActor = smart_cast<CActor*>(&object());	if(!pActor) return;
 
-	//только если находимся в режиме single
+	//С‚РѕР»СЊРєРѕ РµСЃР»Рё РЅР°С…РѕРґРёРјСЃСЏ РІ СЂРµР¶РёРјРµ single
 	CUIGameSP* pGameSP = smart_cast<CUIGameSP*>(HUD().GetUI()->UIGame());
 	if(!pGameSP) return;
 
@@ -1358,4 +1358,30 @@ bool CScriptGameObject::take_items_enabled						() const
 	}
 
 	return								( stalker->take_items_enabled() );
+}
+
+bool CScriptGameObject::GetActorMovementState(const ACTOR_DEFS::EMovementStates& state, const ACTOR_DEFS::EMoveCommand& mask) const
+{
+	CActor* pActor = smart_cast<CActor*>(&object());
+	if (!pActor)
+	{
+		ai().script_engine().script_log(
+			ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member GetActorMovementState!");
+		return 0;
+	}
+
+	return !!((pActor->GetMovementState(state) & mask) > 0);
+}
+
+void CScriptGameObject::SetActorMovementState(const ACTOR_DEFS::EMovementStates& state, const ACTOR_DEFS::EMoveCommand& mask, const bool status) const
+{
+	CActor* pActor = smart_cast<CActor*>(&object());
+	if (!pActor)
+	{
+		ai().script_engine().script_log(
+			ScriptStorage::eLuaMessageTypeError, "CActor : cannot access class member SetActorMovementState!");
+		return;
+	}
+
+	pActor->SetMovementState(state, mask, status);
 }

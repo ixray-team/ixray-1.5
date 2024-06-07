@@ -63,6 +63,11 @@ namespace GameObject {
 	enum ECallbackType;
 };
 
+namespace ACTOR_DEFS {
+	enum EMovementStates;
+	enum EMoveCommand;
+};
+
 class CGameObject;
 class CScriptHit;
 class CScriptEntityAction;
@@ -570,6 +575,10 @@ public:
 			void				enable_level_changer				(bool b);
 			bool				is_level_changer_enabled			();
 			void				set_level_changer_invitation		(LPCSTR str);
+
+			bool				GetActorMovementState				(const ACTOR_DEFS::EMovementStates& state, const ACTOR_DEFS::EMoveCommand& mask) const;
+			void				SetActorMovementState				(const ACTOR_DEFS::EMovementStates& state, const ACTOR_DEFS::EMoveCommand& mask, const bool status) const;
+
 #ifdef DEBUG
 			void				debug_planner						(const script_planner *planner);
 #endif
