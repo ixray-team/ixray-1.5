@@ -1,6 +1,6 @@
 [grenade_f1]:identity_immunities,weapon_probability,default_weapon_params
 grenade_remove_time		= 60000
-detonation_threshold_hit= 200
+detonation_threshold_hit= 0.3
 GroupControlSection		= spawn_group
 discovery_dependency	=
 $spawn 					= "weapons\grenades\f1"
@@ -90,6 +90,10 @@ throw_dir				 = 0,0,1
 wm_size                  = 0.1
 
 wallmark_section		 =explosion_marks
+
+explosion_on_hit = true
+explosion_hit_types = 7, 8
+explosive_while_not_activated = true
 
 [grenade_f1_hud]:hud_base
 fire_point			= 0,0,0

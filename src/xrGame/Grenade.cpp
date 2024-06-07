@@ -15,8 +15,8 @@
 const float default_grenade_detonation_threshold_hit=100;
 CGrenade::CGrenade(void) 
 {
-
 	m_eSoundCheckout = ESoundTypes(SOUND_TYPE_WEAPON_RECHARGING);
+	m_eExplosionHitTypes.clear();
 }
 
 CGrenade::~CGrenade(void) 
@@ -30,6 +30,21 @@ void CGrenade::Load(LPCSTR section)
 
 	m_sounds.LoadSound(section,"snd_checkout","sndCheckout",m_eSoundCheckout);
 
+	m_bExplosionOnHit = READ_IF_EXISTS(pSettings, r_bool, section, "explosion_on_hit", false);
+	m_bExplosionWhileNotActivated = READ_IF_EXISTS(pSettings, r_bool, section, "explosive_while_not_activated", false);
+
+	if (m_bExplosionOnHit)
+	{
+		string128 S1;
+		LPCSTR S_ = pSettings->r_string(section, "explosion_hit_types");
+		int count = _GetItemCount(S_);
+		for (int i = 0; i < count; ++i)
+		{
+			_GetItem(S_, i, S1);
+			m_eExplosionHitTypes.push_back(static_cast<u32>(atoi(S1)));
+		}
+	}
+
 	//////////////////////////////////////
 	//время убирания оружия с уровня
 	if(pSettings->line_exist(section,"grenade_remove_time"))
@@ -39,9 +54,37 @@ void CGrenade::Load(LPCSTR section)
 	m_grenade_detonation_threshold_hit=READ_IF_EXISTS(pSettings,r_float,section,"detonation_threshold_hit",default_grenade_detonation_threshold_hit);
 }
 
-void CGrenade::Hit					(SHit* pHDS)
+bool CGrenade::CheckGrenadeExplosionByHit(SHit* SHit)
 {
-	if( ALife::eHitTypeExplosion==pHDS->hit_type && m_grenade_detonation_threshold_hit<pHDS->damage()&&CExplosive::Initiator()==u16(-1)) 
+	if (m_bExplosionOnHit)
+	{
+		if (m_grenade_detonation_threshold_hit < SHit->power)
+		{
+			if (!Useful() || m_bExplosionWhileNotActivated)
+			{
+				if (!m_eExplosionHitTypes.empty())
+				{
+					for (u32 i = 0; i < m_eExplosionHitTypes.size(); i++)
+					{
+						if (SHit->hit_type == static_cast<ALife::EHitType>(m_eExplosionHitTypes[i]))
+							return true;
+					}
+				}
+				else
+				{
+					if (SHit->hit_type == ALife::eHitTypeExplosion)
+						return true;
+				}
+			}
+		}
+	}
+
+	return false;
+}
+
+void CGrenade::Hit(SHit* pHDS)
+{
+	if (ALife::eHitTypeExplosion == pHDS->hit_type && m_grenade_detonation_threshold_hit < pHDS->damage() && CExplosive::Initiator() == u16(-1) || CheckGrenadeExplosionByHit(pHDS))
 	{
 		CExplosive::SetCurrentParentID(pHDS->who->ID());
 		Destroy();
