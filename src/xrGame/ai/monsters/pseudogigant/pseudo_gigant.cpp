@@ -264,7 +264,7 @@ void CPseudoGigant::on_threaten_execute()
 	if (!pA)
 		return;
 
-	if ((pA->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcJump) != 0)
+	if ((pA->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcJump) != 0 || (pA->GetMovementState(eReal) & ACTOR_DEFS::EMoveCommand::mcFall) != 0)
 		return;
 
 	float dist_to_enemy = pA->Position().distance_to(Position());
