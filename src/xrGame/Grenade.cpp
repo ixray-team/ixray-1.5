@@ -274,11 +274,9 @@ bool CGrenade::Action(s32 cmd, u32 flags)
 					for(;it!=it_e;++it) 
 					{
 						CGrenade *pGrenade = smart_cast<CGrenade*>(*it);
-						if(pGrenade && xr_strcmp(pGrenade->cNameSect(), cNameSect())) 
+						if (pGrenade && xr_strcmp(pGrenade->cNameSect(), cNameSect())) 
 						{
-							m_pInventory->Ruck(this);
-							m_pInventory->SetActiveSlot(NO_ACTIVE_SLOT);
-							m_pInventory->Slot(pGrenade);
+							m_pInventory->PutGrenade(pGrenade);
 							return true;
 						}
 					}

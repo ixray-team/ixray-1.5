@@ -20,6 +20,7 @@
 #include "uigamecustom.h"
 #include "clsid_game.h"
 #include "player_hud.h"
+#include "Grenade.h"
 
 using namespace InventoryUtilities;
 
@@ -81,6 +82,7 @@ CInventory::CInventory()
 	m_fTotalWeight								= -1.f;
 	m_dwModifyFrame								= 0;
 	m_drop_last_frame							= false;
+	new_grenade = nullptr;
 	//m_iLoadActiveSlotFrame						= u32(-1);
 }
 
@@ -895,11 +897,21 @@ void CInventory::Update()
 				}
 			}
 
+			if (new_grenade != nullptr && ItemFromSlot(GRENADE_SLOT))
+				m_iNextActiveSlot = GRENADE_SLOT;
+
 			if (GetNextActiveSlot() != NO_ACTIVE_SLOT)
 			{
 				PIItem tmp_next_active = ItemFromSlot(GetNextActiveSlot());
 				if (tmp_next_active)
 				{
+					if (new_grenade != nullptr && tmp_next_active == ItemFromSlot(GRENADE_SLOT))
+					{
+						Ruck(ItemFromSlot(GRENADE_SLOT));
+						Slot(new_grenade);
+						new_grenade = nullptr;
+					}
+
 					u32 tmp_slot = tmp_next_active->GetSlot();
 					if ((tmp_slot != NO_ACTIVE_SLOT) && (m_slots[tmp_slot].IsBlocked()))
 					{
@@ -1406,4 +1418,10 @@ void CInventory::SetSlotsBlocked(u16 mask, bool bBlock)
 			}
 		}
 	}
+}
+
+void CInventory::PutGrenade(CGrenade* new_grenade)
+{
+	this->new_grenade = new_grenade;
+	Activate(NO_ACTIVE_SLOT);
 }
