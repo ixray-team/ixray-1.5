@@ -1895,7 +1895,7 @@ void CCC_RegisterCommands()
 	CMD3(CCC_Mask,				"hud_crosshair",		&psHUD_Flags,	HUD_CROSSHAIR);
 	CMD3(CCC_Mask,				"hud_crosshair_dist",	&psHUD_Flags,	HUD_CROSSHAIR_DIST);
 
-	CMD4(CCC_Float,				"hud_fov",				&psHUD_FOV_def,	0.1f,	1.0f);
+	CMD4(CCC_Float,				"hud_fov",				&psHUD_FOV_def, 5.0f,	180.0f);
 	CMD4(CCC_Float,				"fov",					&g_fov,			5.0f,	180.0f);
 
 	// Demo

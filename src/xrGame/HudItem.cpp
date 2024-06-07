@@ -444,8 +444,7 @@ attachable_hud_item* CHudItem::HudItemData()
 
 float CHudItem::GetHudFov()
 {
-	auto base = m_fHudFov ? m_fHudFov : psHUD_FOV_def;
-	clamp(base, 0.1f, 1.0f);
+	float base = m_fHudFov ? m_fHudFov : psHUD_FOV_def;
 
 	return base;
 }
