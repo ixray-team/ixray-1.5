@@ -66,6 +66,7 @@ public:
 
 	virtual bool					Useful				() const;
 	virtual float					Weight				();
+	virtual	u32						Cost				() const;
 
 	bool							Get					(CCartridge &cartridge);
 
