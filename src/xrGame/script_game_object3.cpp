@@ -6,9 +6,9 @@
 //	Description : Script game object class script export
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "script_game_object.h"
-#include "script_game_object_impl.h"
 #include "ai_space.h"
 #include "script_engine.h"
 #include "cover_evaluators.h"

@@ -6,13 +6,13 @@
 //	Description : Stalker danger planner
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "stalker_danger_planner.h"
 #include "ai/stalker/ai_stalker.h"
 #include "ai/stalker/ai_stalker_space.h"
 #include "sound_player.h"
 #include "script_game_object.h"
-#include "script_game_object_impl.h"
 #include "stalker_decision_space.h"
 #include "stalker_danger_property_evaluators.h"
 #include "memory_manager.h"

@@ -6,6 +6,7 @@
 //	Description : Stalker kill wounded action classes
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "stalker_kill_wounded_actions.h"
 #include "ai/stalker/ai_stalker.h"
@@ -21,7 +22,6 @@
 #include "level_graph.h"
 #include "visual_memory_manager.h"
 #include "script_game_object.h"
-#include "script_game_object_impl.h"
 #include "restricted_object.h"
 #include "sound_player.h"
 #include "ai/stalker/ai_stalker_space.h"

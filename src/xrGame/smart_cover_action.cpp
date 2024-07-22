@@ -19,10 +19,10 @@ using smart_cover::detail::parse_table;
 using smart_cover::detail::parse_bool;
 using smart_cover::detail::parse_fvector;
 
-smart_cover::action::action(luabind::object const& description) {
-	luabind::object movement = description["movement"];
-	if (luabind::type(movement) != LUA_TNIL && luabind::type(movement) == LUA_TBOOLEAN)
+smart_cover::action::action(luabind::object const &description)
 	{
+	luabind::object movement = description["movement"];
+	if (luabind::type(movement) != LUA_TNIL && luabind::type(movement) == LUA_TBOOLEAN) {
 		m_movement = luabind::object_cast<bool>(movement);
 
 		luabind::object position = description["position"];
@@ -34,13 +34,11 @@ smart_cover::action::action(luabind::object const& description) {
 
 	luabind::object animations;
 	parse_table(description, "animations", animations);
-	for (luabind::iterator I(animations), E; I != E; ++I)
-	{
+	for (luabind::iterator I(animations), E; I != E; ++I) {
 		VERIFY(luabind::type(I.key()) == LUA_TSTRING);
 		LPCSTR animation_type = luabind::object_cast<LPCSTR>(I.key());
 		luabind::object table = *I;
-		if (luabind::type(table) != LUA_TTABLE)
-		{
+		if (luabind::type(table) != LUA_TTABLE) {
 			VERIFY(luabind::type(table) != LUA_TNIL);
 			continue;
 		}
@@ -48,22 +46,22 @@ smart_cover::action::action(luabind::object const& description) {
 	}
 }
 
-smart_cover::action::~action() {
+smart_cover::action::~action()
+{
 	delete_data(m_animations);
 }
 
-void smart_cover::action::add_animation(LPCSTR type, luabind::object const& table) {
+void smart_cover::action::add_animation(LPCSTR type, luabind::object const &table)
+{	
 	VERIFY(luabind::type(table) == LUA_TTABLE);
 	Animations* animations = xr_new<Animations>();
 
 	luabind::iterator it(table), end;
 	const size_t count = luabind::distance(it, end);
 	animations->reserve(count);
-	while (it != end)
-	{
+	while (it != end) {
 		const luabind::object& string = *it;
-		if (luabind::type(string) != LUA_TSTRING)
-		{
+		if (luabind::type(string) != LUA_TSTRING) {
 			VERIFY(luabind::type(string) != LUA_TNIL);
 			continue;
 		}

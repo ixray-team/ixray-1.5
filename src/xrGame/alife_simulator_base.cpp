@@ -6,6 +6,7 @@
 //	Description : ALife Simulator base class
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "alife_simulator_base.h"
 #include "alife_simulator_header.h"
@@ -112,13 +113,13 @@ CSE_Abstract *CALifeSimulatorBase::spawn_item	(LPCSTR section, const Fvector &po
 	string256					s_name_replace;
 	xr_strcpy						(s_name_replace,*abstract->s_name);
 	if (abstract->ID < 1000)
-		strcat					(s_name_replace,"0");
+		xr_strcat					(s_name_replace,"0");
 	if (abstract->ID < 100)
-		strcat					(s_name_replace,"0");
+		xr_strcat					(s_name_replace,"0");
 	if (abstract->ID < 10)
-		strcat					(s_name_replace,"0");
+		xr_strcat					(s_name_replace,"0");
 	string16					S1;
-	strcat						(s_name_replace,_itoa(abstract->ID,S1,10));
+	xr_strcat						(s_name_replace,_itoa(abstract->ID,S1,10));
 	abstract->set_name_replace	(s_name_replace);
 
 	CSE_ALifeDynamicObject		*dynamic_object = smart_cast<CSE_ALifeDynamicObject*>(abstract);
@@ -168,13 +169,13 @@ CSE_Abstract *CALifeSimulatorBase::create(CSE_ALifeGroupAbstract *tpALifeGroupAb
 	string256					s_name_replace;
 	xr_strcpy						(s_name_replace,*k->s_name);
 	if (k->ID < 1000)
-		strcat					(s_name_replace,"0");
+		xr_strcat					(s_name_replace,"0");
 	if (k->ID < 100)
-		strcat					(s_name_replace,"0");
+		xr_strcat					(s_name_replace,"0");
 	if (k->ID < 10)
-		strcat					(s_name_replace,"0");
+		xr_strcat					(s_name_replace,"0");
 	string16					S1;
-	strcat						(s_name_replace,_itoa(k->ID,S1,10));
+	xr_strcat						(s_name_replace,_itoa(k->ID,S1,10));
 	k->set_name_replace			(s_name_replace);
 
 	register_object				(k,true);
@@ -272,7 +273,7 @@ void CALifeSimulatorBase::release	(CSE_Abstract *abstract, bool alife_query)
 	VERIFY							(object);
 
 	if (!object->children.empty()) {
-		u32							children_count = (u32)object->children.size();
+		u32							children_count = object->children.size();
 		u32							bytes = children_count*sizeof(ALife::_OBJECT_ID);
 		ALife::_OBJECT_ID			*children = (ALife::_OBJECT_ID*)_alloca(bytes);
 		CopyMemory					(children,&*object->children.begin(),bytes);

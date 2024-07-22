@@ -12,7 +12,8 @@ enum clientdata_event_t
 	e_configs_error_notif
 };
 
-class clientdata_proxy {
+class clientdata_proxy
+{
 private:
 	ClientID						m_admin_id;		//for file transfer
 	ClientID						m_chearer_id;	//for file receiving
@@ -29,8 +30,8 @@ private:
 	void notify_admin(clientdata_event_t event_for_admin, char const * reason);
 	clientdata_proxy() {};
 public:
-	clientdata_proxy(const clientdata_proxy& other) = delete;
-	clientdata_proxy& operator =(const clientdata_proxy& other) = delete;
+	clientdata_proxy(const clientdata_proxy&) = delete;
+	clientdata_proxy& operator= (const clientdata_proxy&) = delete;
 
 	clientdata_proxy(file_transfer::server_site* ft_server);
 	~clientdata_proxy();

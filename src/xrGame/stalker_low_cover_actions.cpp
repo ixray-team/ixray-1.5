@@ -6,6 +6,7 @@
 //	Description : Stalker low cover actions
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "stalker_low_cover_actions.h"
 #include "ai/stalker/ai_stalker.h"
@@ -20,7 +21,6 @@
 #include "sound_player.h"
 #include "ai/stalker/ai_stalker_space.h"
 #include "script_game_object.h"
-#include "script_game_object_impl.h"
 #include "stalker_combat_planner.h"
 #include "stalker_planner.h"
 

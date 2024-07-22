@@ -18,7 +18,8 @@ namespace smart_cover {
 
 class object;
 
-class loophole final {
+class loophole final
+{
 private:
 	class action_predicate {
 

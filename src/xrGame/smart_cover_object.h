@@ -15,7 +15,9 @@
 namespace smart_cover {
 	class cover;
 
-class object : public CGameObject {
+class object : 
+	public CGameObject
+{
 private:
 	typedef CGameObject	inherited;
 

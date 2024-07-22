@@ -2,7 +2,7 @@ project(xrGame)
 set(XGM_SRC_FILES)
 
 # Files import
-file(GLOB_RECURSE XGM_SOURCE_ALL_FILES
+file(GLOB_RECURSE XGM_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "*.cpp"
     "*.cxx"
     "*.c"
@@ -123,7 +123,6 @@ list(FILTER XGM_SRC_FILES EXCLUDE REGEX "tri-colliderknoopc/dcTriListCollider.cp
 
 # xrGame project
 add_library(xrGame SHARED ${XGM_SRC_FILES})
-target_precompile_headers(xrGame PUBLIC "stdafx.h")
 
 # Include directories
 target_include_directories(xrGame PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -147,6 +146,12 @@ target_link_libraries(xrGame PUBLIC crypto)
 target_link_libraries(xrGame PUBLIC CxImage)
 
 # Move precompiled header
+set_target_properties(xrGame PROPERTIES DISABLE_PRECOMPILE_HEADERS ON)
+set_target_properties(xrGame PROPERTIES COMPILE_FLAGS "/Yustdafx.h")
+set_source_files_properties(stdafx.cpp PROPERTIES COMPILE_FLAGS "/Ycstdafx.h")
+target_precompile_headers(xrGame PUBLIC "stdafx.h")
+
+file(GLOB_RECURSE GAME_SOURCE_PCH_FILES "stdafx.*")
 file(GLOB_RECURSE GAME_SOURCE_ALL_C_FILES "*.c" "../xrGameSpy/gamespy/md5c.c")
 
 set_source_files_properties(${GAME_SOURCE_ALL_C_FILES} PROPERTIES SKIP_PRECOMPILE_HEADERS ON)

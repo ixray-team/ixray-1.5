@@ -38,7 +38,8 @@ enum UpgradeStateResult
 	result_count
 };
 
-class UpgradeBase {
+class UpgradeBase
+{
 public:
 	UpgradeBase(const UpgradeBase& other) = delete;
 	UpgradeBase& operator =(const UpgradeBase& other) = delete;

@@ -18,7 +18,6 @@
 #include "CarWeapon.h"
 
 #include "script_game_object.h"
-#include "script_game_object_impl.h"
 
 void	CCar::OnMouseMove(int dx, int dy)
 {

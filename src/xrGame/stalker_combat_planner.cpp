@@ -6,6 +6,7 @@
 //	Description : Stalker combat planner
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "stalker_combat_planner.h"
 #include "stalker_combat_actions.h"
@@ -15,7 +16,6 @@
 #include "ai/stalker/ai_stalker.h"
 #include "ai/stalker/ai_stalker_impl.h"
 #include "script_game_object.h"
-#include "script_game_object_impl.h"
 #include "cover_evaluators.h"
 #include "cover_manager.h"
 #include "cover_point.h"

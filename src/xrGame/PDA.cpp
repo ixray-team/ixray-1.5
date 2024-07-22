@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "pch_script.h"
 #include "pda.h"
 #include "hudmanager.h"
 #include "../xrPhysics/PhysicsShell.h"
@@ -11,6 +12,7 @@
 
 #include "specific_character.h"
 #include "alife_registry_wrappers.h"
+#include "../xrServerEntities/script_engine.h"
 
 
 CPda::CPda(void)						

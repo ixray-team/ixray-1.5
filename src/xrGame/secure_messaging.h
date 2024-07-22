@@ -7,7 +7,8 @@ namespace secure_messaging
 {
 
 
-class seed_generator {
+class seed_generator
+{
 public:
 	seed_generator(const seed_generator& other) = delete;
 	seed_generator& operator =(const seed_generator& other) = delete;

@@ -6,8 +6,10 @@
 //	Description : ALife monster patrol path manager class script export
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "alife_monster_patrol_path_manager.h"
+#include "patrol_path_manager_space.h"
 
 using namespace luabind;
 

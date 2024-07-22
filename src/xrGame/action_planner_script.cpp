@@ -6,6 +6,7 @@
 //	Description : Action planner script export
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "script_action_planner_wrapper.h"
 #include "script_game_object.h"
@@ -25,7 +26,7 @@ bool get_actual(const CScriptActionPlanner *action_planner)
 
 CScriptActionPlanner *cast_planner(CScriptActionBase *action)
 {
-	return	(smart_cast<CScriptActionPlanner*>(action));
+	return	smart_cast<CScriptActionPlanner*>(action);
 }
 
 #pragma optimize("s",on)

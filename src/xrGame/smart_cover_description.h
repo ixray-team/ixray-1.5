@@ -20,7 +20,8 @@ namespace transitions {
 	class action;
 }
 
-class description final : public detail::intrusive_base_time {
+class description final : public detail::intrusive_base_time
+{
 public:
 	typedef xr_vector<loophole*>	Loopholes;
 	typedef smart_cover::transitions::action		Action;

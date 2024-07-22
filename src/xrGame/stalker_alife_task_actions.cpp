@@ -13,7 +13,6 @@
 #include "inventory_item.h"
 #include "weapon.h"
 #include "script_game_object.h"
-#include "script_game_object_impl.h"
 #include "inventory.h"
 #include "alife_simulator.h"
 #include "alife_object_registry.h"

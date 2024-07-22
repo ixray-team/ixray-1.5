@@ -6,12 +6,12 @@
 //	Description : Stalker alife action classes
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "stalker_alife_actions.h"
 #include "ai/stalker/ai_stalker.h"
 #include "inventory_item.h"
 #include "script_game_object.h"
-#include "script_game_object_impl.h"
 #include "inventory.h"
 #include "weaponmagazined.h"
 #include "movement_manager_space.h"

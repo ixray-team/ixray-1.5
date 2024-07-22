@@ -6,6 +6,7 @@
 //	Description : Stalker get distance action classes
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "stalker_get_distance_actions.h"
 #include "ai/stalker/ai_stalker.h"
@@ -20,7 +21,6 @@
 #include "cover_point.h"
 #include "stalker_decision_space.h"
 #include "script_game_object.h"
-#include "script_game_object_impl.h"
 #include "visual_memory_manager.h"
 
 //////////////////////////////////////////////////////////////////////////

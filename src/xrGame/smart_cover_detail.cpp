@@ -5,6 +5,7 @@
 //	Description : detail namespace functions
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "smart_cover_detail.h"
 
@@ -25,7 +26,8 @@ float smart_cover::detail::parse_float	(
 	return			(result);
 }
 
-LPCSTR smart_cover::detail::parse_string(luabind::object const& table, LPCSTR identifier) {
+LPCSTR smart_cover::detail::parse_string(luabind::object const &table, LPCSTR identifier)
+{
 	VERIFY2(luabind::type(table) == LUA_TTABLE, "invalid loophole description passed");
 	luabind::object	result = table[identifier];
 	VERIFY2(luabind::type(result) != LUA_TNIL, make_string("cannot read string value %s", identifier));
@@ -33,14 +35,16 @@ LPCSTR smart_cover::detail::parse_string(luabind::object const& table, LPCSTR id
 	return			(luabind::object_cast<LPCSTR>(result));
 }
 
-void smart_cover::detail::parse_table(luabind::object const& table, LPCSTR identifier, luabind::object& result) {
+void smart_cover::detail::parse_table	(luabind::object const &table, LPCSTR identifier, luabind::object &result)
+{
 	VERIFY2(luabind::type(table) == LUA_TTABLE, "invalid loophole description passed");
 	result = table[identifier];
 	VERIFY2(luabind::type(result) != LUA_TNIL, make_string("cannot read table value %s", identifier));
 	VERIFY2(luabind::type(result) == LUA_TTABLE, make_string("cannot read table value %s", identifier));
 }
 
-bool smart_cover::detail::parse_bool(luabind::object const& table, LPCSTR identifier) {
+bool smart_cover::detail::parse_bool	(luabind::object const &table, LPCSTR identifier)
+{
 	VERIFY2(luabind::type(table) == LUA_TTABLE, "invalid loophole description passed");
 	luabind::object	result = table[identifier];
 	VERIFY2(luabind::type(result) != LUA_TNIL, make_string("cannot read boolean value %s", identifier));
@@ -48,7 +52,8 @@ bool smart_cover::detail::parse_bool(luabind::object const& table, LPCSTR identi
 	return			(luabind::object_cast<bool>(result));
 }
 
-int smart_cover::detail::parse_int(luabind::object const& table, LPCSTR identifier) {
+int smart_cover::detail::parse_int		(luabind::object const &table, LPCSTR identifier)
+{
 	VERIFY2(luabind::type(table) == LUA_TTABLE, "invalid loophole description passed");
 	luabind::object	result = table[identifier];
 	VERIFY2(luabind::type(result) != LUA_TNIL, make_string("cannot read number value %s", identifier));
@@ -56,7 +61,8 @@ int smart_cover::detail::parse_int(luabind::object const& table, LPCSTR identifi
 	return			(luabind::object_cast<int>(result));
 }
 
-Fvector smart_cover::detail::parse_fvector(luabind::object const& table, LPCSTR identifier) {
+Fvector smart_cover::detail::parse_fvector (luabind::object const &table, LPCSTR identifier)
+{
 	VERIFY2(luabind::type(table) == LUA_TTABLE, "invalid loophole description passed");
 	luabind::object	result = table[identifier];
 	VERIFY2(luabind::type(result) != LUA_TNIL, make_string("cannot read vector value %s", identifier));

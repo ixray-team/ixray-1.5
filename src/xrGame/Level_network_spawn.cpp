@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "pch_script.h"
 #include "xrServer_Objects_ALife_All.h"
 #include "level.h"
@@ -96,9 +97,7 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 	// Client spawn
 //	T.Start		();
 	CObject*	O		= Objects.Create	(*E->s_name);
-	// Msg				("--spawn--CREATE: %f ms",1000.f*T.GetAsync());
 
-//	T.Start		();
 	if (0==O || (!O->net_Spawn	(E))) 
 	{
 		O->net_Destroy			( );
@@ -168,7 +167,6 @@ void CLevel::g_sv_Spawn		(CSE_Abstract* E)
 
 	//---------------------------------------------------------
 	Game().OnSpawn				(O);
-	//---------------------------------------------------------
 }
 
 CSE_Abstract *CLevel::spawn_item		(LPCSTR section, const Fvector &position, u32 level_vertex_id, u16 parent_id, bool return_item)

@@ -75,8 +75,8 @@ shared_str CSpaceRestrictionHolder::normalize_string		(shared_str space_restrict
 	LPSTR					pointer = result_string;
 	{
 		LPSTR				*I_ = strings;
-		LPSTR				*E_ = string_current;
-		for ( ; I_ != E_; ++I_) {
+		LPSTR				*E = string_current;
+		for ( ; I_ != E; ++I_) {
 			for (LPSTR i_ = *I_; *i_; ++i_, ++pointer)
 				*pointer	= *i_;
 
@@ -155,8 +155,8 @@ bool try_remove_string				(shared_str &search_string, const shared_str &string_t
 	for (int i=0, j=0, n=_GetItemCount(*search_string); i<n; ++i, ++j) {
 		if (xr_strcmp(string_to_search,_GetItem(*search_string,i,temp))) {
 			if (j)
-				strcat		(temp1,",");
-			strcat			(temp1,temp);
+				xr_strcat		(temp1,",");
+			xr_strcat			(temp1,temp);
 			continue;
 		}
 
