@@ -1,11 +1,12 @@
 #pragma once
 #ifndef CPHOBJECT
 #define CPHOBJECT
-#include "../xrCDB/ispatial.h"
+#include "../xrcdb/ispatial.h"
 #include "PHItemList.h"
 #include "PHIsland.h"
 typedef u32	CLClassBits;
 typedef u32	CLBits;
+class ISpatial;
 
 using qResultVec = xr_vector<ISpatial*>;
 using qResultIt = qResultVec::iterator;
@@ -14,9 +15,10 @@ class CPHObject;
 class CPHUpdateObject;
 class CPHMoveStorage;
 class CPHSynchronize;
+
 typedef void CollideCallback(CPHObject* obj1,CPHObject* obj2, dGeomID o1, dGeomID o2);
 #ifdef		DEBUG
-class CPhysicsShellHolder;
+class IPhysicsShellHolder;
 #endif
 class CPHObject :
 	public ISpatial 
@@ -119,7 +121,7 @@ virtual		void			vis_update_activate				()										{}
 virtual		void			vis_update_deactivate			()										{}
 
 #ifdef		DEBUG
-virtual		CPhysicsShellHolder	*ref_object					()										=0;
+virtual		IPhysicsShellHolder	*ref_object					()										=0;
 #endif
 
 IC			CLBits&						collide_bits		()										{return m_collide_bits;}
@@ -128,5 +130,10 @@ IC			const CLBits&				collide_bits		()const 								{return m_collide_bits;}
 IC			const _flags<CLClassBits>&	collide_class_bits 	()const 								{return m_collide_class_bits;}
 			void			CollideDynamics					()										;
 };
-DEFINE_PHITEM_LIST(CPHObject, PH_OBJECT_STORAGE, PH_OBJECT_I)
+
+
+
+
+DEFINE_PHITEM_LIST(CPHObject,PH_OBJECT_STORAGE,PH_OBJECT_I)
+
 #endif//CPHOBJECT

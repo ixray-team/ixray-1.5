@@ -3,8 +3,13 @@
 #ifndef PH_JOINT
 #define PH_JOINT
 #include "PhysicsShell.h"
+#include "../3rd party/ode/include/ode/common.h"
+#include "physics_scripted.h"
 class CPHJointDestroyInfo;
-class CPHJoint: public CPhysicsJoint{
+class CPHJoint:
+	public CPhysicsJoint,
+	public cphysics_scripted
+{
 ///////////////////////////////////////////////////////
 				u16									m_bone_id																								;
 				CPHElement							*pFirst_element																							;
@@ -58,6 +63,8 @@ class CPHJoint: public CPhysicsJoint{
 	virtual		void					SetJointSDfactorsActive		()																																																						;
 	virtual		void					SetLimitsSDfactorsActive	()																																																						;
 	virtual		void					SetAxisSDfactorsActive		(int axis_num)																																																			;
+	virtual		void					SetJointFudgefactorActive	( float factor )																																																		;
+
 	virtual		void 					SetAxis						(const SPHAxis& axis,const int axis_num)																																												;
 	virtual		void 					SetAnchor					(const Fvector& position)																																					{SetAnchor(position.x,position.y,position.z);}	
 	virtual		void 					SetAnchorVsFirstElement		(const Fvector& position)																																	{SetAnchorVsFirstElement(position.x,position.y,position.z)	;}
@@ -66,10 +73,13 @@ class CPHJoint: public CPhysicsJoint{
 	virtual		void 					SetAxisDir					(const Fvector& orientation,const int axis_num)																											{SetAxisDir(orientation.x,orientation.y,orientation.z,axis_num)	;}	
 	virtual		void 					SetAxisDirVsFirstElement	(const Fvector& orientation,const int axis_num)																							{SetAxisDirVsFirstElement(orientation.x,orientation.y,orientation.z,axis_num)	;}
 	virtual		void 					SetAxisDirVsSecondElement	(const Fvector& orientation,const int axis_num)																							{SetAxisDirVsSecondElement(orientation.x,orientation.y,orientation.z,axis_num)	;}
+	virtual		void					SetAxisDirDynamic			(const Fvector& orientation,const int axis_num)																							;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	virtual		void 					SetLimits					(const float low,const float high,const int axis_num)																																									;
 	virtual		void 					SetLimitsVsFirstElement		(const float low,const float high,const int axis_num)																																									;
 	virtual		void 					SetLimitsVsSecondElement	(const float low,const float high,const int axis_num)																																									;
+	virtual		void					SetHiLimitDynamic			(int axis_num, float limit )																											;
+	virtual		void					SetLoLimitDynamic			(int axis_num, float limit )																											;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	virtual		void 					SetAnchor					(const float x,const float y,const float z)																																												;
 	virtual		void 					SetAnchorVsFirstElement		(const float x,const float y,const float z)																																												;
@@ -100,10 +110,13 @@ IC				CPHElement				*PSecondElement 			()																																							
 	virtual		void 					GetAxisDir					(int num,Fvector& axis,eVs& vs)																																															;
 	virtual		void 					GetAxisDirDynamic			(int num,Fvector& axis)																																																	;
 	virtual		void 					GetAnchorDynamic			(Fvector& anchor)																																																		;
+	virtual		bool					IsWheelJoint				();
+	virtual		bool					IsHingeJoint				();
 	virtual		void 					GetAxisSDfactors			(float& spring_factor,float& damping_factor,int axis_num)																																								;
 	virtual		void 					GetJointSDfactors			(float& spring_factor,float& damping_factor)																																											;
 	virtual		void					GetMaxForceAndVelocity		(float &force,float &velocity,int axis_num)																																												;
 	virtual		float					GetAxisAngle				(int axis_num)																																																			;
+	virtual		float					GetAxisAngleRate			(int axis_num)																																																			;
 	virtual		void 					Deactivate					()																																																						;
 				void 					ReattachFirstElement		(CPHElement* new_element)																																																;
 				CODEGeom				*&RootGeom					()																																																	{return pFirstGeom	;}
@@ -113,7 +126,9 @@ IC				CPHElement				*PSecondElement 			()																																							
 				void					SetShell					(CPHShell* p)																																																			;			
 
 				void					ClearDestroyInfo			();
-
+private:
+	virtual	iphysics_scripted			&get_scripted				() { return *this ;}
+public:
 };
 
 

@@ -3,15 +3,16 @@
 //#if 0
 
 #include "entity.h"
-#include "../xrPhysics/PHDynamicData.h"
+//#include "../xrPhysics/PHDynamicData.h"
 #include "../xrPhysics/PhysicsShell.h"
-#include "../xrPhysics/PHUpdateObject.h"
+#include "../xrPhysics/phupdateobject.h"
 #include "script_entity.h"
 #include "CarLights.h"
+//#include "phobject.h"
 #include "holder_custom.h"
 #include "PHSkeleton.h"
 #include "DamagableItem.h"
-#include "../xrPhysics/phcollisiondamagereceiver.h"
+#include "phcollisiondamagereceiver.h"
 #include "CarDamageParticles.h"
 #include "xrserver_objects_alife.h"
 #include "CarDamageParticles.h"
@@ -92,7 +93,7 @@ static	const u16				cAsCallsnum						=3;
 	virtual void						StartTimerEffects			()						{};
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	virtual CPhysicsShellHolder*		PPhysicsShellHolder			()						{return static_cast<CPhysicsShellHolder*>(this);}
-	virtual CPHCollisionDamageReceiver	*PHCollisionDamageReceiver	()						{return static_cast<CPHCollisionDamageReceiver*>(this);}
+	virtual ICollisionDamageReceiver	*PHCollisionDamageReceiver	()						{ return this; }
 
 ////////////////////////////////////////////////////////////////////////
 	CCarDamageParticles					m_damage_particles;
@@ -211,10 +212,8 @@ virtual void ApplyDamage			(u16 level);
 		float steering_velocity;
 		float steering_torque;
 		bool  limited;			//zero limited for idle steering drive
-		float GetSteerAngle()
-		{
-			return -pos_right*dJointGetHinge2Angle1 (pwheel->joint->GetDJoint());
-		}
+		float GetSteerAngle();
+	
 		void	 Init		()						;
 		void	 SteerRight	()						;
 		void	 SteerLeft	()						;
@@ -460,7 +459,7 @@ private:
 	float	 			EnginePower							()	;
 	float	 			EngineDriveSpeed					()	;
 	float	 			DriveWheelsMeanAngleRate			()	;
-IC	float	 			EngineRpmFromWheels					(){return dFabs(DriveWheelsMeanAngleRate()*m_current_gear_ratio);}
+IC	float	 			EngineRpmFromWheels					(){return _abs(DriveWheelsMeanAngleRate()*m_current_gear_ratio);}
 	/////////////////////////////////////////////////////////////////////////	
 	void				SteerRight							();
 	void				SteerLeft							();

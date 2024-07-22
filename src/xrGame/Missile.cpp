@@ -755,13 +755,13 @@ void	 CMissile::ExitContactCallback(bool& do_colide,bool bo1,dContact& c,SGameMt
 	dxGeomUserData	*gd1=NULL,	*gd2=NULL;
 	if(bo1)
 	{
-		gd1 =retrieveGeomUserData(c.geom.g1);
-		gd2 =retrieveGeomUserData(c.geom.g2);
+		gd1 =PHRetrieveGeomUserData(c.geom.g1);
+		gd2 =PHRetrieveGeomUserData(c.geom.g2);
 	}
 	else
 	{
-		gd2 =retrieveGeomUserData(c.geom.g1);
-		gd1 =retrieveGeomUserData(c.geom.g2);
+		gd2 =PHRetrieveGeomUserData(c.geom.g1);
+		gd1 =PHRetrieveGeomUserData(c.geom.g2);
 	}
 	if(gd1&&gd2&&(CPhysicsShellHolder*)gd1->callback_data==gd2->ph_ref_object)	
 																				do_colide=false;

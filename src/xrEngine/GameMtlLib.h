@@ -48,11 +48,13 @@
 #define GM_NON_GAME
 #endif
 
+#ifndef	MTL_EXPORT_API
 #ifdef _EDITOR
 	#include "ElTree.hpp"
 	#define MTL_EXPORT_API ECORE_API
 #else
 	#define MTL_EXPORT_API ENGINE_API
+#endif
 #endif
 
 #ifdef GM_NON_GAME
@@ -247,14 +249,7 @@ class MTL_EXPORT_API CGameMtlLibrary{
     GameMtlPairVec		material_pairs_rt;
 #endif
 public:
-	CGameMtlLibrary		()
-	{
-	    material_index 		= 0;
-	    material_pair_index = 0;
-#ifndef _EDITOR
-        material_count	    = 0;
-#endif
-    }
+	CGameMtlLibrary		();
 	~CGameMtlLibrary	()
 	{
 		/*
@@ -316,11 +311,12 @@ public:
 	}
 #else
 	// game
-	IC u16				GetMaterialIdx	(int ID)		{GameMtlIt it=GetMaterialItByID(ID);VERIFY(materials.end() != it); return (u16)(it-materials.begin());}
-	IC u16				GetMaterialIdx	(LPCSTR name)	{GameMtlIt it=GetMaterialIt(name);VERIFY(materials.end() != it); return (u16)(it-materials.begin());}
-	IC SGameMtl*		GetMaterialByIdx(u16 idx)		{VERIFY(idx<materials.size()); return materials[idx];}
 	IC SGameMtl*		GetMaterialByID (s32 id)		{return GetMaterialByIdx(GetMaterialIdx(id));}
 #endif
+	IC u16				GetMaterialIdx	(int ID)		{GameMtlIt it=GetMaterialItByID(ID);VERIFY(materials.end() != it); return (u16)(it-materials.begin());}
+	IC u16				GetMaterialIdx	(LPCSTR name)	{GameMtlIt it=GetMaterialIt(name);VERIFY(materials.end() != it); return (u16)(it-materials.begin());}
+	IC SGameMtl*		GetMaterialByIdx(u16 idx)		{VERIFY(idx<(u16)materials.size()); return materials[idx];}
+
 
 	IC GameMtlIt		FirstMaterial	(){return materials.begin();}
 	IC GameMtlIt		LastMaterial	(){return materials.end();}
@@ -365,5 +361,14 @@ public:
 	}
 
 extern MTL_EXPORT_API CGameMtlLibrary GMLib;
+
+//#ifdef	_EDITOR
+//extern MTL_EXPORT_API CGameMtlLibrary*		PGMLib;
+//#else
+#include "../include/xrapi/xrapi.h"
+//#endif
+
 #endif
+
+
 

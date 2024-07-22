@@ -1,36 +1,37 @@
 #ifndef PHYSICS_COMMON_H
 #define PHYSICS_COMMON_H
 
-#include "MathUtils.h"
 #include "DisablingParams.h"
-#include "ode_include.h"
+#include "physicsexternalcommon.h"
+//#include "ode_include.h"
+//#include "../3rd party/ode/include/ode/common.h"
 
-extern const dReal	default_l_limit									;
-extern const dReal	default_w_limit									;
-extern const dReal	default_k_l										;
-extern const dReal	default_k_w										;
-extern const dReal	default_l_scale									;
-extern const dReal	default_w_scale									;
+extern	XRPHYSICS_API	const float	default_l_limit					;
+extern	XRPHYSICS_API	const float	default_w_limit					;
+extern	XRPHYSICS_API	const float	default_k_l						;
+extern	XRPHYSICS_API	const float	default_k_w						;
+extern const float	default_l_scale									;
+extern const float	default_w_scale									;
 
-extern const dReal 		base_fixed_step								;
-extern const dReal 		base_erp									;
-extern const dReal 		base_cfm									;
+extern const float 		base_fixed_step								;
+extern const float 		base_erp									;
+extern const float 		base_cfm									;
 
-extern dReal	fixed_step										;
-extern dReal	world_cfm										;
-extern dReal	world_erp										;
-extern dReal	world_spring									;
-extern dReal	world_damping									;
+extern XRPHYSICS_API	float	fixed_step							;
+extern 					float	world_cfm							;
+extern 					float	world_erp							;
+extern 					float	world_spring						;
+extern 					float	world_damping						;
 
-extern const dReal	mass_limit										;
+//extern const float	mass_limit										;
 extern const u16	max_joint_allowed_for_exeact_integration		;
-extern const dReal	default_world_gravity							;
-extern		 float	phTimefactor									;
-extern	int			phIterations									;
-extern	float		phBreakCommonFactor								;
-extern	float		phRigidBreakWeaponFactor						;
-extern	float		ph_tri_query_ex_aabb_rate						;
-extern	int			ph_tri_clear_disable_count						;
+extern	XRPHYSICS_API	const		float	default_world_gravity		;
+extern	XRPHYSICS_API	float		phTimefactor						;
+extern	XRPHYSICS_API	int			phIterations						;
+//extern	float		phBreakCommonFactor								;
+//extern	float		phRigidBreakWeaponFactor						;
+//extern	float		ph_tri_query_ex_aabb_rate						;
+//extern	int			ph_tri_clear_disable_count						;
 
 struct SGameMtl;
 #define ERP_S(k_p,k_d,s)		((s*(k_p)) / (((s)*(k_p)) + (k_d)))
@@ -56,33 +57,7 @@ IC void	 MulSprDmp(float &cfm,float	&erp,float mul_spring,float mul_damping)
 	cfm*=factor;
 	erp*=(factor*mul_spring);
 }
-typedef void 	ContactCallbackFun(CDB::TRI* T,dContactGeom* c);
-typedef	void	ObjectContactCallbackFun(bool& do_colide,bool bo1,dContact& c,SGameMtl* material_1,SGameMtl* material_2);
 
-
-typedef void _BCL	BoneCallbackFun(CBoneInstance* B);
-
-
-
-extern ContactCallbackFun *ContactShotMark;
-extern ContactCallbackFun *CharacterContactShotMark;
-
-typedef	void	PhysicsStepTimeCallback		(u32	step_start,u32	step_end);
-extern			PhysicsStepTimeCallback		*physics_step_time_callback;
-
-template <typename geom_type>
-void	t_get_box( const geom_type*	shell, const	Fmatrix& form,	Fvector&	sz, Fvector&	c )
-{
-	c.set(0,0,0);
-	VERIFY( sizeof( form.i ) + sizeof( form._14_ ) == 4* sizeof( float ) );
-	for(int i=0;3>i;++i)
-	{	
-		float lo,hi;
-		const	Fvector &ax=cast_fv(((const	float*)&form+i*4));
-		shell->get_Extensions(ax,0,lo,hi);
-		sz[i]=hi-lo;c.add(Fvector().mul(ax,(lo+hi)/2));
-	}
-}
 
 
 #endif  //PHYSICS_COMMON_H

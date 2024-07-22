@@ -25,8 +25,6 @@
 #	define	DBG_PH_MOVE_CONDITIONS(c)					
 #endif // DEBUG
 
-//#define OLD_BEHAVIOUR
-
 #define DISTANCE_PHISICS_ENABLE_CHARACTERS 2.f
 
 float CMovementManager::speed				(CPHMovementControl *movement_control) const
@@ -47,10 +45,13 @@ void dump_collision_hit(CPHMovementControl *movement_control)
 	if( !dbg_dump_collision_hit )
 		return;
 	VERIFY( movement_control );
-	CPHCharacter * phch = movement_control->PHCharacter();
-	VERIFY( phch );
-	CPhysicsShellHolder  *obj = phch->PhysicsRefObject();
-	VERIFY( obj );
+	//CPHCharacter * phch = movement_control->PHCharacter();
+	//VERIFY( phch );
+
+	IPhysicsShellHolder  *iobj = movement_control->PhysicsRefObject();
+	VERIFY( iobj );
+	VERIFY( smart_cast<CPhysicsShellHolder*>(iobj) );
+	CPhysicsShellHolder	*obj = static_cast<CPhysicsShellHolder	*>(iobj);
 	Msg( "ai unit: %s hited by collision; power: %f, spawn frame %d, current frame %d ", obj->cName().c_str(), movement_control->gcontact_HealthLost, obj->spawn_time(), Device.dwFrame ); 
 	//CPhysicsShellHolder* object =static_cast<CPhysicsShellHolder*>(Level().Objects.net_Find(m_collision_damage_info.m_obj_id));
 	//const ICollisionDamageInfo * di=movement_control->CollisionDamageInfo();
@@ -150,6 +151,7 @@ Fvector CMovementManager::path_position	(const float & velocity, const Fvector &
 		++current_travel_point;
 		if ((current_travel_point+1) >= detail().path().size()) {
 //			VERIFY				(dist <= dist_to_target);
+			dist				= 0.f;
 			return				(dest_position);
 		}
 
@@ -190,7 +192,6 @@ Fvector CMovementManager::path_position	(const float &time_to_check)
 	);
 }
 
-#ifndef OLD_BEHAVIOUR
 void CMovementManager::move_along_path		(CPHMovementControl *movement_control, Fvector &dest_position, float time_delta)
 {
 	START_PROFILE		("Build Path/Move Along Path")
@@ -256,7 +257,7 @@ void CMovementManager::move_along_path		(CPHMovementControl *movement_control, F
 		if(current_travel_point + 1 < detail().path().size())
 			detail().m_current_travel_point = current_travel_point + 1;
 		else
-			detail().m_current_travel_point = (u32)detail().path().size() - 1;
+			detail().m_current_travel_point = detail().path().size() - 1;
 		m_speed			= 0.f;
 		//Msg				("[%6d][%s] strange exit, curr_tp=%d",Device.dwFrame,*object().cName(),detail().m_current_travel_point);
 		return;
@@ -286,7 +287,7 @@ void CMovementManager::move_along_path		(CPHMovementControl *movement_control, F
 	velocity.normalize_safe();							  //как не странно, mdir - не нормирован
 	velocity.mul						(desirable_speed);//*1.25f
 
-	if(!movement_control->PhyssicsOnlyMode())
+	if(!movement_control->PhysicsOnlyMode())
 		movement_control->SetCharacterVelocity(velocity);
 
 	if (DBG_PH_MOVE_CONDITIONS(ph_dbg_draw_mask.test(phDbgNeverUseAiPhMove)||!ph_dbg_draw_mask.test(phDbgAlwaysUseAiPhMove)&&)!(m_nearest_objects.empty())) {  //  физ. объект
@@ -332,7 +333,7 @@ void CMovementManager::move_along_path		(CPHMovementControl *movement_control, F
 
 	// Физика устанавливает позицию в соответствии с нулевой скоростью 
 	if (detail().completed(dest_position,true)) {
-		if(!movement_control->PhyssicsOnlyMode()) {
+		if(!movement_control->PhysicsOnlyMode()) {
 			Fvector velocity_				= {0.f,0.f,0.f};
 			movement_control->SetVelocity	(velocity_);
 			m_speed							= 0.f;
@@ -343,188 +344,3 @@ void CMovementManager::move_along_path		(CPHMovementControl *movement_control, F
 
 	STOP_PROFILE
 }
-
-#else // OLD_BEHAVIOUR
-
-void CMovementManager::move_along_path		(CPHMovementControl *movement_control, Fvector &dest_position, float time_delta)
-{
-	START_PROFILE("Build Path/Move Along Path")
-	VERIFY(movement_control);
-	Fvector				motion;
-	dest_position		= object().Position();
-	VERIFY( _valid( dest_position ) );
-	float				precision = 0.5f;
-	
-	
-	// Если нет движения по пути
-	if (	!enabled() || 
-			!actual()  ||
-//			path_completed() || 
-			detail().path().empty() ||
-			detail().completed(dest_position,true) || 
-			(detail().curr_travel_point_index() >= detail().path().size() - 1) ||
-			fis_zero(old_desirable_speed())
-		)
-	{
-		m_speed			= 0.f;
-		
-
-		DBG_PH_MOVE_CONDITIONS( if(ph_dbg_draw_mask.test(phDbgNeverUseAiPhMove)){movement_control->SetPosition(dest_position);movement_control->DisableCharacter();})
-		if(movement_control->IsCharacterEnabled()) {
-			movement_control->Calculate(detail().path(),0.f,detail().m_current_travel_point,precision);
-			movement_control->GetPosition(dest_position);
-		}
-
-		// проверка на хит
-		apply_collision_hit(movement_control);
-		return;
-	}
-
-	if(!movement_control->CharacterExist())
-	{
-#ifdef	DEBUG
-		Msg("!! Can not move - physics movement shell does not exist. Try to move in wonded state?");
-#endif
-		return;
-	}
-
-//	VERIFY(movement_control->CharacterExist());
-
-
-	if (time_delta < EPS) return;
-
-	//#pragma todo("Dima to Kostia : Please change this piece of code to support paths with multiple desired velocities")
-	
-	
-	// Вычислить пройденную дистанцию, определить целевую позицию на маршруте, 
-	//			 изменить detail().m_current_travel_point
-	
-	float				desirable_speed		=	old_desirable_speed();				// желаемая скорость объекта
-	float				dist				=	desirable_speed * time_delta;		// пройденное расстояние в соостветствие с желаемой скоростью 
-	float				desirable_dist		=	dist;
-
-	// определить целевую точку
-	Fvector				target;
-	
-	u32 prev_cur_point_index = detail().curr_travel_point_index();
-
-	// обновить detail().m_current_travel_point в соответствие с текущей позицией
-	while (detail().m_current_travel_point < detail().path().size() - 2) {
-
-		float pos_dist_to_cur_point			= dest_position.distance_to(detail().path()[detail().m_current_travel_point].position);
-		float pos_dist_to_next_point		= dest_position.distance_to(detail().path()[detail().m_current_travel_point+1].position);
-		float cur_point_dist_to_next_point	= detail().path()[detail().m_current_travel_point].position.distance_to(detail().path()[detail().m_current_travel_point+1].position);
-		
-		if ((pos_dist_to_cur_point > cur_point_dist_to_next_point) && (pos_dist_to_cur_point > pos_dist_to_next_point)) {
-			++detail().m_current_travel_point;			
-		} else break;
-	}
-
-	target.set			(detail().path()[detail().curr_travel_point_index() + 1].position);
-	// определить направление к целевой точке
-	Fvector				dir_to_target;
-	dir_to_target.sub	(target, dest_position);
-
-	// дистанция до целевой точки
-	float				dist_to_target = dir_to_target.magnitude();
-	
-	while (dist > dist_to_target) {
-		dest_position.set	(target);
-		VERIFY( _valid( dest_position ) );
-		if (detail().curr_travel_point_index() + 1 >= detail().path().size())	break;
-		else {
-			dist			-= dist_to_target;
-			++detail().m_current_travel_point;
-			if ((detail().curr_travel_point_index()+1) >= detail().path().size())
-				break;
-			target.set			(detail().path()[detail().curr_travel_point_index() + 1].position);
-			dir_to_target.sub	(target, dest_position);
-			dist_to_target		= dir_to_target.magnitude();
-		}
-	}
-	
-	if (prev_cur_point_index != detail().curr_travel_point_index()) on_travel_point_change(prev_cur_point_index);
-
-	if (dist_to_target < EPS_L) {
-#pragma todo("Dima to ? : is this correct?")
-		detail().m_current_travel_point = detail().path().size() - 1;
-		m_speed			= 0.f;
-		return;
-	}
-
-	// Физика устанавливает новую позицию
-	Device.Statistic->Physics.Begin	();
-
-	// получить физ. объекты в радиусе
-	m_nearest_objects.clear_not_free	();
-	Level().ObjectSpace.GetNearest		(m_nearest_objects,dest_position,DISTANCE_PHISICS_ENABLE_CHARACTERS + (movement_control->IsCharacterEnabled() ? 0.5f : 0.f),&object()); 
-
-	// установить позицию
-	motion.mul			(dir_to_target, dist / dist_to_target);
-	dest_position.add	(motion);
-	Fvector velocity					=	dir_to_target;
-	velocity.normalize_safe();
-	if(velocity.y>0.9f)
-		velocity.y=0.8f;
-	if(velocity.y<-0.9f)
-		velocity.y=-0.8f;
-	velocity.normalize_safe();							  //как не странно, mdir - не нормирован
-	velocity.mul						(desirable_speed);//*1.25f
-	if(!movement_control->PhyssicsOnlyMode())
-		movement_control->SetCharacterVelocity(velocity);
-
-	if (DBG_PH_MOVE_CONDITIONS(ph_dbg_draw_mask.test(phDbgNeverUseAiPhMove)||!ph_dbg_draw_mask.test(phDbgAlwaysUseAiPhMove)&&)!(m_nearest_objects.empty())) {  //  физ. объект
-		
-		if(DBG_PH_MOVE_CONDITIONS(!ph_dbg_draw_mask.test(phDbgNeverUseAiPhMove)&&) !movement_control->TryPosition(dest_position)) {
-			movement_control->GetPosition	(dest_position);
-			movement_control->Calculate		(detail().path(),desirable_speed,detail().m_current_travel_point,precision);
-
-			// проверка на хит
-			apply_collision_hit(movement_control);
-
-		} else {
-			DBG_PH_MOVE_CONDITIONS( if(ph_dbg_draw_mask.test(phDbgNeverUseAiPhMove)){movement_control->SetPosition(dest_position);movement_control->DisableCharacter();})
-			movement_control->b_exect_position	=	true;
-
-		}
-		movement_control->GetPosition	(dest_position);
-	}
-	else {
-		//DBG_PH_MOVE_CONDITIONS( if(ph_dbg_draw_mask.test(phDbgNeverUseAiPhMove)){movement_control->SetPosition(dest_position);movement_control->DisableCharacter();})
-			movement_control->SetPosition(dest_position);
-			movement_control->DisableCharacter();
-			movement_control->b_exect_position	=	true;
-
-	}
-	/*
-	} else { // есть физ. объекты
-
-		movement_control->Calculate				(detail().path(), desirable_speed, detail().m_current_travel_point, precision);
-		movement_control->GetPosition			(dest_position);
-		
-		// проверка на хит
-		apply_collision_hit						(movement_control);
-	}
-		*/
-
-	// установить скорость
-	float	real_motion	= motion.magnitude() + desirable_dist - dist;
-	float	real_speed	= real_motion / time_delta;
-	
-	m_speed				= 0.5f * desirable_speed + 0.5f * real_speed;
-	
-
-	// Физика устанавливает позицию в соответствии с нулевой скоростью 
-	if (detail().completed(dest_position,true)) {
-		if(!movement_control->PhyssicsOnlyMode()) {
-			Fvector velocity				= {0.f,0.f,0.f};
-			movement_control->SetVelocity	(velocity);
-			m_speed							= 0.f;
-		}
-	}
-	
-	Device.Statistic->Physics.End	();
-
-	STOP_PROFILE
-}
-#endif // OLD_BEHAVIOUR

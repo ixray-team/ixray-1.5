@@ -1,19 +1,19 @@
 
 #include "stdafx.h"
-
+#include "car.h"
 //#if 0
 
 #include "ParticlesObject.h"
-#include "../xrPhysics/Physics.h"
+//#include "Physics.h"
 
 #ifdef DEBUG
 #	include "../xrEngine/StatGraph.h"
 #	include "PHDebug.h"
 #endif // DEBUG
 
-#include "hit.h"
+//#include "hit.h"
 #include "PHDestroyable.h"
-#include "car.h"
+
 #include "hudmanager.h"
 #include "cameralook.h"
 #include "camerafirsteye.h"
@@ -29,13 +29,13 @@
 #include "CarWeapon.h"
 #include "game_object_space.h"
 #include "../xrEngine/gamemtllib.h"
-#include "../xrPhysics/PHActivationShape.h"
+//#include "PHActivationShape.h"
 #include "CharacterPhysicsSupport.h"
 #include "car_memory.h"
-
+#include "../xrPhysics/IPHWorld.h"
 BONE_P_MAP CCar::bone_map=BONE_P_MAP();
 
-extern CPHWorld*	ph_world;
+//extern CPHWorld*	ph_world;
 
 CCar::CCar()
 {
@@ -65,7 +65,7 @@ CCar::CCar()
 	b_engine_on=false;
 	e_state_steer=idle;
 	e_state_drive=neutral;
-	m_current_gear_ratio=dInfinity;
+	m_current_gear_ratio=phInfinity;
 	rsp=false;lsp=false;fwp=false;bkp=false;brp=false;
 	///////////////////////////////
 	//////////////////////////////
@@ -1363,22 +1363,24 @@ void CCar::PhTune(float step)
 	for(u16 i=PPhysicsShell()->get_ElementsNumber();i!=0;i--)	
 	{
 		CPhysicsElement* e=PPhysicsShell()->get_ElementByStoreOrder(i-1);
-		if(e->isActive()&&e->isEnabled())dBodyAddForce(e->get_body(),0,e->getMass()*AntiGravityAccel(),0);
+		if(e->isActive()&&e->isEnabled())
+			e->applyForce( 0, e->getMass()*AntiGravityAccel(), 0 );
+			//dBodyAddForce(e->get_body(),0,e->getMass()*AntiGravityAccel(),0);
 	}
 }
 float CCar::EffectiveGravity()
 {
-	float g= ph_world->Gravity();
+	float g= physics_world()->Gravity();
 	if(CPHUpdateObject::IsActive())g*=0.5f;
 	return g;
 }
 float CCar::AntiGravityAccel()
 {
-	return ph_world->Gravity()-EffectiveGravity();
+	return physics_world()->Gravity()-EffectiveGravity();
 }
 float CCar::GravityFactorImpulse()
 {
-	return _sqrt(EffectiveGravity()/ph_world->Gravity());
+	return _sqrt(EffectiveGravity()/physics_world()->Gravity());
 }
 void CCar::UpdateBack()
 {
@@ -1610,7 +1612,7 @@ float CCar::DriveWheelsMeanAngleRate()
 }
 float CCar::EngineDriveSpeed()
 {
-	//float wheel_speed,drive_speed=dInfinity;
+	//float wheel_speed,drive_speed=phInfinity;
 	float calc_rpm=0.f;
 	if(b_transmission_switching)
 	{
@@ -1634,7 +1636,7 @@ float CCar::EngineDriveSpeed()
 	else
 		return		(1.f-m_rpm_decrement_factor)*m_current_rpm+m_rpm_decrement_factor*calc_rpm;
 
-	//if(drive_speed<dInfinity) return dFabs(drive_speed*m_current_gear_ratio);
+	//if(drive_speed<phInfinity) return dFabs(drive_speed*m_current_gear_ratio);
 	//else					  return 0.f;
 }
 
@@ -1811,8 +1813,8 @@ void CCar::CarExplode()
 //
 //	dxGeomUserData *l_pUD1 = NULL;
 //	dxGeomUserData *l_pUD2 = NULL;
-//	l_pUD1 = retrieveGeomUserData(c.geom.g1);
-//	l_pUD2 = retrieveGeomUserData(c.geom.g2);
+//	l_pUD1 = PHRetrieveGeomUserData(c.geom.g1);
+//	l_pUD2 = PHRetrieveGeomUserData(c.geom.g2);
 //
 //	if(! l_pUD1) return;
 //	if(!l_pUD2) return;
@@ -2031,7 +2033,8 @@ Fvector	CCar::		ExitVelocity				()
 	if(!P||!P->isActive())return Fvector().set(0,0,0);
 	CPhysicsElement *E=P->get_ElementByStoreOrder(0);
 	Fvector v=ExitPosition();
-	dBodyGetPointVel(E->get_body(),v.x,v.y,v.z,cast_fp(v));
+	E->GetPointVel( v, v );
+	//dBodyGetPointVel(E->get_body(),v.x,v.y,v.z,cast_fp(v));
 	return v;
 }
 

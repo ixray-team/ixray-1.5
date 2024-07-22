@@ -11,7 +11,8 @@
 #include "ai_space.h"
 #include "script_engine.h"
 
-IC	bool compare_safe(const luabind::object& o1, const luabind::object& o2) {
+IC	bool compare_safe(const luabind::object& o1, const luabind::object& o2)
+{
 	if ((luabind::type(o1) == LUA_TNIL) && (luabind::type(o2) == LUA_TNIL))
 		return						(true);
 
@@ -114,8 +115,7 @@ public:
 			} process_error catch (std::exception&) {
 				ai().script_engine().print_output(ai().script_engine().lua(), "", 1);
 			}
-		}
-		catch (...) {
+		} catch (...) {
 			const_cast<CScriptCallbackEx<TResult>*>(this)->clear();
 		}
 		return TResult(0);
@@ -136,8 +136,7 @@ public:
 			} process_error catch (std::exception&) {
 				ai().script_engine().print_output(ai().script_engine().lua(), "", 1);
 			}
-		}
-		catch (...) {
+		} catch (...) {
 			const_cast<CScriptCallbackEx<TResult>*>(this)->clear();
 		}
 		return TResult(0);
@@ -154,16 +153,14 @@ void CScriptCallbackEx<void>::operator()(Args &&...args) const {
 				if (m_object.is_valid()) {
 					VERIFY(m_object.is_valid());
 					luabind::call_function<void>(m_functor, m_object, std::forward<Args>(args)...);
-				}
-				else {
+				} else {
 					luabind::call_function<void>(m_functor, std::forward<Args>(args)...);
 				}
 			}
 		} process_error catch (std::exception&) {
 			ai().script_engine().print_output(ai().script_engine().lua(), "", 1);
 		}
-	}
-	catch (...) {
+	} catch (...) {
 		const_cast<CScriptCallbackEx<void>*>(this)->clear();
 	}
 }
@@ -178,16 +175,14 @@ void CScriptCallbackEx<void>::operator()(Args &&...args) {
 				if (m_object.is_valid()) {
 					VERIFY(m_object.is_valid());
 					luabind::call_function<void>(m_functor, m_object, std::forward<Args>(args)...);
-				}
-				else {
+				} else {
 					luabind::call_function<void>(m_functor, std::forward<Args>(args)...);
 				}
 			}
 		} process_error catch (std::exception&) {
 			ai().script_engine().print_output(ai().script_engine().lua(), "", 1);
 		}
-	}
-	catch (...) {
+	} catch (...) {
 		const_cast<CScriptCallbackEx<void>*>(this)->clear();
 	}
 }

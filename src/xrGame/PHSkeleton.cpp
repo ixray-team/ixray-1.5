@@ -8,8 +8,8 @@
 #include "PHSynchronize.h"
 #include "../xrPhysics/MathUtils.h"
 #include "../Include/xrRender/Kinematics.h"
-#include "../xrPhysics/PHObject.h"
-#include "../xrPhysics/PHCollideValidator.h"
+//#include "PHObject.h"
+//#include "../xrPhysics/PHCollideValidator.h"
 #include "ai_object_location.h"
 #include "ai_space.h"
 #include "game_graph.h"
@@ -73,10 +73,15 @@ bool CPHSkeleton::Spawn(CSE_Abstract *D)
 	CSE_Visual				*visual = smart_cast<CSE_Visual*>(D);
 	VERIFY					(visual);
 	m_startup_anim			= visual->startup_animation;
-
+	CPHSkeleton* source		= 0;
 	if(po->_flags.test(CSE_PHSkeleton::flSpawnCopy))
 	{
-		CPHSkeleton* source=smart_cast<CPHSkeleton*>(Level().Objects.net_Find(po->source_id));
+		source=smart_cast<CPHSkeleton*>(Level().Objects.net_Find(po->source_id));
+		VERIFY(source);
+	}
+	if(source)
+	{
+		
 		R_ASSERT2(source,"no source");
 		source->UnsplitSingle(this);
 		m_flags.set				(CSE_PHSkeleton::flSpawnCopy,FALSE);
@@ -111,7 +116,7 @@ bool CPHSkeleton::Spawn(CSE_Abstract *D)
 			{
 				if(ini->line_exist("collide","not_collide_parts"))
 				{
-					CGID gr= CPHCollideValidator::RegisterGroup();
+					CGID gr= RegisterGroup();
 					obj->PPhysicsShell()->RegisterToCLGroup(gr);
 				}
 			}
@@ -241,14 +246,20 @@ void CPHSkeleton::LoadNetState(NET_Packet& P)
 }
 void CPHSkeleton::RestoreNetState(CSE_PHSkeleton* po)
 {
-	if(!po->_flags.test(CSE_PHSkeleton::flSavedData))return;
+	VERIFY( po );
+	if(!po->_flags.test(CSE_PHSkeleton::flSavedData))
+		return;
 	CPhysicsShellHolder* obj=PPhysicsShellHolder();
 	PHNETSTATE_VECTOR& saved_bones=po->saved_bones.bones;
+	VERIFY( saved_bones.size() == obj->PHGetSyncItemsNumber() );
+	
 	PHNETSTATE_I i=saved_bones.begin(),e=saved_bones.end();
 	if(obj->PPhysicsShell()&&obj->PPhysicsShell()->isActive())
 	{
 		obj->PPhysicsShell()->Disable();
 	}
+
+	if( saved_bones.size() == obj->PHGetSyncItemsNumber() )
 	for(u16 bone=0;e!=i;i++,bone++)
 	{
 		R_ASSERT(bone<obj->PHGetSyncItemsNumber());

@@ -13,9 +13,9 @@
 #include "xrmessages.h"
 #include "physicsshellholder.h"
 #include "explosive.h"
-#include "../xrPhysics/PHWorld.h"
+#include "../xrPhysics/IPHWorld.h"
 #include "CharacterPhysicsSupport.h"
-extern CPHWorld*	ph_world;
+//extern CPHWorld*	ph_world;
 CBlackGraviArtefact::CBlackGraviArtefact(void) 
 {
 	m_fImpulseThreshold = 10.f;
@@ -88,7 +88,7 @@ void CBlackGraviArtefact::net_Relcase(CObject* O)
 }
 void CBlackGraviArtefact::UpdateCLChild() 
 {
-	VERIFY(!ph_world->Processing());
+	VERIFY(!physics_world()->Processing());
 	inherited::UpdateCLChild	();
 
 	if (getVisible() && m_pPhysicsShell) {

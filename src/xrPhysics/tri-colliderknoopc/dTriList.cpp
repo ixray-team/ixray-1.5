@@ -5,7 +5,7 @@
 #include "dcTriListCollider.h"
 #include "../ExtendedGeom.h"
 #include "dcTriListCollider.cpp"	// Allow inlining
-#include "../gameobject.h"
+//#include "../gameobject.h"
 
 
 

@@ -9,6 +9,7 @@
 #pragma once
 #include "object_interfaces.h"
 #include <queue>
+#include "object_type_traits.h"
 
 struct CDestroyer {
 	IC	static void delete_data(LPCSTR data)
@@ -113,14 +114,12 @@ struct CDestroyer {
 		}
 	};
 
-	struct CHelper3
-	{
+	struct CHelper3 {
 		template <typename T>
-		IC	static void delete_data(T& data)
-		{
-			for (auto DataValue : data)
+		IC	static void delete_data(T& data) {
+			for (auto DataValue : data) {
 				CDestroyer::delete_data(DataValue);
-
+			}
 			data.clear();
 		}
 	};

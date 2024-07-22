@@ -6,8 +6,10 @@
 //	Description : AI Behaviour for monster "Crow"
 ////////////////////////////////////////////////////////////////////////////
 
+#include "stdafx.h"
 #include "pch_script.h"
 #include "../../../xrPhysics/physicsshell.h"
+#include "../../../xrPhysics/phvalide.h"
 #include "ai_crow.h"
 #include "../../hudmanager.h"
 #include "../../level.h"
@@ -19,9 +21,6 @@
 #include "game_object_space.h"
 #include "script_game_object.h"
 #include "hit.h"
-#ifdef	DEBUG
-#include "../xrPhysics/phvalide.h"
-#endif
 
 void CAI_Crow::SAnim::Load	(IKinematicsAnimated* visual, LPCSTR prefix)
 {

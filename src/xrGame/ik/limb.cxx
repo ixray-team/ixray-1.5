@@ -35,7 +35,7 @@
 //#include <string.h>
 #include "stdafx.h"
 #include "limb.h"
-#include "../../xrPhysics/ode_include.h"
+//#include "../ode_include.h"
 enum { SolvePosOnly = 1, SolvePosAndOrientation = 2 }; 
 
 //
@@ -798,10 +798,11 @@ int Limb::try_singularities(int solves, float &swivel_angle, float x[])
 //
 // Assumes that either SetGoal or SetGoalPos has been called first
 //
+extern XRPHYSICS_API	const float	phInfinity;
 int Limb::Solve(float x[], float *new_swivel, float *new_pos)
 {
     int success; 
-    float swivel_angle=-dInfinity; 
+    float swivel_angle=-phInfinity; 
 
     x[3] = x3;
 
@@ -842,7 +843,7 @@ int Limb::Solve(float x[], float *new_swivel, float *new_pos)
 	swivel_angle = 0.0f;
 	success = SolveByAngle(swivel_angle, x);
     }
-	VERIFY(swivel_angle!=-dInfinity);
+	VERIFY(swivel_angle!=-phInfinity);
     if (new_swivel)
 	*new_swivel = swivel_angle;
     if (new_pos)

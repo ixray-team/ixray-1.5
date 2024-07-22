@@ -5,9 +5,10 @@
 #include "../Include/xrRender/Kinematics.h"
 #include "../xrEngine/bone.h"
 
-#include "../xrPhysics/Physics.h"
+//#include "Physics.h"
 #include "../xrPhysics/ExtendedGeom.h"
-#include "hit.h"
+#include "../xrPhysics/PhysicsShell.h"
+//#include "hit.h"
 #include "level.h"
 #include "CustomZone.h"
 
@@ -70,11 +71,11 @@ void  OnCharacterContactInDeath(bool& do_colide,bool bo1,dContact& c,SGameMtl * 
 	character_shell_control* l_character_physic_support=0;
 	if (bo1)
 	{
-		l_character_physic_support=(character_shell_control*)retrieveGeomUserData(c.geom.g1)->callback_data;
+		l_character_physic_support=(character_shell_control*)PHRetrieveGeomUserData(c.geom.g1)->callback_data;
 	}
 	else
 	{
-		l_character_physic_support=(character_shell_control*)retrieveGeomUserData(c.geom.g2)->callback_data;
+		l_character_physic_support=(character_shell_control*)PHRetrieveGeomUserData(c.geom.g2)->callback_data;
 	}
 
 	surface.mu=l_character_physic_support->curr_skin_friction_in_death();

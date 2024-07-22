@@ -44,8 +44,7 @@ private:
 	//перобразование из const char* в T_ITEM
 
 	template <typename T_CONVERT_ITEM>
-        T_ITEM				convert			(const char*)
-	{
+	T_ITEM convert(const char*) {
         static_assert(!std::is_same_v<T_CONVERT_ITEM, T_CONVERT_ITEM>, "Specialization for convert in CIni_Table not found");
 		NODEFAULT;
 	}

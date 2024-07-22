@@ -77,7 +77,7 @@ class CScriptMonsterHitInfo;
 class CScriptBinderObject;
 class CCoverPoint;
 class CScriptIniFile;
-class CPhysicsShell;
+class cphysics_shell_scripted;
 class CHelicopter;
 class CHangingLamp;
 class CHolderCustom;
@@ -544,7 +544,8 @@ public:
 
 			Fvector				bone_position			(LPCSTR bone_name) const;
 			bool				is_body_turning			() const;
-			CPhysicsShell*		get_physics_shell		() const;
+	cphysics_shell_scripted*	get_physics_shell		() const;
+			u16					get_bone_id				(LPCSTR bone_name) const;					
 			bool				weapon_strapped			() const;
 			bool				weapon_unstrapped		() const;
 			void				eat						(CScriptGameObject *item);

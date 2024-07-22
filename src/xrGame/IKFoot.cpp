@@ -6,7 +6,7 @@
 #include "GameObject.h"
 
 
-#include "../xrPhysics/ode_include.h"
+//#include "ode_include.h"
 #include "../xrPhysics/MathUtils.h"
 #include "../include/xrrender/Kinematics.h"
 #include "../xrEngine/bone.h"
@@ -67,13 +67,17 @@ void CIKFoot::Create		(  IKinematics	*K, LPCSTR section, u16 bones[4] )
 	set_toe( bones );
 }
 
-struct envc : public SEnumVerticesCallback {
+struct envc :
+public SEnumVerticesCallback
+{
 	Fvector &pos;
 	Fvector start_pos;
 	const Fmatrix &i_bind_transform;
 	const Fvector &ax;
 	envc( const Fmatrix &_i_bind_transform, const Fvector &_ax,  Fvector &_pos ): 
 	SEnumVerticesCallback(), i_bind_transform( _i_bind_transform ), ax( _ax ), pos( _pos ) { start_pos.set( 0, 0, 0 ); }
+	envc(const envc& other) = delete;
+	envc& operator=(const envc& other) = delete;
 	void operator () (const Fvector& p)
 	{
 		Fvector lpos;
@@ -82,10 +86,6 @@ struct envc : public SEnumVerticesCallback {
 		if( Fvector().sub( lpos, start_pos ).dotproduct( ax ) > Fvector().sub( pos, start_pos ).dotproduct( ax ) )
 						pos.set( lpos );
 	}
-
-public:
-	envc(const envc& other) = delete;
-	envc& operator =(const envc& other) = delete;
 };
 void CIKFoot::set_toe(  u16 bones[4] )
 {

@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "pch_script.h"
 #include "Level.h"
 #include "Level_Bullet_Manager.h"
@@ -18,6 +19,7 @@
 #include "string_table.h"
 #include "file_transfer.h"
 
+#include "../xrPhysics/physicscommon.h"
 ENGINE_API bool g_dedicated_server;
 
 const int max_objects_size			= 2*1024;
@@ -257,7 +259,7 @@ void CLevel::ClientSave	()
 	}
 }
 
-extern		float		phTimefactor;
+//extern	XRPHYSICS_API	float		phTimefactor;
 extern		BOOL		g_SV_Disable_Auth_Check;
 
 #pragma todo("remove next deadlock checking after testing...")
@@ -492,7 +494,17 @@ void			CLevel::ClearAllObjects				()
 	for (u32 i=0; i<CLObjNum; i++)
 	{
 		CObject* pObj = Level().Objects.o_get_by_iterator(i);
-		R_ASSERT(pObj->H_Parent()==NULL);
+		if (pObj->H_Parent() != NULL)
+		{
+			if (IsGameTypeSingle())
+			{
+				FATAL("pObj->H_Parent()==NULL");
+			} else
+			{
+				Msg("! ERROR: object's parent is not NULL");
+			}
+		}
+		
 		//-----------------------------------------------------------
 		NET_Packet			GEN;
 		GEN.w_begin			(M_EVENT);

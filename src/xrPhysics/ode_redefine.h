@@ -1,7 +1,7 @@
 #ifndef ODE_REDEFINE
 #define ODE_REDEFINE
 
-#ifdef  XRGAME_EXPORTS
+#ifdef  XRPHYSICS_EXPORTS
 
 #ifdef	dSqrt
 #undef	dSqrt

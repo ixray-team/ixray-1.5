@@ -348,6 +348,9 @@ IC	typename CProblemSolverAbstract::_operator_ptr CProblemSolverAbstract::get_op
 {
 	typename OPERATOR_VECTOR::iterator	I = std::lower_bound(m_operators.begin(), m_operators.end(),operator_id);
 	THROW						(m_operators.end() != I);
+	if (m_operators.end() == I) {
+		return 0;
+	}
 	return						((*I).get_operator());
 }
 

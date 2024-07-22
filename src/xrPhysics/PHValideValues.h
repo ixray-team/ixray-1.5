@@ -1,6 +1,8 @@
 #ifndef PH_VALIDE_VALUES
 #define PH_VALIDE_VALUES
 
+#include "mathutilsode.h"
+#include "ph_valid_ode.h"
 class CSafeValue
 {
 		float						m_safe_value				;

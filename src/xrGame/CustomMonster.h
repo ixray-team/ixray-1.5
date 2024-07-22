@@ -11,6 +11,8 @@
 #include "../xrEngine/feel_touch.h"
 #include "../Include/xrRender/Kinematics.h"
 #include "associative_vector.h"
+#include "trajectories.h"
+
 
 namespace MonsterSpace {
 	struct SBoneRotation;
@@ -326,6 +328,15 @@ private:
 public:
 	virtual	void					create_anim_mov_ctrl						( CBlend *b, Fmatrix *start_pose, bool local_animation  );
 	virtual	void					destroy_anim_mov_ctrl						();
+	virtual void					ForceTransform			( Fmatrix const& m );
+	
+public:
+	virtual	Fvector					spatial_sector_point	( );
+
+#ifdef DEBUG
+	xr_vector<trajectory_pick>			m_jump_picks;
+	xr_vector<Fvector>				m_jump_collide_tris;
+#endif // #ifdef DEBUG
 };
 
 #include "custommonster_inline.h"

@@ -1,23 +1,17 @@
 #ifndef ELEVATOR_STAETE
 #define ELEVATOR_STAETE
+
+#include "ielevatorstate.h"
 class CPHCharacter;
 struct dContact;
 struct SGameMtl;
-class CClimableObject;
-class CElevatorState
+class IClimableObject;
+
+class CElevatorState :
+	public IElevatorState
 {
 public:	
-	enum Estate
-	{
-		clbNone			=0	,				
-		clbNearUp			,			
-		clbNearDown			,		
-		clbClimbingUp		,		
-		clbClimbingDown		,	
-		clbDepart			,
-		clbNoLadder			,
-		clbNoState			
-	};
+
 private:
 	Estate m_state;
 
@@ -26,9 +20,9 @@ private:
 		u32	  time;
 	};
 
-static SEnertionState m_etable[CElevatorState::clbNoState][CElevatorState::clbNoState];
+static SEnertionState m_etable[clbNoState][clbNoState];
 
-CClimableObject	*m_ladder;	
+IClimableObject	*m_ladder;	
 CPHCharacter	*m_character;
 Fvector			m_start_position;//for depart state
 u32				m_start_time;
@@ -36,7 +30,7 @@ public:
 						CElevatorState					();
 			void		PhTune							(float step)																			;
 			void		SetCharacter					(CPHCharacter *character);
-			void		SetElevator						(CClimableObject* climable);
+			void		SetElevator						(IClimableObject* climable);
 			void		EvaluateState					();
 			bool		GetControlDir					(Fvector& dir);
 			void		GetJumpDir						(const Fvector& accel,Fvector& dir);
@@ -48,6 +42,7 @@ public:
 			void		Depart							();
 			float		ClimbDirection					();
 			void		Deactivate						();
+			bool		UpdateMaterial					( u16 &materil_idx );
 IC			Estate		State							(){return m_state;}
 private:
 			void		NewState						();
@@ -63,7 +58,8 @@ private:
 			void		UpdateStClimbingDown			();
 			void		UpdateClimbingCommon			(const Fvector	&d_to_ax,float to_ax,const Fvector& control_accel,float ca);
 			void		UpdateDepart					();
-
+public:
+			void		NetRelcase						( IPhysicsShellHolder* O );
 			
 
 };

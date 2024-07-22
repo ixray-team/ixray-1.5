@@ -335,6 +335,7 @@ protected:
 	CCameraBase*			cameras[eacMaxCam];
 	EActorCameras			cam_active;
 	float					fPrevCamPos;
+	float					current_ik_cam_shift;
 	Fvector					vPrevCamDir;
 	float					fCurAVelocity;
 	CEffectorBobbing*		pCamBobbing;
@@ -752,7 +753,7 @@ public:
 	virtual void			On_SetEntity();
 	virtual void			On_LostEntity();
 
-static CPhysicsShell		*actor_camera_shell;
+//static CPhysicsShell		*actor_camera_shell;
 
 DECLARE_SCRIPT_REGISTER_FUNCTION
 };

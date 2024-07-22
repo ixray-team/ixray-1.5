@@ -124,6 +124,7 @@ public:
 	virtual void 		__stdcall	on_render				(CDUInterface* du, ISE_AbstractLEOwner* owner, bool bSelected, const Fmatrix& parent,int priority, bool strictB2F) = 0;
 	virtual	visual_data*__stdcall	visual_collection		() const = 0;
 	virtual	u32			__stdcall	visual_collection_size	() const = 0;
+	virtual	void		__stdcall	set_additional_info		(void* info) = 0;
 #endif // #ifndef XRGAME_EXPORTS
 	virtual LPCSTR		__stdcall	name					() const = 0;
 	virtual void		__stdcall	set_name				(LPCSTR) = 0;

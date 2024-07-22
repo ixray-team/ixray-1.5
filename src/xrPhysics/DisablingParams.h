@@ -7,7 +7,7 @@ struct	SOneDDOParams
 	float				acceleration					;
 };
 
-struct	SAllDDOParams
+struct	XRPHYSICS_API	SAllDDOParams
 {
 	void				Reset						()	;
 	void				Load			(CInifile* ini)	;

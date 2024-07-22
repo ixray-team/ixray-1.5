@@ -12,8 +12,8 @@
 #include "hudmanager.h"
 #include "ai_space.h"
 #include "ai_debug.h"
-#include "../xrPhysics/PHdynamicdata.h"
-#include "../xrPhysics/Physics.h"
+//#include "PHdynamicdata.h"
+//#include "Physics.h"
 #include "ShootingObject.h"
 #include "GameTaskManager.h"
 #include "Level_Bullet_Manager.h"
@@ -47,6 +47,8 @@
 #include "file_transfer.h"
 #include "message_filter.h"
 
+#include "../xrPhysics/iphworld.h"
+#include "../xrPhysics/console_vars.h"
 #ifdef DEBUG
 #	include "level_debug.h"
 #	include "ai/stalker/ai_stalker.h"
@@ -60,12 +62,12 @@
 
 ENGINE_API bool g_dedicated_server;
 
-extern BOOL	g_bDebugDumpPhysicsStep;
+//extern BOOL	g_bDebugDumpPhysicsStep;
 extern CUISequencer * g_tutorial;
 extern CUISequencer * g_tutorial2;
 
-CPHWorld	*ph_world			= 0;
-float		g_cl_lvInterp		= 0;
+
+float		g_cl_lvInterp		= 0.1f;
 u32			lvInterpSteps		= 0;
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -112,8 +114,9 @@ CLevel::CLevel():IPureClient	(Device.GetTimerGlobal())
 	m_dwNumSteps				= 0;
 	m_dwDeltaUpdate				= u32(fixed_step*1000);
 	m_dwLastNetUpdateTime		= 0;
-
-	physics_step_time_callback	= (PhysicsStepTimeCallback*) &PhisStepsCallback;
+	//VERIFY						( physics_world() );
+	//physics_world()->set_step_time_callback((PhysicsStepTimeCallback*) &PhisStepsCallback);
+	//physics_step_time_callback	= (PhysicsStepTimeCallback*) &PhisStepsCallback;
 	m_seniority_hierarchy_holder= xr_new<CSeniorityHierarchyHolder>();
 
 	if(!g_dedicated_server)
@@ -230,10 +233,10 @@ CLevel::~CLevel()
 	Engine.Event.Handler_Detach	(eDemoPlay,		this);
 	Engine.Event.Handler_Detach	(eChangeRP,		this);
 
-	if (ph_world)
+	if (physics_world())
 	{
-		ph_world->Destroy		();
-		xr_delete				(ph_world);
+		destroy_physics_world();
+		xr_delete(m_ph_commander_physics_worldstep);
 	}
 
 	// destroy PSs
@@ -764,7 +767,7 @@ void CLevel::OnRender()
 
 #ifdef DEBUG
 	draw_wnds_rects();
-	ph_world->OnRender	();
+	physics_world()->OnRender	();
 #endif // DEBUG
 
 #ifdef DEBUG
@@ -786,6 +789,10 @@ void CLevel::OnRender()
 			CAI_Stalker*		stalker_ = smart_cast<CAI_Stalker*>(_O);
 			if (stalker_)
 				stalker_->OnRender	();
+
+			CCustomMonster*		monster = smart_cast<CCustomMonster*>(_O);
+			if (monster)
+				monster->OnRender	();
 
 			CPhysicObject		*physic_object = smart_cast<CPhysicObject*>(_O);
 			if (physic_object)
@@ -885,7 +892,7 @@ void CLevel::OnEvent(EVENT E, u64 P1, u64 /**P2/**/)
 		char* name = (char*)P1;
 		string_path RealName;
 		xr_strcpy		(RealName,name);
-		strcat			(RealName,".xrdemo");
+		xr_strcat			(RealName,".xrdemo");
 		Cameras().AddCamEffector(xr_new<CDemoPlay> (RealName,1.3f,0));
 	} else if (E==eChangeTrack && P1) {
 		// int id = atoi((char*)P1);
@@ -939,15 +946,15 @@ void CLevel::make_NetCorrectionPrediction	()
 {
 	m_bNeed_CrPr	= false;
 	m_bIn_CrPr		= true;
-	u64 NumPhSteps = ph_world->m_steps_num;
-	ph_world->m_steps_num -= m_dwNumSteps;
-	if(g_bDebugDumpPhysicsStep&&m_dwNumSteps>10)
+	u64 NumPhSteps = physics_world()->StepsNum();
+	physics_world()->StepsNum() -= m_dwNumSteps;
+	if(ph_console::g_bDebugDumpPhysicsStep&&m_dwNumSteps>10)
 	{
 		Msg("!!!TOO MANY PHYSICS STEPS FOR CORRECTION PREDICTION = %d !!!",m_dwNumSteps);
 		m_dwNumSteps = 10;
 	};
 //////////////////////////////////////////////////////////////////////////////////
-	ph_world->Freeze();
+	physics_world()->Freeze();
 
 	//setting UpdateData and determining number of PH steps from last received update
 	for	(OBJECTS_LIST_it OIt = pObjects4CrPr.begin(); OIt != pObjects4CrPr.end(); OIt++)
@@ -962,7 +969,7 @@ void CLevel::make_NetCorrectionPrediction	()
 	
 	for (u32 i =0; i<m_dwNumSteps; i++)	
 	{
-		ph_world->Step();
+		physics_world()->Step();
 
 		for	(OBJECTS_LIST_it AIt = pActors4CrPr.begin(); AIt != pActors4CrPr.end(); AIt++)
 		{
@@ -983,7 +990,7 @@ void CLevel::make_NetCorrectionPrediction	()
 	{
 		for (u32 i =0; i<lvInterpSteps; i++)	//second prediction "real current" to "future" position
 		{
-			ph_world->Step();
+			physics_world()->Step();
 #ifdef DEBUG
 /*
 			for	(OBJECTS_LIST_it OIt = pObjects4CrPr.begin(); OIt != pObjects4CrPr.end(); OIt++)
@@ -1003,9 +1010,9 @@ void CLevel::make_NetCorrectionPrediction	()
 			pObj->PH_A_CrPr();
 		};
 	};
-	ph_world->UnFreeze();
+	physics_world()->UnFreeze();
 
-	ph_world->m_steps_num = NumPhSteps;
+	physics_world()->StepsNum() = NumPhSteps;
 	m_dwNumSteps = 0;
 	m_bIn_CrPr = false;
 
@@ -1085,13 +1092,11 @@ ALife::_TIME_ID CLevel::GetStartGameTime()
 ALife::_TIME_ID CLevel::GetGameTime()
 {
 	return			(game->GetGameTime());
-//	return			(Server->game->GetGameTime());
 }
 
 ALife::_TIME_ID CLevel::GetEnvironmentGameTime()
 {
 	return			(game->GetEnvironmentGameTime());
-//	return			(Server->game->GetGameTime());
 }
 
 u8 CLevel::GetDayTime() 
@@ -1127,19 +1132,16 @@ void CLevel::GetGameDateTime	(u32& year, u32& month, u32& day, u32& hours, u32& 
 float CLevel::GetGameTimeFactor()
 {
 	return			(game->GetGameTimeFactor());
-//	return			(Server->game->GetGameTimeFactor());
 }
 
 void CLevel::SetGameTimeFactor(const float fTimeFactor)
 {
 	game->SetGameTimeFactor(fTimeFactor);
-//	Server->game->SetGameTimeFactor(fTimeFactor);
 }
 
 void CLevel::SetGameTimeFactor(ALife::_TIME_ID GameTime, const float fTimeFactor)
 {
 	game->SetGameTimeFactor(GameTime, fTimeFactor);
-//	Server->game->SetGameTimeFactor(fTimeFactor);
 }
 
 void CLevel::SetEnvironmentGameTimeFactor(u64 const& GameTime, float const& fTimeFactor)
@@ -1148,17 +1150,9 @@ void CLevel::SetEnvironmentGameTimeFactor(u64 const& GameTime, float const& fTim
 		return;
 
 	game->SetEnvironmentGameTimeFactor(GameTime, fTimeFactor);
-//	Server->game->SetGameTimeFactor(fTimeFactor);
-}/*
-void CLevel::SetGameTime(ALife::_TIME_ID GameTime)
-{
-	game->SetGameTime(GameTime);
-//	Server->game->SetGameTime(GameTime);
 }
-*/
 bool CLevel::IsServer ()
 {
-//	return (!!Server);
 	if (!Server || IsDemoPlayStarted()) return false;
 	//return (Server->GetClientsCount() != 0);
 	return true;
@@ -1166,7 +1160,6 @@ bool CLevel::IsServer ()
 
 bool CLevel::IsClient ()
 {
-//	return (!Server);
 	if (IsDemoPlayStarted())
 		return true;
 	

@@ -3,6 +3,7 @@
 #include "PHDynamicData.h"
 #include "Physics.h"
 #include "MathUtils.h"
+#include "ph_valid_ode.h"
 
 extern CPHWorld		*ph_world;
 

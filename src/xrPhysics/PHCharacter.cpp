@@ -4,13 +4,16 @@
 #include "PHDynamicData.h"
 #include "Physics.h"
 #include "ExtendedGeom.h"
-#include "physicsshellholder.h"
+#include "iphysicsshellholder.h"
 
 #include "../xrEngine/cl_intersect.h"
 #include "../xrEngine/gamemtllib.h"
 
-#include "../xrPhysics/tri-colliderKNoOPC\__aabb_tri.h"
+#include "tri-colliderKNoOPC\__aabb_tri.h"
 #include "../3rd party/ode/ode/src/util.h"
+#include "ph_valid_ode.h"
+#include "Phaicharacter.h"
+#include "phactorcharacter.h"
 
 CPHCharacter::CPHCharacter(void):
   CPHDisablingTranslational()
@@ -155,7 +158,7 @@ void CPHCharacter::CutVelocity(float l_limit,float /*a_limit*/)
 
 const	Fmatrix&	CPHCharacter::XFORM				()							const
 {
-	return m_phys_ref_object->XFORM();//>renderable.xform;
+	return m_phys_ref_object->ObjectXFORM();//>renderable.xform;
 }
 void			CPHCharacter::get_LinearVel		( Fvector& velocity )		const
 {
@@ -171,3 +174,70 @@ const	Fvector	&CPHCharacter::mass_Center		()							const
 {
 	return	cast_fv( dBodyGetLinearVel(m_body) );
 }
+
+
+void CPHCharacter::get_body_position( Fvector &p )
+{
+	VERIFY(b_exist);
+	VERIFY(get_body());
+	p.set(cast_fv(dBodyGetPosition(get_body())));
+}
+
+void	virtual_move_collide_callback( bool& do_collide, bool bo1, dContact& c, SGameMtl* material_1, SGameMtl* material_2 )
+{
+	if( !do_collide )
+		return;
+	do_collide = false;
+	SGameMtl* oposite_matrial	= bo1 ? material_1 : material_2 ;
+	if(oposite_matrial->Flags.test(SGameMtl::flPassable))
+		return;
+
+	dxGeomUserData	*my_data			=	retrieveGeomUserData(	bo1 ? c.geom.g1 : c.geom.g2 );
+	dxGeomUserData	*oposite_data		=	retrieveGeomUserData( bo1 ? c.geom.g2 : c.geom.g1 ) ;
+	VERIFY( my_data );
+	if( oposite_data && oposite_data->ph_ref_object == my_data->ph_ref_object )
+		return;
+
+	//if( c.geom.depth > camera_collision_sckin_depth/2.f )
+	//cam_collided = true;
+	//if( !cam_step )
+		//return;
+
+	c.surface.mu = 0;
+	c.surface.soft_cfm =0.01f;
+	dJointID contact_joint	= dJointCreateContact(0, ContactGroup, &c);//dJointCreateContactSpecial(0, ContactGroup, &c);
+	CPHObject* obj = (CPHObject*)my_data->callback_data;
+	VERIFY( obj );
+
+	obj->Island().DActiveIsland()->ConnectJoint(contact_joint);
+
+	if(bo1)
+		dJointAttach			(contact_joint, dGeomGetBody(c.geom.g1), 0);
+	else
+		dJointAttach			(contact_joint, 0, dGeomGetBody(c.geom.g2));
+	
+}
+
+void	CPHCharacter::	fix_body_rotation					()
+{
+		dBodyID b= get_body();//GetBody();
+		if(b)
+		{
+			dMatrix3 R;
+			dRSetIdentity (R);
+			dBodySetAngularVel(b,0.f,0.f,0.f);
+			dBodySetRotation(b,R);
+		}
+}
+
+
+
+CPHCharacter	*create_ai_character()
+{
+	return xr_new<CPHAICharacter>	();
+}
+CPHCharacter	*create_actor_character( bool single_game )
+{
+	return xr_new<CPHActorCharacter>	( single_game );
+}
+

@@ -2,16 +2,17 @@
 #define PH_STATIC_GEOM_SHELL_H
 #include "PHGeometryOwner.h"
 #include "PHObject.h"
-#include "PHUpdateObject.h"
-
+#include "phupdateobject.h"
+#include "iphstaticgeomshell.h"
 class CPHStaticGeomShell: 
 	public CPHGeometryOwner,
 	public CPHObject,
-	public CPHUpdateObject
+	public CPHUpdateObject,
+	public IPHStaticGeomShell
 {
 
 #ifdef	DEBUG
-	virtual		CPhysicsShellHolder	*ref_object					() { return CPHGeometryOwner::PhysicsRefObject() ;}
+	virtual		IPhysicsShellHolder	*ref_object					() { return CPHGeometryOwner::PhysicsRefObject() ;}
 #endif
 
 			void			get_spatial_params	();	
@@ -26,9 +27,10 @@ public:
 			void			Activate			(const Fmatrix& form);
 			void			Deactivate			();
 							CPHStaticGeomShell	();
+virtual						~CPHStaticGeomShell	(){};
 };
 
-CPHStaticGeomShell* P_BuildStaticGeomShell(CGameObject* obj,ObjectContactCallbackFun* object_contact_callback);
-CPHStaticGeomShell* P_BuildStaticGeomShell(CGameObject* obj,ObjectContactCallbackFun* object_contact_callback,Fobb &b);
-void				P_BuildStaticGeomShell(CPHStaticGeomShell* shell,CGameObject* obj,ObjectContactCallbackFun* object_contact_callback,Fobb &b);
+//CPHStaticGeomShell* P_BuildStaticGeomShell(CGameObject* obj,ObjectContactCallbackFun* object_contact_callback);
+//CPHStaticGeomShell* P_BuildStaticGeomShell(CGameObject* obj,ObjectContactCallbackFun* object_contact_callback,Fobb &b);
+//void				P_BuildStaticGeomShell(CPHStaticGeomShell* shell,CGameObject* obj,ObjectContactCallbackFun* object_contact_callback,Fobb &b);
 #endif

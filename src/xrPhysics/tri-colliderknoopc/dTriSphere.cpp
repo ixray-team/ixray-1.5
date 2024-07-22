@@ -3,6 +3,8 @@
 #include "dTriColliderMath.h"
 #include "dTriSphere.h"
 #include "dctrilistcollider.h"
+#include "../phworld.h"
+#include "../../xrcdb/xr_area.h"
 ////////////////////////////////////////////////////////////////////////////
 IC dReal dcTriListCollider::PointSphereTest(const dReal* center, const dReal radius,
 							 const dReal* pt,dReal* norm)
@@ -198,7 +200,8 @@ int dcTriListCollider::dTriSphere(const dReal* v0,const dReal* v1,const dReal* v
 	 }
 	 else
 	 {
-		CDB::TRI*       T_array      = Level().ObjectSpace.GetStaticTris();
+		//VERIFY( g_pGameLevel );
+		CDB::TRI*       T_array      = inl_ph_world().ObjectSpace().GetStaticTris();
 		flags8& gl_state=gl_cl_tries_state[I-B];
 		if(gl_state.test(fl_engaged_s0)||gl_state.test(fl_engaged_s1)||gl_state.test(fl_engaged_s2))	
 			return 0;

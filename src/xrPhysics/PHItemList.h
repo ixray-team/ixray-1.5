@@ -31,7 +31,8 @@ template<class T>
 	
 		public:
 		
-		class iterator {
+		class iterator
+			{
 				
 						T		*my_ptr;
 					public:

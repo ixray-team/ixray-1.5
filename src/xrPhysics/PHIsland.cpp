@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "PHIsland.h"
 #include "physics.h"
+#include "ph_valid_ode.h"
 void	CPHIsland::	Step(dReal step)
 {
 	if(!m_flags.is_active()) return;

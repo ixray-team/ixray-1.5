@@ -1,6 +1,6 @@
 //#include "stdafx.h"
-#include "../xrPhysics/ode_include.h"
-
+//#include "ode_include.h"
+#include "../../3rd party/ode/include/ode/common.h"
 
 /* Class ID */
 

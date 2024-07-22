@@ -4,28 +4,33 @@
 #include "Physics.h"
 #include "ExtendedGeom.h"
 #include "PHCapture.h"
-#include "Entity.h"
-#include "inventory_item.h"
+//#include "Entity.h"
+//#include "inventory_item.h"
 #include "../Include/xrRender/Kinematics.h"
-#include "Actor.h"
-#include "Inventory.h"
-#include "CaptureBoneCallback.h"
+//#include "Actor.h"
+//#include "Inventory.h"
+//#include "CaptureBoneCallback.h"
+#include "iphysicsshellholder.h"
+#include "../xrengine/bone.h"
+#include "../xrengine/device.h"
 extern	class CPHWorld	*ph_world;
 ///////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
-bool can_capture( CPHCharacter   *a_character, CPhysicsShellHolder	*a_taget_object  )
+bool can_capture( CPHCharacter   *a_character, IPhysicsShellHolder	*a_taget_object  )
 {
 	if(!a_taget_object									||
-	   !a_taget_object->m_pPhysicsShell					||
-	   !a_taget_object->m_pPhysicsShell->isActive()		||
-	   smart_cast<CInventoryItem*>(a_taget_object)		||
+	   !a_taget_object->ObjectPPhysicsShell()					||
+	   !a_taget_object->ObjectPPhysicsShell()->isActive()		||
+	   a_taget_object->IsInventoryItem()				||
 	   !a_character										||
 	   !a_character->b_exist							||
 	   !a_character->PhysicsRefObject()					||
-	   !a_character->PhysicsRefObject()->Visual( )
+	   //!a_character->PhysicsRefObject()->ObjectVisual( )
+	   !a_character->PhysicsRefObject()->ObjectKinematics( )
 	   ) return false;
 
-	IKinematics* p_kinematics = smart_cast<IKinematics*>( a_character->PhysicsRefObject()->Visual( ) );
+	//IKinematics* p_kinematics = smart_cast<IKinematics*>( a_character->PhysicsRefObject()->ObjectVisual( ) );
+	IKinematics* p_kinematics = a_character->PhysicsRefObject()->ObjectKinematics( ) ;
 	VERIFY( p_kinematics );
 	CInifile* ini = p_kinematics->LL_UserData();
 	if(!ini								||
@@ -34,15 +39,17 @@ bool can_capture( CPHCharacter   *a_character, CPhysicsShellHolder	*a_taget_obje
 	return true;
 }
 
-bool can_capture( CPHCharacter   *a_character, CPhysicsShellHolder	*a_taget_object, u16 a_taget_element  ) 
+bool can_capture( CPHCharacter   *a_character, IPhysicsShellHolder	*a_taget_object, u16 a_taget_element  ) 
 {
 
 	if( !can_capture( a_character, a_taget_object)	||
 		a_taget_element == BI_NONE					|| 
-		!a_taget_object->Visual() 
+		//!a_taget_object->ObjectVisual() 
+		!a_taget_object->ObjectKinematics() 
 		) return false;
 
-	IKinematics* K=	smart_cast<IKinematics*>( a_taget_object->Visual( ) );
+	//IKinematics* K=	smart_cast<IKinematics*>( a_taget_object->ObjectVisual( ) );
+	IKinematics* K=	 a_taget_object->ObjectKinematics( ) ;
 
 	if(!K || !K->LL_GetBoneInstance(a_taget_element).callback_param() )
 		return false;
@@ -53,7 +60,8 @@ static CBoneInstance * get_capture_bone( CPHCharacter   *a_character )
 {
 	VERIFY( a_character );
 	VERIFY( a_character->PhysicsRefObject() );
-	IKinematics* p_kinematics = smart_cast<IKinematics*>( a_character->PhysicsRefObject()->Visual( ) );
+	//IKinematics* p_kinematics = smart_cast<IKinematics*>( a_character->PhysicsRefObject()->ObjectVisual( ) );
+	IKinematics* p_kinematics =  a_character->PhysicsRefObject()->ObjectKinematics( ) ;
 	VERIFY( p_kinematics );
 	CInifile* ini = p_kinematics->LL_UserData();
 	VERIFY( ini );
@@ -69,7 +77,7 @@ static CBoneInstance * get_capture_bone( CPHCharacter   *a_character )
 /*
 CPHCharacter		*m_character;
 CPhysicsElement*	m_taget_element;
-CPhysicsShellHolder*	m_taget_object;
+IPhysicsShellHolder*	m_taget_object;
 dJointID			m_joint;
 dJointID			m_ajoint;
 dJointFeedback		m_joint_feedback;
@@ -90,7 +98,7 @@ bool				b_disabled;
 bool				b_character_feedback;
 */
 
-CPHCapture::CPHCapture	( CPHCharacter   *a_character, CPhysicsShellHolder	*a_taget_object, CPHCaptureBoneCallback* cb /*=0*/ ):
+CPHCapture::CPHCapture	( CPHCharacter   *a_character, IPhysicsShellHolder	*a_taget_object, NearestToPointCallback* cb /*=0*/ ):
 	m_joint					( NULL )				,	
 	m_ajoint				( NULL )				,
 	m_body					( NULL )				,
@@ -118,18 +126,18 @@ CPHCapture::CPHCapture	( CPHCharacter   *a_character, CPhysicsShellHolder	*a_tag
 		return;
 
 	VERIFY( m_taget_object );
-	VERIFY( m_taget_object->m_pPhysicsShell );
+	VERIFY( m_taget_object->ObjectPPhysicsShell() );
 	VERIFY( a_character );
 	m_capture_bone			=get_capture_bone( a_character );
 	VERIFY( m_capture_bone );
-	m_taget_element			=m_taget_object->m_pPhysicsShell->NearestToPoint( m_capture_bone->mTransform.c, cb );
+	m_taget_element			=m_taget_object->ObjectPPhysicsShell()->NearestToPoint( m_capture_bone->mTransform.c, cb );
 	if( ! m_taget_element )
 		return;
 	Init( );
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-	CPHCapture::CPHCapture(CPHCharacter   *a_character,CPhysicsShellHolder	*a_taget_object,u16 a_taget_element):
+	CPHCapture::CPHCapture(CPHCharacter   *a_character,IPhysicsShellHolder	*a_taget_object,u16 a_taget_element):
 	m_joint					( NULL )			,	
 	m_ajoint				( NULL )			,
 	m_body					( NULL )			,
@@ -162,10 +170,11 @@ CPHCapture::CPHCapture	( CPHCharacter   *a_character, CPhysicsShellHolder	*a_tag
 	VERIFY( a_character );
 	m_capture_bone			=get_capture_bone( a_character ) ;
 		
-	IRenderVisual* V=m_taget_object->Visual( );
-	VERIFY( V );
+	//IRenderVisual* V=m_taget_object->ObjectVisual( );
+	//VERIFY( V );
 
-	IKinematics* K=	smart_cast<IKinematics*>( m_taget_object->Visual( ) );
+	//IKinematics* K=	smart_cast<IKinematics*>( m_taget_object->ObjectVisual( ) );
+	IKinematics* K=	m_taget_object->ObjectKinematics( ) ;
 	VERIFY( K );
 
 	CBoneInstance& tag_bone=K->LL_GetBoneInstance( a_taget_element );
@@ -182,10 +191,12 @@ void CPHCapture::Init( )
 	VERIFY( m_taget_element );
 	VERIFY( m_character );
 	VERIFY( m_character->PhysicsRefObject() );
-	VERIFY( m_character->PhysicsRefObject()->Visual( ) );
+	//VERIFY( m_character->PhysicsRefObject()->ObjectVisual( ) );
+	VERIFY( m_character->PhysicsRefObject()->ObjectKinematics( ) );
 	VERIFY( m_capture_bone );
 
-	IKinematics* p_kinematics = smart_cast<IKinematics*>( m_character->PhysicsRefObject()->Visual( ) );
+	//IKinematics* p_kinematics = smart_cast<IKinematics*>( m_character->PhysicsRefObject()->ObjectVisual( ) );
+	IKinematics* p_kinematics = m_character->PhysicsRefObject()->ObjectKinematics( ) ;
 	VERIFY( p_kinematics );
 	CInifile	* ini = p_kinematics->LL_UserData();
 	VERIFY( ini );
@@ -194,7 +205,7 @@ void CPHCapture::Init( )
 	Fvector capture_bone_position;
 	capture_bone_position.set(m_capture_bone->mTransform.c);
 	b_character_feedback=true;
-	(m_character->PhysicsRefObject())->XFORM().transform_tiny(capture_bone_position);
+	(m_character->PhysicsRefObject())->ObjectXFORM().transform_tiny(capture_bone_position);
 
 	m_taget_element->GetGlobalPositionDynamic(&dir);
 	dir.sub(capture_bone_position,dir);
@@ -207,7 +218,7 @@ void CPHCapture::Init( )
 	m_capture_distance		=ini->r_float("capture","distance");					//distance
 	m_capture_force			=ini->r_float("capture","capture_force");				//capture force
 	m_capture_time			=ini->r_u32("capture","time_limit")*1000;				//time;		
-	m_time_start			=Device.dwTimeGlobal;
+	m_time_start			=inl_ph_world().Device().dwTimeGlobal;
 	float max_pull_force    =ini->r_float("capture","pull_force");					//pull force
 	m_pull_force			=pool_force_factor*ph_world->Gravity()*m_taget_element->PhysicsShell()->getMass();
 	if(m_pull_force>max_pull_force) 
@@ -218,10 +229,12 @@ void CPHCapture::Init( )
 	//m_taget_element->PhysicsShell()->set_ObjectContactCallback(object_contactCallbackFun);
 	m_character->SetObjectContactCallback(object_contactCallbackFun);
 	m_island.Init();
-	CActor* A=smart_cast<CActor*>(m_character->PhysicsRefObject());
-	if(A)
+	//CActor* A=smart_cast<CActor*>(m_character->PhysicsRefObject());
+	IPhysicsShellHolder* A=(m_character->PhysicsRefObject());
+	if(A->IsActor())
 	{
-		A->SetWeaponHideState(INV_STATE_BLOCK_ALL,true);
+		//A->SetWeaponHideState(INV_STATE_BLOCK_ALL,true);
+		A->HideAllWeapons(true);
 	}
 	CPHUpdateObject::Activate();
 	e_state = cstPulling;
@@ -253,16 +266,18 @@ void CPHCapture::Release()
 	}
 	m_body=NULL;
 
-	if(e_state==cstPulling&&m_taget_element&&!m_taget_object->getDestroy()&&m_taget_object->PPhysicsShell()&&m_taget_object->PPhysicsShell()->isActive())
+	if(e_state==cstPulling&&m_taget_element&&!m_taget_object->ObjectGetDestroy()&&m_taget_object->ObjectPPhysicsShell()&&m_taget_object->ObjectPPhysicsShell()->isActive())
 	{
 		m_taget_element->set_DynamicLimits();
 	}
 
 	b_collide=true;
-	CActor* A=smart_cast<CActor*>(m_character->PhysicsRefObject());
+	//CActor* A=smart_cast<CActor*>(m_character->PhysicsRefObject());
+	IPhysicsShellHolder* A=(m_character->PhysicsRefObject());
 	if(A)
 	{
-		A->SetWeaponHideState(INV_STATE_BLOCK_ALL,false);
+		A->HideAllWeapons(false);
+		//A->SetWeaponHideState(INV_STATE_BLOCK_ALL,false);
 //.		A->inventory().setSlotsBlocked(false);
 	}
 

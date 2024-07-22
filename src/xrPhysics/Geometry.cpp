@@ -8,7 +8,7 @@
 
 //global
 #ifdef DEBUG
-#	include	"phdebug.h"
+#	include	"debug_output.h"
 #endif // #ifdef DEBUG
 
 static void computeFinalTx(dGeomID geom_transform,dReal* final_pos,dReal* final_R)
@@ -188,14 +188,23 @@ void CODEGeom::set_static_ref_form(const Fmatrix& form)
 	PHDynamicData::FMX33toDMX(m33,R);
 	dGeomSetRotation(geometry_transform(),R);
 }
-void CODEGeom::	clear_motion_history()
+void CODEGeom::	clear_motion_history( bool set_unspecified )
 {
 	dGeomUserDataResetLastPos(geom());
+	if( set_unspecified )
+		return;
+	get_global_center_bt( cast_fv ( dGeomGetUserData( geom() )->last_pos ) );
+#ifdef	DEBUG
+	Fmatrix m;
+	get_xform( m );
+	if( Fvector().sub( m.c, cast_fv ( dGeomGetUserData( geom() )->last_pos ) ).magnitude() > EPS )
+		Msg("! WRONG THING" );
+#endif
 }
 
 void CODEGeom::set_build_position(const Fvector& /*ref_point*/)
 {
-	clear_motion_history();
+	clear_motion_history( true );
 }
 
 void CODEGeom::set_body(dBodyID body)
@@ -326,7 +335,7 @@ void* CODEGeom::get_callback_data()
 		return dGeomGetUserData(m_geom_transform)->callback_data;
 	}
 }
-void CODEGeom::set_ref_object(CPhysicsShellHolder* ro)
+void CODEGeom::set_ref_object(IPhysicsShellHolder* ro)
 {
 	if(!m_geom_transform) return;
 	if(geom())
@@ -545,6 +554,9 @@ void	CBoxGeom::set_size(const Fvector&	half_size )
 							m_box.m_halfsize.z*2.f
 						);
 }
+
+
+
 void	CBoxGeom::get_size(Fvector&	half_size ) const
 {
 	VERIFY( geom() );
@@ -671,6 +683,16 @@ void CCylinderGeom::get_Extensions( const Fvector& axis, float center_prg, float
 	get_final_tx_bt( pos, rot, p, r )		;
 	GetCylinderExtensions( g, cast_fp( axis ), pos, rot, center_prg, &lo_ext, &hi_ext );	
 }
+
+
+void	CCylinderGeom::set_radius( float r )
+{
+	m_cylinder.m_radius = r;
+	VERIFY( geom() );
+	dGeomCylinderSetParams ( geom(), m_cylinder.m_radius, m_cylinder.m_height );
+}
+
+
 const Fvector& CCylinderGeom::local_center()
 {
 	return m_cylinder.m_center;
@@ -730,8 +752,8 @@ void	CODEGeom::	dbg_draw			( float scale, u32 color, Flags32 flags )const
 {
 	Fmatrix m;
 	get_xform( m );
-	DBG_DrawMatrix( m, 0.02f );
-	DBG_DrawPoint(m.c, 0.001f, color_xrgb(0, 255, 255));
+	debug_output().DBG_DrawMatrix( m, 0.02f );
+	debug_output().DBG_DrawPoint(m.c, 0.001f, color_xrgb(0, 255, 255));
 }
 
 
@@ -749,7 +771,7 @@ void	CBoxGeom::	dbg_draw			( float scale, u32 color, Flags32 flags )const
 	dVector3 l;
 	dGeomBoxGetLengths( g, l );
 
-	DBG_DrawOBB( m, cast_fv( l ).mul( 0.5f ), color );
+	debug_output().DBG_DrawOBB( m, cast_fv( l ).mul( 0.5f ), color );
 }
 
 void	CSphereGeom::	dbg_draw			( float scale, u32 color, Flags32 flags )const
@@ -763,12 +785,23 @@ void	CSphereGeom::	dbg_draw			( float scale, u32 color, Flags32 flags )const
 	VERIFY( g );
 	dGeomSphereGetRadius( g );
 
-	DBG_DrawPoint( m.c, dGeomSphereGetRadius( g ), color );
+	debug_output().DBG_DrawPoint( m.c, dGeomSphereGetRadius( g ), color );
 
 }
 
 void	CCylinderGeom::	dbg_draw			( float scale, u32 color, Flags32 flags )const
 {
 	inherited::dbg_draw( scale, color, flags );
+	
+	dGeomID	g = geom();
+	VERIFY( g );
+
+	Fmatrix m;
+	get_xform( m );
+
+	float r = 1, h = 1;
+	dGeomCylinderGetParams( g, &r, &h );
+	Fvector ext( Fvector().set( r, h*0.5f, r ) );
+	debug_output().DBG_DrawOBB( m, ext, color );
 }
 #endif

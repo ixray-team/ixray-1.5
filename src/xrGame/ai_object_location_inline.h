@@ -31,3 +31,8 @@ IC	const u32 CAI_ObjectLocation::level_vertex_id					() const
 {
 	return					(m_level_vertex_id);
 }
+
+IC	void CAI_ObjectLocation::game_vertex(_GRAPH_ID const& game_vertex_id) {
+	VERIFY(ai().game_graph().valid_vertex_id(game_vertex_id));
+	m_game_vertex_id = game_vertex_id;
+}

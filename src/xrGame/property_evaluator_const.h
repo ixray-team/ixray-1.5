@@ -20,8 +20,7 @@ protected:
 
 public:
 	IC					CPropertyEvaluatorConst	(inherited::_value_type value, LPCSTR evaluator_name = "");
-	virtual inherited::_value_type	evaluate				()
-	{
+	virtual inherited::_value_type	evaluate() {
 		return			(this->m_value);
 	}
 };

@@ -1,4 +1,7 @@
 #include "stdafx.h"
+#include "mathutils.h"
+#include "../3rd party/ode/include/ode/common.h"
+XRPHYSICS_API const float	phInfinity = dInfinity;
 /*
 #include "MathUtils.h"
 enum EBoxSideNearestPointCode
@@ -411,71 +414,73 @@ IC bool RAYvsCYLINDER(const Fcylinder& c_cylinder, const Fvector &S, const Fvect
 	}
 }
 
-void capped_cylinder_ray_collision_test() {
-	Fcylinder c;
-	c.m_center.set(0, 0, 0);
-	c.m_direction.set(0, 0, 1);
-	c.m_height = 2;
-	c.m_radius = 1;
-	//ray
-	Fvector dir, pos; float R;
-	dir.set(1, 0, 0); pos.set(0, 0, 0); R = 3;
 
+void capped_cylinder_ray_collision_test()
+{
+	Fcylinder c;
+	c.m_center.set(0,0,0);
+	c.m_direction.set(0,0,1);
+	c.m_height=2;
+	c.m_radius=1;
+	//ray
+	Fvector dir,pos;float R;
+	dir.set(1,0,0);pos.set(0,0,0);R=3;
+	
 	//inside
-	RAYvsCYLINDER(c, pos, dir, R, FALSE);//true , 1
-	RAYvsCYLINDER(c, pos, dir, R, TRUE);//false ,
-	dir.set(0, 0, 1);
-	RAYvsCYLINDER(c, pos, dir, R, FALSE);//true , 2
-	RAYvsCYLINDER(c, pos, dir, R, TRUE);//false
+	RAYvsCYLINDER(c,pos,dir,R,FALSE);//true , 1
+	RAYvsCYLINDER(c,pos,dir,R,TRUE);//false ,
+	dir.set(0,0,1);
+	RAYvsCYLINDER(c,pos,dir,R,FALSE);//true , 2
+	RAYvsCYLINDER(c,pos,dir,R,TRUE);//false
 
 	//outside
-	pos.set(-3, 0, 0); dir.set(1, 0, 0); R = 4;
-	RAYvsCYLINDER(c, pos, dir, R, FALSE);//true , 2
-	RAYvsCYLINDER(c, pos, dir, R, TRUE);//true , 2
-	R = 1;
-	RAYvsCYLINDER(c, pos, dir, R, FALSE);//false
-	pos.set(0, 0, -3); dir.set(0, 0, 1); R = 4;
-	RAYvsCYLINDER(c, pos, dir, R, FALSE);//true , 1
-	RAYvsCYLINDER(c, pos, dir, R, TRUE);//true, 1
+	pos.set(-3,0,0);dir.set(1,0,0);R=4;
+	RAYvsCYLINDER(c,pos,dir,R,FALSE);//true , 2
+	RAYvsCYLINDER(c,pos,dir,R,TRUE);//true , 2
+	R=1;
+	RAYvsCYLINDER(c,pos,dir,R,FALSE);//false
+	pos.set(0,0,-3);dir.set(0,0,1);R=4;
+	RAYvsCYLINDER(c,pos,dir,R,FALSE);//true , 1
+	RAYvsCYLINDER(c,pos,dir,R,TRUE);//true, 1
 
-	pos.set(-3, -3, -3); dir.set(1, 1, 1); dir.normalize(); R = 10;
-	RAYvsCYLINDER(c, pos, dir, R, TRUE);//true, ?
+	pos.set(-3,-3,-3);dir.set(1,1,1);dir.normalize();R=10;
+	RAYvsCYLINDER(c,pos,dir,R,TRUE);//true, ?
 	float ir[2];
 	Fcylinder::ecode code[2];
-	c.intersect(pos, dir, ir, code);
+	c.intersect(pos,dir,ir,code);
 	//
-	pos.set(0, 0, 0);
-	RAYvsCYLINDER(c, pos, dir, R, FALSE);//true, ?
+	pos.set(0,0,0);
+	RAYvsCYLINDER(c,pos,dir,R,FALSE);//true, ?
 	//Fcylinder::ecode code[2];
-	c.intersect(pos, dir, ir, code);
-	RAYvsCYLINDER(c, pos, dir, R, TRUE);//false
-	CTimer t; t.Start();
-	for (int i = 0; i < 1000000; i++)
+	c.intersect(pos,dir,ir,code);
+	RAYvsCYLINDER(c,pos,dir,R,TRUE);//false
+	CTimer t;t.Start();
+	for(int i=0;i<1000000;i++)
 	{
 		Fcylinder c_;
-		c_.m_center.random_point(Fvector().set(2, 2, 2));
+		c_.m_center.random_point(Fvector().set(2,2,2));
 		c_.m_direction.random_dir();
-		c_.m_height = Random.randF(0.2f, 2.f);
-		c_.m_radius = Random.randF(0.1f, 2.f);
+		c_.m_height=Random.randF(0.2f,2.f);
+		c_.m_radius=Random.randF(0.1f,2.f);
 		//ray
-		Fvector dir_, pos_; float R_ = Random.randF(0.1f, 2.f);
-		dir_.random_dir(); pos_.random_point(Fvector().set(2, 2, 2));
-		RAYvsCYLINDER(c_, pos_, dir_, R_, TRUE);
+		Fvector dir_,pos_;float R_=Random.randF(0.1f,2.f);
+		dir_.random_dir();pos_.random_point(Fvector().set(2,2,2));
+		RAYvsCYLINDER(c_,pos_,dir_,R_,TRUE);
 	}
-	Msg("my RAYvsCYLINDE time %f ms", t.GetElapsed_sec() * 1000.f);
+	Msg("my RAYvsCYLINDE time %f ms",t.GetElapsed_sec()*1000.f);
 	t.Start();
-	for (int i = 0; i < 1000000; i++)
+	for(int i=0;i<1000000;i++)
 	{
 		Fcylinder c_;
-		c_.m_center.random_point(Fvector().set(2, 2, 2));
+		c_.m_center.random_point(Fvector().set(2,2,2));
 		c_.m_direction.random_dir();
-		c_.m_height = Random.randF(0.2f, 2.f);
-		c_.m_radius = Random.randF(0.1f, 2.f);
+		c_.m_height=Random.randF(0.2f,2.f);
+		c_.m_radius=Random.randF(0.1f,2.f);
 		//ray
-		Fvector dir_, pos_;//float R=Random.randF(0.1f,2.f);
-		dir_.random_dir(); pos_.random_point(Fvector().set(2, 2, 2));
-		c_.intersect(pos_, dir_, ir, code);
+		Fvector dir_,pos_;//float R=Random.randF(0.1f,2.f);
+		dir_.random_dir();pos_.random_point(Fvector().set(2,2,2));
+		c_.intersect(pos_,dir_,ir,code);
 	}
-	Msg("current intersect time %f ms", t.GetElapsed_sec() * 1000.f);
+		Msg("current intersect time %f ms",t.GetElapsed_sec()*1000.f);
 
 }

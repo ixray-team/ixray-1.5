@@ -7,6 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
+
 #ifdef DEBUG
 #include "profiler.h"
 #include "../xrEngine/gamefont.h"
@@ -81,8 +82,8 @@ IC	void CProfiler::convert_string	(LPCSTR str, shared_str &out, u32 max_string_s
 	}
 	xr_strcpy						(m_temp,"");
 	for (u32 k = 0; k<count; ++k)
-		strcat					(m_temp,indent);
-	strcat						(m_temp,j);
+		xr_strcat					(m_temp,indent);
+	xr_strcat						(m_temp,j);
 	count						= xr_strlen(m_temp);
 	for ( ; count < max_string_size; ++count)
 		m_temp[count]			= white_character;
@@ -271,5 +272,4 @@ void CProfiler::add_profile_portion	(const CProfileResultPortion &profile_portio
 	InterlockedExchange			(&critical_section_counter,0);
 #endif // PROFILE_CRITICAL_SECTIONS
 }
-
-#endif // DEBUG
+#endif

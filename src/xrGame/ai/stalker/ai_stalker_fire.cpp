@@ -1039,7 +1039,7 @@ void CAI_Stalker::check_throw_trajectory	(const float &throw_time)
 	m_throw_picks.front()	= m_throw_position;
 #endif // DEBUG
 
-	const Fvector			gravity = Fvector().set(0.f, -ph_world->Gravity(), 0.f);
+	const Fvector			gravity = Fvector().set(0.f, -physics_world()->Gravity(), 0.f);
 	const float				epsilon = .1f;
 
 	float					low = 0.f;
@@ -1113,8 +1113,8 @@ void CAI_Stalker::update_throw_params		()
 		return;
 	}
 
-	float					time = ThrowMinVelTime(m_throw_velocity,ph_world->Gravity());
-	TransferenceToThrowVel	(m_throw_velocity,time,ph_world->Gravity());
+	float					time = ThrowMinVelTime(m_throw_velocity,physics_world()->Gravity());
+	TransferenceToThrowVel	(m_throw_velocity,time,physics_world()->Gravity());
 
 	check_throw_trajectory	(time);
 }

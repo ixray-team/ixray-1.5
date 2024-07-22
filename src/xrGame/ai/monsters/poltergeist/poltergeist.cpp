@@ -202,8 +202,11 @@ void CPoltergeist::shedule_Update(u32 dt)
 
 BOOL CPoltergeist::net_Spawn (CSE_Abstract* DC) 
 {
-	if (!inherited::net_Spawn(DC)) return(FALSE);
-
+	if (!inherited::net_Spawn(DC)) 
+		return(FALSE);
+	VERIFY(character_physics_support());
+	VERIFY(character_physics_support()->movement());
+	character_physics_support()->movement()->DestroyCharacter();
 	// спаунится нивидимым
 	setVisible		(false);
 	ability()->on_hide();
@@ -230,7 +233,7 @@ void CPoltergeist::Die(CObject* who)
 				Fmatrix M;
 				M.set							(XFORM());
 				M.translate_over				(m_current_position);
-				PPhysicsShell()->SetTransform	(M);
+				PPhysicsShell()->SetTransform(M, mh_unspecified);
 			} else 
 				Position() = m_current_position;
 		}

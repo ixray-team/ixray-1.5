@@ -1,7 +1,9 @@
 #pragma once
 
 class CCharacterPhysicsSupport;
-class activating_character_delay {
+
+class activating_character_delay
+{
 	CCharacterPhysicsSupport &char_support;
 	u32 activate_time;
 	static const u32 delay = 3000;

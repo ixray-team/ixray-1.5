@@ -423,8 +423,8 @@ bool CBulletManager::ObjectHit( SBullet_Hit* hit_res, SBullet* bullet, const Fve
 	float speed_scale = 0.0f;
 
 #ifdef DEBUG
-	Fvector dbg_bullet_pos;
-	dbg_bullet_pos.mad(bullet->bullet_pos,bullet->dir,R.range);
+	//Fvector dbg_bullet_pos;
+	//dbg_bullet_pos.mad(bullet->bullet_pos,bullet->dir,R.range);
 	int bullet_state = 0;
 #endif
 
@@ -497,7 +497,7 @@ bool CBulletManager::ObjectHit( SBullet_Hit* hit_res, SBullet* bullet, const Fve
 	extern BOOL g_bDrawBulletHit;
 	if(g_bDrawBulletHit)
 	{
-		g_hit[bullet_state].push_back(dbg_bullet_pos);
+//		g_hit[bullet_state].push_back(dbg_bullet_pos);
 		g_hit[bullet_state].push_back(end_point);
 	}
 #endif 

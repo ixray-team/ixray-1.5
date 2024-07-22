@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "PHGeometryOwner.h"
+#include "phworld.h"
+
 #include "../Include/xrRender/Kinematics.h"
 #include "../xrEngine/bone.h"
 
@@ -7,9 +9,11 @@ CPHGeometryOwner::CPHGeometryOwner()
 {
 	b_builded=false;
 	m_mass_center.set(0,0,0);
-	contact_callback=ContactShotMark;
+	VERIFY( ph_world );
+	//contact_callback=ContactShotMark;//ph_world->default_contact_shotmark();
+	contact_callback=ph_world->default_contact_shotmark();
 	object_contact_callback=NULL;
-	ul_material=GMLib.GetMaterialIdx("objects\\small_box");
+	ul_material=GMLibrary().GetMaterialIdx("objects\\small_box");
 	m_group=NULL;
 	m_phys_ref_object=NULL;
 }
@@ -127,12 +131,12 @@ void CPHGeometryOwner::get_mc_kinematics(IKinematics* K,Fvector& mc,float& mass)
 	GEOM_I i_geom=m_geoms.begin(),e=m_geoms.end();
 	for(;i_geom!=e;++i_geom)
 	{
-		CBoneData& data=K->LL_GetData((*i_geom)->bone_id());
+		const IBoneData& data=K->GetBoneData((*i_geom)->bone_id());
 		Fvector add;
-		mass+=data.mass;
+		mass+=data.get_mass();
 		m_volume+=(*i_geom)->volume();
-		add.set(data.center_of_mass);
-		add.mul(data.mass);
+		add.set(data.get_center_of_mass());
+		add.mul(data.get_mass());
 		mc.add(add);
 	}
 	mc.mul(1.f/mass);
@@ -324,7 +328,7 @@ void*	CPHGeometryOwner::get_CallbackData()
 		VERIFY(b_builded);
 		return (*m_geoms.begin())->get_callback_data	();
 }
-void CPHGeometryOwner::set_PhysicsRefObject(CPhysicsShellHolder* ref_object)
+void CPHGeometryOwner::set_PhysicsRefObject(IPhysicsShellHolder* ref_object)
 {
 	m_phys_ref_object=ref_object;
 	if(!b_builded) return;
@@ -438,12 +442,12 @@ void CPHGeometryOwner::clear_cashed_tries()
 	}
 }
 
-void	CPHGeometryOwner::clear_motion_history()
+void	CPHGeometryOwner::clear_motion_history( bool set_unspecified )
 {
 	GEOM_I i=m_geoms.begin(),e=m_geoms.end();
 	for(;i!=e;++i)
 	{
-		(*i)->clear_motion_history();
+		(*i)->clear_motion_history( set_unspecified );
 	}
 }
 

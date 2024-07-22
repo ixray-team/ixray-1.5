@@ -4,11 +4,11 @@
 #include "tri-colliderknoopc/dTriList.h"
 #include "PHContactBodyEffector.h"
 #include "../xrEngine/gamemtllib.h"
-#include "gameobject.h"
-#include "PhysicsShellHolder.h"
+//#include "gameobject.h"
+//#include "PhysicsShellHolder.h"
 #include "PHCollideValidator.h"
 #ifdef DEBUG
-#include "PHDebug.h"
+#include "debug_output.h"
 #endif
 ///////////////////////////////////////////////////////////////
 #pragma warning(disable:4995)
@@ -24,42 +24,42 @@ extern CPHWorld *ph_world;
 
 #include "ExtendedGeom.h"
 //union dInfBytes dInfinityValue = {{0,0,0x80,0x7f}};
-PhysicsStepTimeCallback		*physics_step_time_callback				= 0;
+//PhysicsStepTimeCallback		*physics_step_time_callback				= 0;
 
-const dReal 		default_w_limit									= 9.8174770f;//(M_PI/16.f/(fixed_step=0.02f));
-const dReal 		default_l_limit									= 150.f;//(3.f/fixed_step=0.02f);
-const dReal 		default_l_scale									= 1.01f;
-const dReal 		default_w_scale									= 1.01f;
-const dReal			default_k_l										= 0.0002f;//square resistance !!
-const dReal			default_k_w										= 0.05f;
+const float 		default_w_limit									= 9.8174770f;//(M_PI/16.f/(fixed_step=0.02f));
+const float 		default_l_limit									= 150.f;//(3.f/fixed_step=0.02f);
+const float 		default_l_scale									= 1.01f;
+const float 		default_w_scale									= 1.01f;
+const float			default_k_l										= 0.0002f;//square resistance !!
+const float			default_k_w										= 0.05f;
 
-const dReal			mass_limit										= 10000.f;//some conventional value used as evaluative param (there is no code restriction on mass)
+
 extern const u16	max_joint_allowed_for_exeact_integration		= 30;
 
 //base	params
-const dReal base_fixed_step											=	0.02f				;
-const dReal base_erp												=	0.54545456f			;
-const dReal base_cfm												=	1.1363636e-006f		;
+const float base_fixed_step											=	0.02f				;
+const float base_erp												=	0.54545456f			;
+const float base_cfm												=	1.1363636e-006f		;
 //base params
-dReal 			fixed_step											=	0.01f;
-dReal 			world_cfm											=	CFM(SPRING_S(base_cfm,base_erp,base_fixed_step),DAMPING(base_cfm,base_erp));
-dReal 			world_erp											=	ERP(SPRING_S(base_cfm,base_erp,base_fixed_step),DAMPING(base_cfm,base_erp));
-dReal			world_spring										=	1.0f*SPRING	(world_cfm,world_erp);
-dReal			world_damping										=	1.0f*DAMPING(world_cfm,world_erp);
+float 			fixed_step											=	0.01f;
+float 			world_cfm											=	CFM(SPRING_S(base_cfm,base_erp,base_fixed_step),DAMPING(base_cfm,base_erp));
+float 			world_erp											=	ERP(SPRING_S(base_cfm,base_erp,base_fixed_step),DAMPING(base_cfm,base_erp));
+float			world_spring										=	1.0f*SPRING	(world_cfm,world_erp);
+float			world_damping										=	1.0f*DAMPING(world_cfm,world_erp);
 
 
-const dReal			default_world_gravity							=	2*9.81f;
+const float			default_world_gravity							=	2*9.81f;
 
 
 /////////////////////////////////////////////////////
 
 int			phIterations											= 18;
 float		phTimefactor											= 1.f;
-float		phBreakCommonFactor										= 0.01f;
-float		phRigidBreakWeaponFactor								= 1.f;
+//float		phBreakCommonFactor										= 0.01f;
+//float		phRigidBreakWeaponFactor								= 1.f;
 Fbox		phBoundaries											= {1000.f,1000.f,-1000.f,-1000.f};
-float		ph_tri_query_ex_aabb_rate								= 1.3f;
-int			ph_tri_clear_disable_count								= 10;
+//float		ph_tri_query_ex_aabb_rate								= 1.3f;
+//int			ph_tri_clear_disable_count								= 10;
 dWorldID	phWorld;
 
 /////////////////////////////////////
@@ -151,8 +151,8 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2,dJointGroupID jointGroup,C
 		if(!is_tri_2&&!is_tri_1) surface.mode=0;
 		if(is_tri_1) material_idx_1=(u16)surface.mode;
 		if(is_tri_2) material_idx_2=(u16)surface.mode;
-		SGameMtl* material_1=GMLib.GetMaterialByIdx(material_idx_1);
-		SGameMtl* material_2=GMLib.GetMaterialByIdx(material_idx_2);
+		SGameMtl* material_1=GMLibrary().GetMaterialByIdx(material_idx_1);
+		SGameMtl* material_2=GMLibrary().GetMaterialByIdx(material_idx_2);
 		////////////////params can be changed in callbacks//////////////////////////////////////////////////////////////////////////
 		surface.mode =dContactApprox1|dContactSoftERP|dContactSoftCFM;
 		float spring	=material_2->fPHSpring*material_1->fPHSpring*world_spring;
@@ -237,8 +237,8 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2,dJointGroupID jointGroup,C
 		}
 
 		if(usr_data_2){
-			usr_data_2->pushing_b_neg	=	usr_data_2->pushing_b_neg	&& !GMLib.GetMaterialByIdx(usr_data_2->b_neg_tri->material)->Flags.test(SGameMtl::flPassable);
-			usr_data_2->pushing_neg		=	usr_data_2->pushing_neg		&& !GMLib.GetMaterialByIdx(usr_data_2->neg_tri->material)->Flags.test(SGameMtl::flPassable);
+			usr_data_2->pushing_b_neg	=	usr_data_2->pushing_b_neg	&& !GMLibrary().GetMaterialByIdx(usr_data_2->b_neg_tri->material)->Flags.test(SGameMtl::flPassable);
+			usr_data_2->pushing_neg		=	usr_data_2->pushing_neg		&& !GMLibrary().GetMaterialByIdx(usr_data_2->neg_tri->material)->Flags.test(SGameMtl::flPassable);
 			pushing_neg=usr_data_2->pushing_b_neg||usr_data_2->pushing_neg;
 			if(usr_data_2->ph_object){
 				usr_data_2->ph_object->InitContact(&c,do_collide,material_idx_1,material_idx_2);
@@ -247,15 +247,14 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2,dJointGroupID jointGroup,C
 		}
 		///////////////////////////////////////////////////////////////////////////////////////
 		if(usr_data_1){ 
-			usr_data_1->pushing_b_neg	=	usr_data_1->pushing_b_neg	&& !GMLib.GetMaterialByIdx(usr_data_1->b_neg_tri->material)->Flags.test(SGameMtl::flPassable);
-			usr_data_1->pushing_neg		=	usr_data_1->pushing_neg		&& !GMLib.GetMaterialByIdx(usr_data_1->neg_tri->material)->Flags.test(SGameMtl::flPassable);
+			usr_data_1->pushing_b_neg	=	usr_data_1->pushing_b_neg	&& !GMLibrary().GetMaterialByIdx(usr_data_1->b_neg_tri->material)->Flags.test(SGameMtl::flPassable);
+			usr_data_1->pushing_neg		=	usr_data_1->pushing_neg		&& !GMLibrary().GetMaterialByIdx(usr_data_1->neg_tri->material)->Flags.test(SGameMtl::flPassable);
 			pushing_neg=usr_data_1->pushing_b_neg||usr_data_1->pushing_neg;
 			if(usr_data_1->ph_object){
 				usr_data_1->ph_object->InitContact(&c,do_collide,material_idx_1,material_idx_2);
 
 			}
 		}
-
 
 		if (pushing_neg) {
 #ifdef _M_X64
@@ -264,13 +263,12 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2,dJointGroupID jointGroup,C
 			surface.mu = dInfinity;
 #endif
 		}
-
 		if	(do_collide && collided_contacts<MAX_CONTACTS)
 		{
 			++collided_contacts;
 			#ifdef DEBUG
-			if( ph_dbg_draw_mask.test(phDbgDrawContacts) )
-				DBG_DrawContact(c);
+			if( debug_output().ph_dbg_draw_mask().test(phDbgDrawContacts) )
+				debug_output().DBG_DrawContact(c);
 			#endif
 			dJointID contact_joint	= dJointCreateContact(0, jointGroup, &c);
 			world->ConnectJoint(contact_joint);

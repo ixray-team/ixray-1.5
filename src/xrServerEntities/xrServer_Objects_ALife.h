@@ -593,10 +593,16 @@ add_to_type_list(CSE_ALifeObjectBreakable)
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_ALifeObjectClimable,CSE_Shape,CSE_ALifeDynamicObject)
 CSE_ALifeObjectClimable	(LPCSTR caSection);
+shared_str						material;
 virtual							~CSE_ALifeObjectClimable	();
 virtual bool					used_ai_locations	() const;
 virtual bool					can_switch_offline	() const;
 virtual ISE_Shape*  __stdcall	shape				();
+
+#ifndef XRGAME_EXPORTS
+virtual	void		__stdcall	set_additional_info	(void* info);
+#endif
+
 SERVER_ENTITY_DECLARE_END
 add_to_type_list(CSE_ALifeObjectClimable)
 #define script_type_list save_type_list(CSE_ALifeObjectClimable)
