@@ -325,6 +325,17 @@ void CInventoryOwner::renderable_Render		()
 	if (inventory().ActiveItem())
 		inventory().ActiveItem()->renderable_Render();
 
+	if (auto* CurrEntity = smart_cast<CEntityAlive*>(this); CurrEntity == Actor()) {
+		auto rWeapon = inventory().ItemFromSlot(RIFLE_SLOT);
+		bool rValid = rWeapon ? rWeapon->GetSlot() == RIFLE_SLOT : false;
+		if (rWeapon && rValid && rWeapon != inventory().ActiveItem())
+			rWeapon->renderable_Render();
+
+		auto lWeapon = inventory().ItemFromSlot(PISTOL_SLOT);
+		bool lValid = lWeapon ? lWeapon->GetSlot() == RIFLE_SLOT : false;
+		if (lWeapon && lValid && lWeapon != inventory().ActiveItem())
+			lWeapon->renderable_Render();
+	}
 	CAttachmentOwner::renderable_Render();
 }
 

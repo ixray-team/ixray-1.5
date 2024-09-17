@@ -80,7 +80,8 @@ void CHudItem::renderable_Render()
 			CInventoryOwner	*owner = smart_cast<CInventoryOwner*>(object().H_Parent());
 			VERIFY			(owner);
 			CInventoryItem	*self = smart_cast<CInventoryItem*>(this);
-			if (owner->attached(self))
+			if (owner->attached(self) ||
+				(item().GetSlot() == RIFLE_SLOT /*|| item().BaseSlot() == INV_SLOT_2*/))
 				on_renderable_Render();
 		}
 	}

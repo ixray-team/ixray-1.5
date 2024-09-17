@@ -22,6 +22,8 @@
 #include "clsid_game.h"
 #include "player_hud.h"
 #include "Grenade.h"
+#include "ai/stalker/ai_stalker.h"
+#include "weaponmagazined.h"
 
 using namespace InventoryUtilities;
 
@@ -124,6 +126,19 @@ void CInventory::Take(CGameObject *pObj, bool bNotActivate, bool strict_placemen
 	//usually net_Import arrived for objects that not has a parent object..
 	//for unknown reason net_Import arrived for object that has a parent, so correction prediction schema will crash
 	Level().RemoveObject_From_4CrPr		(pObj);
+
+	if (Level().CurrentEntity()) {
+		std::uint16_t actor_id = Level().CurrentEntity()->ID();
+		if (GetOwner()->object_id() == actor_id &&
+			this->m_pOwner->object_id() == actor_id) // actors inventory
+		{
+			CWeaponMagazined* pWeapon = smart_cast<CWeaponMagazined*>(pIItem);
+			if (pWeapon && pWeapon->strapped_mode()) {
+				pWeapon->strapped_mode(false);
+				Ruck(pWeapon);
+			}
+		}
+	}
 
 	m_all.push_back						(pIItem);
 
@@ -1323,7 +1338,17 @@ void  CInventory::AddAvailableItems(TIItemContainer& items_container, bool for_t
 				items_container.push_back(pIItem);
 		}
 	}
-	
+
+	CAI_Stalker* pOwner = smart_cast<CAI_Stalker*>(m_pOwner);
+	if (pOwner && !pOwner->g_Alive()) {
+		TISlotArr::const_iterator I = m_slots.begin();
+		TISlotArr::const_iterator E = m_slots.end();
+		for (; I <= E; ++I) {
+			const CInventorySlot& S = *I;
+			if (S.m_pIItem && (S.m_pIItem->GetSlot() != BOLT_SLOT))
+				items_container.push_back(S.m_pIItem);
+		}
+	}
 	if(m_bSlotsUseful)
 	{
 		TISlotArr::const_iterator slot_it			= m_slots.begin();
@@ -1334,7 +1359,17 @@ void  CInventory::AddAvailableItems(TIItemContainer& items_container, bool for_t
 			if(S.m_pIItem && (!for_trade || S.m_pIItem->CanTrade())  )
 			{
 				if(!S.m_bPersistent || S.m_pIItem->GetSlot()==GRENADE_SLOT )
-					items_container.push_back(S.m_pIItem);
+				{
+					if (pOwner) {
+						std::uint32_t slot = S.m_pIItem->GetSlot();
+
+						if (slot != RIFLE_SLOT /* && slot != INV_SLOT_2*/)
+							items_container.push_back(S.m_pIItem);
+					}
+					else {
+						items_container.push_back(S.m_pIItem);
+					}
+				}
 			}
 		}
 	}		
