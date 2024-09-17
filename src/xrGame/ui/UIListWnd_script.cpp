@@ -56,10 +56,10 @@ void CUIListWnd::script_register(lua_State *L)
 		.def("GetSelectedItem",			&CUIListWnd::GetSelectedItem)
 		.def("ResetFocusCapture",		&CUIListWnd::ResetFocusCapture),
 
-		class_<CUIListItem, CUIButton, default_holder, CUIListItemWrapper>("CUIListItem")
+		class_<CUIListItem, CUIButton, CUIListItemWrapper>("CUIListItem")
 		.def(							constructor<>()),
 
-		class_<CUIListItemEx, CUIListItem, default_holder, CUIListItemExWrapper>("CUIListItemEx")
+		class_<CUIListItemEx, CUIListItem, CUIListItemExWrapper>("CUIListItemEx")
 		.def(							constructor<>())
 		.def("SetSelectionColor",		&CUIListItemEx::SetSelectionColor),
 

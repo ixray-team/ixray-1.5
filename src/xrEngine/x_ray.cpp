@@ -22,7 +22,7 @@
 #include <locale.h>
 
 #include <luabind/luabind.hpp>
-#include <luabind/memory_allocator.hpp>
+#include <luabind/luabind_memory.h>
 
 //---------------------------------------------------------------------
 ENGINE_API CInifile* pGameIni		= NULL;
@@ -630,8 +630,6 @@ int APIENTRY WinMain_impl(HINSTANCE hInstance,
 		damn_keys_filter		filter;
 		(void)filter;
 #endif // DEDICATED_SERVER
-		luabind::allocator = &luabind_allocator;
-		luabind::allocator_context = nullptr;
 
 		FPU::m24r				();
 		InitEngine				();

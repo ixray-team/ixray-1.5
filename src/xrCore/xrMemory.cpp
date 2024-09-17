@@ -6,7 +6,7 @@
 #include	"xrsharedmem.h"
 #include	"xrMemory_pure.h"
 
-// FX: Хак для установки уровня инициализации переменной в глобальном пространстве
+// FX: РҐР°Рє РґР»СЏ СѓСЃС‚Р°РЅРѕРІРєРё СѓСЂРѕРІРЅСЏ РёРЅРёС†РёР°Р»РёР·Р°С†РёРё РїРµСЂРµРјРµРЅРЅРѕР№ РІ РіР»РѕР±Р°Р»СЊРЅРѕРј РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРµ
 #pragma section(".Hook",read)
 
 BOOL		mem_initialized	= FALSE;
@@ -29,14 +29,12 @@ xrMemory::xrMemory()
 	mem_fill32	= xrMemFill32_x86;
 
 #ifndef PURE_ONLY
-	if (!!strstr(GetCommandLineA(), "-pure_alloc"))
-	{
-		pAlloc = CMemAllocPure::Create();
-	}
-	else
-	{
-		pAlloc = CMemAllocXRay::Create();
-	}
+	//if (!!strstr(GetCommandLineA(), "-pure_alloc")) 
+	//{ 
+	pAlloc = CMemAllocPure::Create();
+	//} else { 
+	//	pAlloc = CMemAllocXRay::Create(); 
+	//} 
 #else
 	pAlloc = CMemAllocPure::Create();
 #endif

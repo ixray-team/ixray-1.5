@@ -23,3 +23,5 @@
 #include "../xrEngine/igame_level.h"
 #include "../xrPhysics/xrPhysics.h"
 #include "smart_cast.h"
+
+#include "pch_script.h" 

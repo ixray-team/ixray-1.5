@@ -211,7 +211,7 @@ void game_sv_mp_script::script_register(lua_State *L)
 
 	module(L)
 	[
-		class_<game_sv_mp_script, game_sv_mp, default_holder, WrapType>("game_sv_mp_script")
+		class_<game_sv_mp_script, game_sv_mp, WrapType>("game_sv_mp_script")
 			.def(	constructor<>())
 			.def("GetTeamData",			&GetTeamData)
 			.def("SpawnPlayer",			&SpawnPlayer)

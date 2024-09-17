@@ -197,11 +197,11 @@ int  CScriptEngine::lua_pcall_failed	(lua_State *L)
 	return					(LUA_ERRRUN);
 }
 
-void lua_cast_failed					(lua_State *L, luabind::type_id const& info)
+void lua_cast_failed					(lua_State *L, LUABIND_TYPE_INFO info)
 {
 	CScriptEngine::print_output	(L,"",LUA_ERRRUN);
 
-	Debug.fatal				(DEBUG_INFO,"LUA error: cannot cast lua value to %s",info.name());
+	Debug.fatal				(DEBUG_INFO,"LUA error: cannot cast lua value to %s",info->name());
 }
 
 void CScriptEngine::setup_callbacks		()
@@ -223,22 +223,22 @@ void CScriptEngine::setup_callbacks		()
 		luabind::set_error_callback		(CScriptEngine::lua_error);
 #endif
 
-#ifndef MASTER_GOLD
+#if 0
 		luabind::set_pcall_callback
 		(
 			[](lua_State* L) ->void
-			{  
+			{
 				lua_pushcfunction(L, CScriptEngine::lua_pcall_failed);
 			}
 		);
-#endif // MASTER_GOLD
+#endif
 	}
 
 #ifdef LUABIND_NO_EXCEPTIONS
 	luabind::set_cast_failed_callback	(lua_cast_failed);
 #endif
 	lua_atpanic							(lua(),CScriptEngine::lua_panic);
-	luabind::disable_super_deprecation();
+	//luabind::disable_super_deprecation();
 }
 
 #ifdef DEBUG

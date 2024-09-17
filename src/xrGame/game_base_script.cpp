@@ -25,7 +25,7 @@ void game_PlayerState::script_register(lua_State *L)
 
 	module(L)
 		[
-			luabind::class_<game_PlayerState, no_bases, default_holder, WrapType>("game_PlayerState")
+			luabind::class_<game_PlayerState, WrapType>("game_PlayerState")
 			.def(	constructor<>())
 			.def_readwrite("team",				&BaseType::team)
 			.def_readwrite("kills",				&BaseType::m_iRivalKills)
@@ -60,7 +60,7 @@ void game_GameState::script_register(lua_State *L)
 
 	module(L)
 		[
-			luabind::class_< game_GameState, no_bases, default_holder, DLL_Pure >("game_GameState")
+			luabind::class_< game_GameState, DLL_Pure >("game_GameState")
 			.def(	constructor<>())
 
 			.def_readwrite("type",				&game_GameState::m_type)

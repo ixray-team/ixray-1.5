@@ -142,6 +142,7 @@ target_compile_definitions(xrGame PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
 # Linker list
 target_link_libraries(xrGame PUBLIC xrEngine)
 target_link_libraries(xrGame PUBLIC xrPhysics)
+target_link_libraries(xrGame PUBLIC luabind)
 target_link_libraries(xrGame PUBLIC crypto)
 target_link_libraries(xrGame PUBLIC CxImage)
 

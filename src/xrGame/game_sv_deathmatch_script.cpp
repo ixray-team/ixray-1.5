@@ -20,7 +20,7 @@ void game_sv_Deathmatch::script_register(lua_State *L)
 	typedef CWrapperBase<game_sv_Deathmatch> WrapType;
 	module(L)
 		[
-			class_<game_sv_Deathmatch, game_sv_GameState, default_holder, WrapType>("game_sv_Deathmatch")
+			class_<game_sv_Deathmatch, game_sv_GameState, WrapType>("game_sv_Deathmatch")
 			.def(	constructor<>())
 			.def("GetTeamData",			&game_sv_Deathmatch::GetTeamData)
 			

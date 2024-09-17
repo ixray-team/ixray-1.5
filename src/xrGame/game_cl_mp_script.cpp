@@ -105,7 +105,7 @@ void game_cl_mp_script::script_register(lua_State *L)
 
 	module(L)
 	[
-		class_<game_cl_mp_script, game_cl_mp, default_holder, WrapType>("game_cl_mp_script")
+		class_<game_cl_mp_script, game_cl_mp, WrapType>("game_cl_mp_script")
 			.def(	constructor<>())
 			.def("CommonMessageOut",	&BaseType::CommonMessageOut)
 			.def("GetPlayersCount",		&BaseType::GetPlayersCount)
