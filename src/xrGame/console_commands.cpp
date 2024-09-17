@@ -44,7 +44,7 @@
 #include "cameralook.h"
 #include "character_hit_animations_params.h"
 #include "inventory_upgrade_manager.h"
-
+#include "string_table.h"
 #include "GameSpy/GameSpy_Full.h"
 #include "GameSpy/GameSpy_Patching.h"
 
@@ -525,7 +525,7 @@ public:
 		timer.Start				();
 #endif
 		if (!xr_strlen(S)){
-			strconcat			(sizeof(S),S,Core.UserName,"_","quicksave");
+			strconcat			(sizeof(S),S,Core.UserName," - ",CStringTable().translate("quicksave").c_str());
 			NET_Packet			net_packet;
 			net_packet.w_begin	(M_SAVE_GAME);
 			net_packet.w_stringZ(S);

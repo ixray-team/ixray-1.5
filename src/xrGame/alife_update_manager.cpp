@@ -22,6 +22,7 @@
 #include "restriction_space.h"
 #include "profiler.h"
 #include "mt_config.h"
+#include "string_table.h"
 
 using namespace ALife;
 
@@ -200,7 +201,7 @@ bool CALifeUpdateManager::change_level	(NET_Packet &net_packet)
 	}
 
 	string256						autoave_name;
-	strconcat						(sizeof(autoave_name),autoave_name,Core.UserName,"_","autosave");
+	strconcat						(sizeof(autoave_name),autoave_name,Core.UserName," - ",CStringTable().translate("autosave").c_str());
 	LPCSTR							temp0 = strstr(**m_server_command_line,"/");
 	VERIFY							(temp0);
 	string256						temp;
