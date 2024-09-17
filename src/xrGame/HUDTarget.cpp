@@ -182,7 +182,11 @@ void CHUDTarget::Render()
 			if (IsGameTypeSingle())
 			{
 				CInventoryOwner* our_inv_owner		= smart_cast<CInventoryOwner*>(pCurEnt);
-				if (E_ && E_->g_Alive() && !E_->cast_base_monster())
+				if (E_ && E_->g_Alive() && E_->cast_base_monster())
+				{
+					C = C_ON_ENEMY;
+				}
+				else if (E_ && E_->g_Alive() && !E_->cast_base_monster())
 				{
 					CInventoryOwner* others_inv_owner	= smart_cast<CInventoryOwner*>(E_);
 
@@ -266,7 +270,11 @@ void CHUDTarget::Render()
 	{
 		F->OutSetI		(0.f,0.05f);
 		F->SetColor		(C);
-		F->OutNext		("%4.1f - %4.2f - %d",PP.RQ.range, PP.power, PP.pass);
+#ifdef DEBUG
+		F->OutNext("%4.1f - %4.2f - %d", PP.RQ.range, PP.power, PP.pass);
+#else
+		F->OutNext("%4.1f", PP.RQ.range);
+#endif	
 	}
 
 	//отрендерить кружочек или крестик
