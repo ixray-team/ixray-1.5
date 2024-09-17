@@ -83,7 +83,7 @@ bool CUI::Render()
 	if (pEntity)
 	{
 		CActor* pActor			=	smart_cast<CActor*>(pEntity);
-		if(pActor && pActor->HUDview() && psHUD_Flags.is(HUD_WEAPON|HUD_WEAPON_RT|HUD_WEAPON_RT2))
+		if(pActor && pActor->g_Alive() && psHUD_Flags.is(HUD_WEAPON|HUD_WEAPON_RT|HUD_WEAPON_RT2))
 		{
 			TISlotArr& inv_slots	= pActor->inventory().m_slots;
 			TISlotArr::iterator it = inv_slots.begin();

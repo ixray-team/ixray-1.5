@@ -113,7 +113,8 @@ void CActor::IR_OnKeyboardPress(int cmd)
 			if(det_active)
 			{
 				CCustomDetector* det			= smart_cast<CCustomDetector*>(det_active);
-				det->ToggleDetector				(g_player_hud->attached_item(0)!=NULL);
+				if (det)
+					det->switch_detector();				
 				return;
 			}
 		}break;
