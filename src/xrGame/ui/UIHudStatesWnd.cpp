@@ -323,7 +323,6 @@ void CUIHudStatesWnd::SetAmmoIcon( const shared_str& sect_name )
 		// all others ammo (1x1, 1x2) will be not scaled (original picture)
 		float h = gridHeight * INV_GRID_HEIGHT(EngineExternal()[EEngineExternalUI::HQIcons]) * 0.65f;
 		float w = gridWidth  * INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]) * 0.65f;
-		float posx_16 = 8.33f;
 		float posx = 10.0f;
 
 		if (EngineExternal()[EEngineExternalUI::HQIcons])
@@ -340,17 +339,16 @@ void CUIHudStatesWnd::SetAmmoIcon( const shared_str& sect_name )
 				w = INV_GRID_WIDTH(EngineExternal()[EEngineExternalUI::HQIcons]) * 1.5f;
 		}
 
-		bool is_16x10 = UI().is_widescreen();
 		if ( gridWidth < 1.01f )
 		{
-			m_ui_weapon_icon->SetTextureOffset( (is_16x10)? posx_16 : posx, 0.0f);
+			m_ui_weapon_icon->SetTextureOffset( posx * UI().get_current_kx(), 0.0f);
 		}
 		else
 		{
 			m_ui_weapon_icon->SetTextureOffset( 0.0f, 2.0f );
 		}
 
-		m_ui_weapon_icon->SetWidth((is_16x10) ? w * 0.833f * m_ui_weapon_icon_scale : w * m_ui_weapon_icon_scale);
+		m_ui_weapon_icon->SetWidth(w * UI().get_current_kx() * m_ui_weapon_icon_scale);
 		m_ui_weapon_icon->SetHeight(h * m_ui_weapon_icon_scale);
 		
 	}

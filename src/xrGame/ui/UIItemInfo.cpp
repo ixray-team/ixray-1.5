@@ -352,8 +352,7 @@ void CUIItemInfo::InitItem(CUICellItem* pCellItem, CInventoryItem* pCompareItem,
 				float(item_grid_rect.x2 * INV_GRID_WIDTH2(EngineExternal()[EEngineExternalUI::HQIcons])),
 				float(item_grid_rect.y2 * INV_GRID_HEIGHT2(EngineExternal()[EEngineExternalUI::HQIcons])) };
 		}
-		if(UI().is_widescreen())
-			v_r.x2 /= 1.2f;
+		v_r.x2									*= UI().get_current_kx();
 
 		UIItemImage->GetUIStaticItem().SetRect	(v_r);
 //		UIItemImage->SetWidth					(_min(v_r.width(),	UIItemImageSize.x));
@@ -459,8 +458,7 @@ void CUIItemInfo::InitItemUpgradeIcon(CInventoryItem* pInvItem)
 				float(item_grid_rect.x2 * INV_GRID_WIDTH2(EngineExternal()[EEngineExternalUI::HQIcons])),
 				float(item_grid_rect.y2 * INV_GRID_HEIGHT2(EngineExternal()[EEngineExternalUI::HQIcons])) };
 		}
-		if(UI().is_widescreen())
-			v_r.x2 /= 1.2f;
+		v_r.x2									*= UI().get_current_kx();
 
 		UIItemImage->GetUIStaticItem().SetRect	(v_r);
 //		UIItemImage->SetWidth					(_min(v_r.width(),	UIItemImageSize.x));

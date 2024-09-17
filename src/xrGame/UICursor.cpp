@@ -50,8 +50,7 @@ void CUICursor::InitInternal()
 	m_static->SetOriginalRect	(rect);
 	Fvector2					sz;
 	sz.set						(rect.rb);
-	if(UI().is_widescreen())
-		sz.x					/= 1.2f;
+	sz.x						*= UI().get_current_kx();
 
 	float width					= xml_doc.ReadFlt("width", 0, 40.0f);
 	float height				= xml_doc.ReadFlt("height", 0, 40.0f);
