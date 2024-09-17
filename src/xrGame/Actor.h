@@ -332,7 +332,6 @@ protected:
 	float					currentFOV				();
 
 	// Cameras
-	CCameraBase*			cameras[eacMaxCam];
 	EActorCameras			cam_active;
 	float					fPrevCamPos;
 	float					current_ik_cam_shift;
@@ -345,6 +344,7 @@ protected:
 	CActorCameraManager*	m_pActorEffector;
 	static float			f_Ladder_cam_limit;
 public:
+	CCameraBase*			cameras[eacMaxCam];
 	virtual void			feel_touch_new				(CObject* O);
 	virtual void			feel_touch_delete			(CObject* O);
 	virtual BOOL			feel_touch_contact			(CObject* O);

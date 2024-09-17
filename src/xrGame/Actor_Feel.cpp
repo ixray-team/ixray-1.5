@@ -117,6 +117,7 @@ BOOL CActor::CanPickItem(const CFrustum& frustum, const Fvector& from, CObject* 
 	return !bOverlaped;
 }
 
+#include "ai\monsters\ai_monster_utils.h"
 void CActor::PickupModeUpdate()
 {
 	if(!m_bPickupMode) return;
@@ -151,7 +152,7 @@ void	CActor::PickupModeUpdate_COD	()
 {
 	if (Level().CurrentViewEntity() != this || !g_b_COD_PickUpMode) return;
 		
-	if (!g_Alive() || eacFirstEye != cam_active) 
+	if (!g_Alive() || eacFreeLook == cam_active)
 	{
 		HUD().GetUI()->UIMainIngameWnd->SetPickUpItem(NULL);
 		return;

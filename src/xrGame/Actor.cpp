@@ -863,7 +863,7 @@ float CActor::currentFOV()
 
 	CWeapon* pWeapon = smart_cast<CWeapon*>(inventory().ActiveItem());	
 
-	if (eacFirstEye == cam_active && pWeapon &&
+	if (eacFreeLook != cam_active && pWeapon &&
 		pWeapon->IsZoomed() && 
 		( !pWeapon->ZoomTexture() || (!pWeapon->IsRotatingToZoom() && pWeapon->ZoomTexture()) )
 		 )
@@ -1221,9 +1221,13 @@ void CActor::shedule_Update	(u32 DT)
 
 	//что актер видит перед собой
 	collide::rq_result& RQ				= HUD().GetCurrentRayQuery();
-	
 
-	if(!input_external_handler_installed() && RQ.O && RQ.O->getVisible() &&  RQ.range<2.0f) 
+	Fvector ActorPos, PickPos = { 0.0f, 0.0f, 0.0f };
+	Center(ActorPos);
+	PickPos.mad(Device.vCameraPosition, Device.vCameraDirection, RQ.range);
+
+
+	if (!input_external_handler_installed() && RQ.O && RQ.O->getVisible() && ActorPos.distance_to_sqr(PickPos) < 4.0f)
 	{
 		m_pObjectWeLookingAt			= smart_cast<CGameObject*>(RQ.O);
 		
