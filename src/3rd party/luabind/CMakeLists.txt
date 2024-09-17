@@ -2,11 +2,10 @@ project(luabind)
 set(LUABIND_SRC_FILES)
 
 # Files import
-file(GLOB_RECURSE LUABIND_SOURCE_ALL_FILES
+file(GLOB_RECURSE LUABIND_SOURCE_ALL_FILES CONFIGURE_DEPENDS
     "luabind/src/*.*"
 )
-
-file(GLOB_RECURSE LUABIND_INCL_ALL_FILES
+file(GLOB_RECURSE LUABIND_INCL_ALL_FILES CONFIGURE_DEPENDS
     "${IXRAY_SDK_INC}/luabind/*.*"
 )
 
@@ -27,10 +26,11 @@ target_include_directories(luabind PUBLIC "${IXRAY_SDK_INC}/luabind/")
 target_include_directories(luabind PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/luabind/src")
 target_include_directories(luabind PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/")
 
+#target_link_directories(luabind PUBLIC "${IXRAY_SDK_LIB}/")
+
 target_compile_definitions(luabind PRIVATE LUABIND_BUILDING)
 target_compile_definitions(luabind PUBLIC "$<$<CONFIG:RELWITHDEBINFO>:LUABIND_NO_EXCEPTIONS>")
 target_compile_definitions(luabind PUBLIC "$<$<CONFIG:RELEASE>:LUABIND_NO_EXCEPTIONS>")
-
 # NuGet
 set(LUAJIT ${CMAKE_BINARY_DIR}/packages/IXRay.Packages.LuaJIT.2023.8.23-open/)
 
