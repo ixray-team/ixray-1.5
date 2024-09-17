@@ -2195,10 +2195,6 @@ CMD4(CCC_FloatBlock,		"dbg_text_height_scale",	&dbg_text_height_scale	,			0.2f	,
 
 	CMD3(CCC_Mask,		"ai_use_torch_dynamic_lights",	&g_uCommonFlags, flAiUseTorchDynamicLights);
 
-#ifndef MASTER_GOLD
-	CMD4(CCC_Vector3,		"psp_cam_offset",				&CCameraLook2::m_cam_offset, Fvector().set(-1000,-1000,-1000),Fvector().set(1000,1000,1000));
-#endif // MASTER_GOLD
-
 	CMD1(CCC_GSCheckForUpdates, "check_for_updates");
 #ifdef DEBUG
 	CMD1(CCC_Crash,		"crash"						);

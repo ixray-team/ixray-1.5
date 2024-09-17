@@ -1341,12 +1341,12 @@ void  CInventory::AddAvailableItems(TIItemContainer& items_container, bool for_t
 
 	CAI_Stalker* pOwner = smart_cast<CAI_Stalker*>(m_pOwner);
 	if (pOwner && !pOwner->g_Alive()) {
-		TISlotArr::const_iterator I = m_slots.begin();
-		TISlotArr::const_iterator E = m_slots.end();
+		xr_vector<CInventorySlot>::iterator I = pOwner->inventory().m_slots.begin();
+		xr_vector<CInventorySlot>::iterator E = pOwner->inventory().m_slots.end();
 		for (; I <= E; ++I) {
-			const CInventorySlot& S = *I;
-			if (S.m_pIItem && (S.m_pIItem->GetSlot() != BOLT_SLOT))
-				items_container.push_back(S.m_pIItem);
+			PIItem item = ItemFromSlot(BOLT_SLOT);
+			if (!item)
+				items_container.push_back(item);
 		}
 	}
 	if(m_bSlotsUseful)
