@@ -16,6 +16,9 @@
 #include "stalker_animation_data_storage.h"
 #include "stalker_velocity_holder.h"
 
+#include "../xrEngine/x_ray.h"
+#include "ui/UILoadingScreen.h"
+
 #include "ActorEffector.h"
 #include "actor.h"
 #include "spectator.h"
@@ -89,6 +92,11 @@ CGamePersistent::~CGamePersistent(void)
 	Engine.Event.Handler_Detach	(eQuickLoad,this);
 }
 
+void CGamePersistent::PreStart(LPCSTR op) 
+{
+	pApp->SetLoadingScreen(new UILoadingScreen());
+	__super::PreStart(op);
+}
 void CGamePersistent::RegisterModel(IRenderVisual* V)
 {
 	// Check types

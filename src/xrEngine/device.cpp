@@ -121,7 +121,7 @@ void CRenderDevice::End		(void)
 			if(precache_light) precache_light->set_active	(false);
 			if(precache_light) precache_light.destroy		();
 			::Sound->set_master_volume						(1.f);
-			pApp->destroy_loading_shaders					();
+			pApp->DestroyLoadingScreen						();
 
 			m_pRender->ResourcesDestroyNecessaryTextures	();
 			Memory.mem_compact								();
@@ -306,8 +306,9 @@ void CRenderDevice::on_idle		()
 	}
 
 #ifndef DEDICATED_SERVER
-	if(!g_pGameLevel || g_pGamePersistent->m_pMainMenu->IsActive())
-	#endif // DEDICATED_SERVER
+	bool isFpsLimitNeeded = !g_pGameLevel || g_pGamePersistent->m_pMainMenu->IsActive();
+	if (!g_dedicated_server && isFpsLimitNeeded)
+#endif // DEDICATED_SERVER
 	{
 		u32 FrameEndTime = TimerGlobal.GetElapsed_ms();
 		u32 FrameTime = (FrameEndTime - FrameStartTime);
