@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "UIHudStatesWnd.h"
-
+#include "../UIFontDefines.h"
 #include "../Actor.h"
 #include "../ActorCondition.h"
 #include "../CustomOutfit.h"
@@ -264,8 +264,8 @@ void CUIHudStatesWnd::UpdateActiveItemInfo( CActor* actor )
 		
 		// hack ^ begin
 
-		CGameFont* pFont32 = UI().Font().pFontGraffiti32Russian;
-		CGameFont* pFont22 = UI().Font().pFontGraffiti22Russian;
+		CGameFont* pFont32 = UI().Font().GetFont(GRAFFITI32_FONT_NAME);
+		CGameFont* pFont22 = UI().Font().GetFont(GRAFFITI22_FONT_NAME);
 		CGameFont* pFont   = pFont32;
 
 		if ( UI().is_widescreen() )

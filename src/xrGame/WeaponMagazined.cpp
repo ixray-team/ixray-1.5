@@ -12,10 +12,10 @@
 #include "xrserver_objects_alife_items.h"
 #include "ActorEffector.h"
 #include "EffectorZoomInertion.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 #include "level.h"
 #include "object_broker.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 #include "MPPlayersBag.h"
 #include "ui/UIXmlInit.h"
 #include "ui/UIStatic.h"
@@ -1239,7 +1239,7 @@ void CWeaponMagazined::net_Import	(NET_Packet& P)
 	SetQueueSize(GetCurrentFireMode());
 }
 
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 void CWeaponMagazined::GetBriefInfo(xr_string& str_name, xr_string& icon_sect_name, xr_string& str_count, string16& fire_mode )
 {
 	int	AE		= GetAmmoElapsed();

@@ -9,7 +9,7 @@
 #include "UI3tButton.h"
 #include "UIStatix.h"
 #include "../game_cl_deathmatch.h"
-#include "../xr_level_controller.h"
+#include "../../xrEngine/xr_level_controller.h"
 #include "../HUDManager.h"
 #include "CExtraContentFilter.h"
 

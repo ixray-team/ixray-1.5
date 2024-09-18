@@ -5,9 +5,9 @@
 #include "object_broker.h"
 #include "UICellItem.h"
 #include "UIDragDropListEx.h"
-#include "../string_table.h"
+#include "../xrEngine/string_table.h"
 #include "UIMpItemsStoreWnd.h"
-
+#include "../UIFontDefines.h"
 #include "../Weapon.h"
 #include "../WeaponMagazinedWGrenade.h"
 #include "UICellCustomItems.h"
@@ -901,7 +901,7 @@ void CUICellItemTradeMenuDraw::OnDraw(CUICellItem* cell)
 		string64							buff;
 
 		xr_sprintf							(buff," %d", acc - DIK_ESCAPE);
-		CGameFont* pFont					= UI().Font().pFontLetterica16Russian;
+		CGameFont* pFont					= UI().Font().GetFont(LETTERICA16_FONT_NAME);
 		pFont->SetAligment					(CGameFont::alCenter);
 		pFont->SetColor						(color_rgba(135,123,116,255));
 		pFont->Out							(pos.x, pos.y, buff);

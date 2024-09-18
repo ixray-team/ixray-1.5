@@ -10,7 +10,7 @@
 #include "../xrGameSpy/xrGameSpy_MainDefs.h"
 #include "xrGameSpyServer.h"
 #include "gamespy/GameSpy_Full.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 
 #ifdef BATTLEYE
 

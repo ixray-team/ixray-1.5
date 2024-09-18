@@ -6,8 +6,9 @@
 #include "../game_cl_mp.h"
 #include <dinput.h>
 #include "../level.h"
-#include "../string_table.h"
+#include "../xrEngine/string_table.h"
 #include "../HUDManager.h"
+#include "UIFontDefines.h"
 
 CUISpeechMenu::CUISpeechMenu(LPCSTR section_name)
 {
@@ -20,7 +21,7 @@ CUISpeechMenu::CUISpeechMenu(LPCSTR section_name)
 	CUIXmlInit::InitScrollView	(xml_doc, "speech_menu",0,m_pList);
 	m_pList->SetWndPos			(Fvector2().set(0,0));
 	m_text_color				= 0xffffffff;
-	SetFont(UI().Font().pFontLetterica18Russian);
+	SetFont(UI().Font().GetFont(LETTERICA18_FONT_NAME));
 	CUIXmlInit::InitFont		(xml_doc,"speech_menu:text",0,m_text_color,m_pFont);	
     InitList					(section_name);
 }

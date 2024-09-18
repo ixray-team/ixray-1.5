@@ -4,7 +4,7 @@
 #include "../game_cl_artefacthunt.h"
 #include "UIStatsPlayerInfo.h"
 #include "UIStatsIcon.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 #include "../level.h"
 #include "UIStatic.h"
 #include "UIXmlInit.h"

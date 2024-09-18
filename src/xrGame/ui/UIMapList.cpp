@@ -10,7 +10,7 @@
 #include "UIComboBox.h"
 #include "UIListBoxItem.h"
 #include "../../xrEngine/xr_ioconsole.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 #include "CExtraContentFilter.h"
 
 #include "object_broker.h"

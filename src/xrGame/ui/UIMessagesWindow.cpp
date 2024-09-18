@@ -17,7 +17,7 @@
 #include "UIPdaMsgListItem.h"
 #include "UIColorAnimatorWrapper.h"
 #include "../InfoPortion.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 #include "../game_cl_artefacthunt.h"
 #include "../game_news.h"
 #include "UIInventoryUtilities.h"

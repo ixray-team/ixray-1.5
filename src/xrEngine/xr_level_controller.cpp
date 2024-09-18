@@ -1,15 +1,15 @@
 #include "stdafx.h"
 #include <dinput.h>
-#include "../xrEngine/xr_ioconsole.h"
-#include "../xrEngine/xr_input.h"
-#include "../xrEngine/xr_ioc_cmd.h"
+#include "xr_ioconsole.h"
+#include "xr_input.h"
+#include "xr_ioc_cmd.h"
 #include "xr_level_controller.h"
 #include "string_table.h"
 
-_binding	g_key_bindings		[bindings_count]; 
-_key_group	g_current_keygroup	= _sp;
+ENGINE_API _binding	g_key_bindings[bindings_count];
+ENGINE_API _key_group g_current_keygroup = _sp;
 
-_action  actions[]		= {
+ENGINE_API _action  actions[]		= {
 	{ "left",				kLEFT					,_both},	
 	{ "right",				kRIGHT					,_both},	
 	{ "up",					kUP						,_both},	
@@ -101,7 +101,7 @@ _action  actions[]		= {
 	
 																
 	{ NULL, 				kLASTACTION				,_both}		
-};															
+};	
 
 _keyboard keyboards[] = {
 	{ "kESCAPE",	 	DIK_ESCAPE		},	{ "k1",				DIK_1			},
@@ -174,19 +174,19 @@ _keyboard keyboards[] = {
 void initialize_bindings()
 {
 #ifdef DEBUG
-	int i1=0;
-	while(true)
+	int i1 = 0;
+	while (true)
 	{
-		_keyboard& _k1			= keyboards[i1];
-		if(_k1.key_name==NULL)	break;
+		_keyboard& _k1 = keyboards[i1];
+		if (_k1.key_name == NULL)	break;
 		int i2 = i1;
 		while (true)
 		{
-			_keyboard& _k2			= keyboards[i2];
-			if(_k2.key_name==NULL)	break;
-			if(_k1.dik==_k2.dik && i1!=i2)
+			_keyboard& _k2 = keyboards[i2];
+			if (_k2.key_name == NULL)	break;
+			if (_k1.dik == _k2.dik && i1 != i2)
 			{
-				Msg("%s==%s",_k1.key_name,_k2.key_name);
+				Msg("%s==%s", _k1.key_name, _k2.key_name);
 			}
 			++i2;
 		}
@@ -194,262 +194,273 @@ void initialize_bindings()
 	}
 #endif
 
-	for(int idx=0; idx<bindings_count; ++idx)
+	for (int idx = 0; idx < bindings_count; ++idx)
 		g_key_bindings[idx].m_action = &actions[idx];
-	
+
 }
 
 void remap_keys()
 {
-	int idx				= 0;
+	int idx = 0;
 	string128			buff;
-	while(keyboards[idx].key_name)
+	while (keyboards[idx].key_name)
 	{
-		buff[0]				= 0;
-		_keyboard&	kb		= keyboards[idx];
-		bool res			= pInput->get_dik_name(kb.dik, buff, sizeof(buff) );
-		if(res)
-			kb.key_local_name	= buff;
+		buff[0] = 0;
+		_keyboard& kb = keyboards[idx];
+		bool res = pInput->get_dik_name(kb.dik, buff, sizeof(buff));
+		if (res)
+			kb.key_local_name = buff;
 		else
-			kb.key_local_name	= kb.key_name;
+			kb.key_local_name = kb.key_name;
 
-//.		Msg("[%s]-[%s]",kb.key_name, kb.key_local_name.c_str());
+		//.		Msg("[%s]-[%s]",kb.key_name, kb.key_local_name.c_str());
 		++idx;
 	}
 }
 
-LPCSTR id_to_action_name(int _id)
+ENGINE_API LPCSTR id_to_action_name(EGameActions _id)
 {
-	int idx				= 0;
-	while( actions[idx].action_name )
+	int idx = 0;
+	while (actions[idx].action_name)
 	{
-		if(_id==actions[idx].id )
+		if (_id == actions[idx].id)
 			return actions[idx].action_name;
 		++idx;
 	}
-	Msg				("! cant find corresponding [action_name] for id");
+	Msg("! cant find corresponding [action_name] for id");
 	return			NULL;
 }
 
-EGameActions action_name_to_id(LPCSTR _name)
+ENGINE_API EGameActions action_name_to_id(LPCSTR _name)
 {
 	_action* action = action_name_to_ptr(_name);
-	if(action)
+	if (action)
 		return action->id;
 	else
 		return	kNOTBINDED;
 }
 
-_action* action_name_to_ptr(LPCSTR _name)
+ENGINE_API _action* action_name_to_ptr(LPCSTR _name)
 {
-	int idx				= 0;
-	while( actions[idx].action_name )
+	int idx = 0;
+	while (actions[idx].action_name)
 	{
-		if( !_stricmp(_name,actions[idx].action_name) )
+		if (!_stricmp(_name, actions[idx].action_name))
 			return &actions[idx];
 		++idx;
 	}
-	Msg				("! cant find corresponding [id] for action_name", _name);
+	Msg("! cant find corresponding [id] for action_name", _name);
 	return			NULL;
 }
 
-LPCSTR	dik_to_keyname			(int _dik)
+ENGINE_API LPCSTR	dik_to_keyname(int _dik)
 {
 	_keyboard* kb = dik_to_ptr(_dik, true);
-	if(kb)
+	if (kb)
 		return kb->key_name;
 	else
 		return NULL;
 }
 
-_keyboard* dik_to_ptr(int _dik, bool bSafe)
+ENGINE_API _keyboard* dik_to_ptr(int _dik, bool bSafe)
 {
-	int idx =0;
-	while(keyboards[idx].key_name)
+	int idx = 0;
+	while (keyboards[idx].key_name)
 	{
-		_keyboard&	kb		= keyboards[idx];
-		if(kb.dik==_dik)
+		_keyboard& kb = keyboards[idx];
+		if (kb.dik == _dik)
 			return &keyboards[idx];
 		++idx;
-	}	
+	}
 	if (!bSafe)
-		Msg			("! cant find corresponding [_keyboard] for dik");
+		Msg("! cant find corresponding [_keyboard] for dik");
 	return			NULL;
 }
 
-int	keyname_to_dik (LPCSTR _name)
+ENGINE_API int	keyname_to_dik(LPCSTR _name)
 {
 	_keyboard* _kb = keyname_to_ptr(_name);
 	return _kb->dik;
 }
 
-_keyboard*	keyname_to_ptr(LPCSTR _name)
+ENGINE_API _keyboard* keyname_to_ptr(LPCSTR _name)
 {
-	int idx =0;
-	while(keyboards[idx].key_name)
+	int idx = 0;
+	while (keyboards[idx].key_name)
 	{
-		_keyboard&	kb		= keyboards[idx];
-		if( !_stricmp(_name, kb.key_name) )
+		_keyboard& kb = keyboards[idx];
+		if (!_stricmp(_name, kb.key_name))
 			return &keyboards[idx];
 		++idx;
-	}	
+	}
 
-	Msg				("! cant find corresponding [_keyboard*] for keyname %s", _name);
+	Msg("! cant find corresponding [_keyboard*] for keyname %s", _name);
 	return			NULL;
 }
 
-bool is_group_not_conflicted(_key_group g1, _key_group g2)
+ENGINE_API bool is_group_not_conflicted(_key_group g1, _key_group g2)
 {
-	return ((g1==_sp && g2==_mp) || (g1==_mp && g2==_sp));
+	return ((g1 == _sp && g2 == _mp) || (g1 == _mp && g2 == _sp));
 }
 
 bool is_group_matching(_key_group g1, _key_group g2)
 {
-	return ( (g1==g2) || (g1==_both) || (g2==_both) );
+	return ((g1 == g2) || (g1 == _both) || (g2 == _both));
 }
 
-bool is_binded(EGameActions _action_id, int _dik)
+ENGINE_API bool is_binded(EGameActions _action_id, int _dik)
 {
 	_binding* pbinding = &g_key_bindings[_action_id];
-	if(pbinding->m_keyboard[0] && pbinding->m_keyboard[0]->dik==_dik)
+	if (pbinding->m_keyboard[0] && pbinding->m_keyboard[0]->dik == _dik)
 		return true;
 
-	if(pbinding->m_keyboard[1] && pbinding->m_keyboard[1]->dik==_dik)
+	if (pbinding->m_keyboard[1] && pbinding->m_keyboard[1]->dik == _dik)
 		return true;
-	
+
 	return false;
 }
 
-int get_action_dik(EGameActions _action_id)
+ENGINE_API int get_action_dik(EGameActions _action_id, int idx)
 {
 	_binding* pbinding = &g_key_bindings[_action_id];
 
-	if(pbinding->m_keyboard[0] )
-		return pbinding->m_keyboard[0]->dik;
+	if (idx == -1)
+	{
+		if (pbinding->m_keyboard[0])
+			return pbinding->m_keyboard[0]->dik;
 
-	if(pbinding->m_keyboard[1] )
-		return pbinding->m_keyboard[1]->dik;
-
+		if (pbinding->m_keyboard[1])
+			return pbinding->m_keyboard[1]->dik;
+	}
+	else
+	{
+		if (pbinding->m_keyboard[idx])
+			return pbinding->m_keyboard[idx]->dik;
+	}
 	return 0;
 }
 
-EGameActions get_binded_action(int _dik)
+ENGINE_API EGameActions get_binded_action(int _dik)
 {
-	for(int idx=0; idx<bindings_count; ++idx)
+	for (int idx = 0; idx < bindings_count; ++idx)
 	{
-		_binding*	binding = &g_key_bindings[idx];
+		_binding* binding = &g_key_bindings[idx];
 
-		bool b_is_group_matching	= is_group_matching(binding->m_action->key_group,g_current_keygroup);
-		
-		if(!b_is_group_matching)	continue;
+		bool b_is_group_matching = is_group_matching(binding->m_action->key_group, g_current_keygroup);
 
-		if(binding->m_keyboard[0] && binding->m_keyboard[0]->dik==_dik && b_is_group_matching)
+		if (!b_is_group_matching)	continue;
+
+		if (binding->m_keyboard[0] && binding->m_keyboard[0]->dik == _dik && b_is_group_matching)
 			return binding->m_action->id;
-		
-		if(binding->m_keyboard[1] && binding->m_keyboard[1]->dik==_dik && b_is_group_matching)
+
+		if (binding->m_keyboard[1] && binding->m_keyboard[1]->dik == _dik && b_is_group_matching)
 			return binding->m_action->id;
 	}
 	return kNOTBINDED;
 }
 
-void GetActionAllBinding		(LPCSTR _action, char* dst_buff, int dst_buff_sz)
+ENGINE_API void GetActionAllBinding(LPCSTR _action, char* dst_buff, int dst_buff_sz)
 {
-	int			action_id	= action_name_to_id(_action);
-	_binding*	pbinding	= &g_key_bindings[action_id];
+	int			action_id = action_name_to_id(_action);
+	_binding* pbinding = &g_key_bindings[action_id];
 
 	string128	prim;
 	string128	sec;
-	prim[0]		= 0;
-	sec[0]		= 0;
+	prim[0] = 0;
+	sec[0] = 0;
 
-	if(pbinding->m_keyboard[0])
+	if (pbinding->m_keyboard[0])
 	{
 		xr_strcpy(prim, pbinding->m_keyboard[0]->key_local_name.c_str());
 	}
-	if(pbinding->m_keyboard[1])
+	if (pbinding->m_keyboard[1])
 	{
 		xr_strcpy(sec, pbinding->m_keyboard[1]->key_local_name.c_str());
 	}
-	
-	xr_sprintf		(dst_buff, dst_buff_sz, "%s%s%s", prim[0]?prim:"", (sec[0]&&prim[0])?" , ":"", sec[0]?sec:"");
-					
+	if (NULL == pbinding->m_keyboard[0] && NULL == pbinding->m_keyboard[1])
+	{
+		xr_sprintf(dst_buff, dst_buff_sz, "%s", CStringTable().translate("st_key_notbinded").c_str());
+	}
+	else
+		xr_sprintf(dst_buff, dst_buff_sz, "%s%s%s", prim[0] ? prim : "", (sec[0] && prim[0]) ? " , " : "", sec[0] ? sec : "");
+
 }
 
-ConsoleBindCmds	bindConsoleCmds;
+ENGINE_API ConsoleBindCmds bindConsoleCmds;
 BOOL bRemapped = FALSE;
 
 class CCC_Bind : public IConsole_Command
 {
 	int m_work_idx;
 public:
-	CCC_Bind(LPCSTR N, int idx) : IConsole_Command(N),m_work_idx(idx) {};
-	virtual void Execute(LPCSTR args) 
+	CCC_Bind(LPCSTR N, int idx) : IConsole_Command(N), m_work_idx(idx) {};
+	virtual void Execute(LPCSTR args)
 	{
 		string256							action;
 		string256							key;
-		*action								= 0;
-		*key								= 0;
+		*action = 0;
+		*key = 0;
 
-		sscanf								(args,"%s %s", action, key);
+		sscanf(args, "%s %s", action, key);
 		if (!*action)
 			return;
 
 		if (!*key)
 			return;
 
-		if(!bRemapped) {
-			remap_keys	();
-			bRemapped	= TRUE;
+		if (!bRemapped) {
+			remap_keys();
+			bRemapped = TRUE;
 		}
 
 		if (!action_name_to_ptr(action))
 			return;
 
-		int action_id						= action_name_to_id			(action);
-		if (action_id==kNOTBINDED)
+		int action_id = action_name_to_id(action);
+		if (action_id == kNOTBINDED)
 			return;
 
-		_keyboard*	pkeyboard				= keyname_to_ptr(key);
+		_keyboard* pkeyboard = keyname_to_ptr(key);
 		if (!pkeyboard)
 			return;
 
-		_binding*	curr_pbinding			= &g_key_bindings[action_id];
+		_binding* curr_pbinding = &g_key_bindings[action_id];
 
-		curr_pbinding->m_keyboard[m_work_idx]= pkeyboard;
-			
+		curr_pbinding->m_keyboard[m_work_idx] = pkeyboard;
+
 		{
-			for(int idx=0; idx<bindings_count; ++idx)
+			for (int idx = 0; idx < bindings_count; ++idx)
 			{
-				_binding*	binding			= &g_key_bindings[idx];
-				if(binding==curr_pbinding)	continue;
+				_binding* binding = &g_key_bindings[idx];
+				if (binding == curr_pbinding)	continue;
 
 				bool b_conflict = !is_group_not_conflicted(binding->m_action->key_group, curr_pbinding->m_action->key_group);
 
-				if(binding->m_keyboard[0]==pkeyboard && b_conflict)
-					binding->m_keyboard[0]=NULL;
-				
-				if(binding->m_keyboard[1]==pkeyboard && b_conflict)
-					binding->m_keyboard[1]=NULL;
+				if (binding->m_keyboard[0] == pkeyboard && b_conflict)
+					binding->m_keyboard[0] = NULL;
+
+				if (binding->m_keyboard[1] == pkeyboard && b_conflict)
+					binding->m_keyboard[1] = NULL;
 			}
 		}
 
 
 		CStringTable::ReparseKeyBindings();
 	}
-	virtual void Save(IWriter* F) 
+	virtual void Save(IWriter* F)
 	{
-		if(m_work_idx==0)
-			F->w_printf		("default_controls\r\n");
+		if (m_work_idx == 0)
+			F->w_printf("default_controls\r\n");
 
-		for(int idx=0; idx<bindings_count;++idx)
+		for (int idx = 0; idx < bindings_count; ++idx)
 		{
 			_binding* pbinding = &g_key_bindings[idx];
-			if( pbinding->m_keyboard[m_work_idx] )
+			if (pbinding->m_keyboard[m_work_idx])
 			{
-				F->w_printf("%s %s %s\r\n", 
-							cName, 
-							pbinding->m_action->action_name,
-							pbinding->m_keyboard[m_work_idx]->key_name);
+				F->w_printf("%s %s %s\r\n",
+					cName,
+					pbinding->m_action->action_name,
+					pbinding->m_keyboard[m_work_idx]->key_name);
 			}
 		}
 	}
@@ -459,13 +470,15 @@ class CCC_UnBind : public IConsole_Command
 {
 	int m_work_idx;
 public:
-	CCC_UnBind(LPCSTR N, int idx) : IConsole_Command(N),m_work_idx(idx) 
-	{ bEmptyArgsHandled=TRUE; };
+	CCC_UnBind(LPCSTR N, int idx) : IConsole_Command(N), m_work_idx(idx)
+	{
+		bEmptyArgsHandled = TRUE;
+	};
 	virtual void Execute(LPCSTR args)
 	{
-		int action_id						= action_name_to_id			(args);
-		_binding*	pbinding				= &g_key_bindings[action_id];
-		pbinding->m_keyboard[m_work_idx]	= NULL;
+		int action_id = action_name_to_id(args);
+		_binding* pbinding = &g_key_bindings[action_id];
+		pbinding->m_keyboard[m_work_idx] = NULL;
 
 		CStringTable::ReparseKeyBindings();
 	}
@@ -475,11 +488,13 @@ class CCC_ListActions : public IConsole_Command
 {
 public:
 	CCC_ListActions(LPCSTR N) : IConsole_Command(N)
-	{ bEmptyArgsHandled=TRUE; };
+	{
+		bEmptyArgsHandled = TRUE;
+	};
 
 	virtual void Execute(LPCSTR args) {
 		Log("- --- Action list start ---");
-		for(int idx=0; idx<bindings_count;++idx)
+		for (int idx = 0; idx < bindings_count; ++idx)
 		{
 			_binding* pbinding = &g_key_bindings[idx];
 			Log("-", pbinding->m_action->action_name);
@@ -492,15 +507,17 @@ class CCC_UnBindAll : public IConsole_Command
 {
 public:
 	CCC_UnBindAll(LPCSTR N) : IConsole_Command(N)
-	{ bEmptyArgsHandled=TRUE; };
-
-	virtual void Execute(LPCSTR args) 
 	{
-		for(int idx=0; idx<bindings_count;++idx)
+		bEmptyArgsHandled = TRUE;
+	};
+
+	virtual void Execute(LPCSTR args)
+	{
+		for (int idx = 0; idx < bindings_count; ++idx)
 		{
-			_binding* pbinding		= &g_key_bindings[idx];
-			pbinding->m_keyboard[0]	= NULL;
-			pbinding->m_keyboard[1]	= NULL;
+			_binding* pbinding = &g_key_bindings[idx];
+			pbinding->m_keyboard[0] = NULL;
+			pbinding->m_keyboard[1] = NULL;
 		}
 		bindConsoleCmds.clear();
 	}
@@ -509,16 +526,16 @@ public:
 class CCC_DefControls : public CCC_UnBindAll
 {
 public:
-	CCC_DefControls(LPCSTR N) : CCC_UnBindAll(N){}
+	CCC_DefControls(LPCSTR N) : CCC_UnBindAll(N) {}
 
-	virtual void Execute(LPCSTR args) 
+	virtual void Execute(LPCSTR args)
 	{
 		CCC_UnBindAll::Execute(args);
 		string_path				_cfg;
 		string_path				cmd;
-		FS.update_path			(_cfg,"$game_config$","default_controls.ltx");
-		strconcat				(sizeof(cmd),cmd,"cfg_load", " ", _cfg);
-		Console->Execute		(cmd);
+		FS.update_path(_cfg, "$game_config$", "default_controls.ltx");
+		strconcat(sizeof(cmd), cmd, "cfg_load", " ", _cfg);
+		Console->Execute(cmd);
 	}
 };
 
@@ -526,22 +543,24 @@ class CCC_BindList : public IConsole_Command
 {
 public:
 	CCC_BindList(LPCSTR N) : IConsole_Command(N)
-	{ bEmptyArgsHandled=TRUE; };
+	{
+		bEmptyArgsHandled = TRUE;
+	};
 
 	virtual void Execute(LPCSTR args) {
-		Log				("- --- Bind list start ---");
-		string512		buff;			
-		
-		for(int idx=0; idx<bindings_count;++idx)
+		Log("- --- Bind list start ---");
+		string512		buff;
+
+		for (int idx = 0; idx < bindings_count; ++idx)
 		{
-			_binding* pbinding		= &g_key_bindings[idx];
-			xr_sprintf		(buff,"[%s] primary is[%s] secondary is[%s]",
-						pbinding->m_action->action_name,
-						(pbinding->m_keyboard[0])?pbinding->m_keyboard[0]->key_local_name.c_str():"NULL",
-						(pbinding->m_keyboard[1])?pbinding->m_keyboard[1]->key_local_name.c_str():"NULL");
-			Log		(buff);
+			_binding* pbinding = &g_key_bindings[idx];
+			xr_sprintf(buff, "[%s] primary is[%s] secondary is[%s]",
+				pbinding->m_action->action_name,
+				(pbinding->m_keyboard[0]) ? pbinding->m_keyboard[0]->key_local_name.c_str() : "NULL",
+				(pbinding->m_keyboard[1]) ? pbinding->m_keyboard[1]->key_local_name.c_str() : "NULL");
+			Log(buff);
 		}
-		Log				("- --- Bind list end   ---");
+		Log("- --- Bind list end   ---");
 	}
 };
 
@@ -549,48 +568,49 @@ class CCC_BindConsoleCmd : public IConsole_Command
 {
 public:
 	CCC_BindConsoleCmd(LPCSTR N) : IConsole_Command(N) {};
-	virtual void Execute(LPCSTR args) 
+	virtual void Execute(LPCSTR args)
 	{
 		string512				console_command;
 		string256				key;
-		int cnt					= _GetItemCount(args,' ');
-		_GetItems				(args,0,cnt-1,console_command,' ');
-		_GetItem				(args,cnt-1,key,' ');
+		int cnt = _GetItemCount(args, ' ');
+		_GetItems(args, 0, cnt - 1, console_command, ' ');
+		_GetItem(args, cnt - 1, key, ' ');
 
-		int dik					= keyname_to_dik(key);
-		bindConsoleCmds.bind	(dik, console_command);
+		int dik = keyname_to_dik(key);
+		bindConsoleCmds.bind(dik, console_command);
 	}
 
-	virtual void Save(IWriter* F) 
+	virtual void Save(IWriter* F)
 	{
 		bindConsoleCmds.save(F);
 	}
 
 };
 
-
 class CCC_UnBindConsoleCmd : public IConsole_Command
 {
 public:
 	CCC_UnBindConsoleCmd(LPCSTR N) : IConsole_Command(N)
-	{ bEmptyArgsHandled=FALSE; };
-
-	virtual void Execute(LPCSTR args) 
 	{
-		int _dik = keyname_to_dik	(args);
-		bindConsoleCmds.unbind		(_dik);
+		bEmptyArgsHandled = FALSE;
+	};
+
+	virtual void Execute(LPCSTR args)
+	{
+		int _dik = keyname_to_dik(args);
+		bindConsoleCmds.unbind(_dik);
 	}
 };
 
 void ConsoleBindCmds::bind(int dik, LPCSTR N)
 {
-	_conCmd& c	= m_bindConsoleCmds[dik];
-	c.cmd		= N;
+	_conCmd& c = m_bindConsoleCmds[dik];
+	c.cmd = N;
 }
 void ConsoleBindCmds::unbind(int dik)
 {
-	xr_map<int,_conCmd>::iterator it = m_bindConsoleCmds.find(dik);
-	if(it==m_bindConsoleCmds.end())
+	xr_map<int, _conCmd>::iterator it = m_bindConsoleCmds.find(dik);
+	if (it == m_bindConsoleCmds.end())
 		return;
 
 	m_bindConsoleCmds.erase(it);
@@ -603,8 +623,8 @@ void ConsoleBindCmds::clear()
 
 bool ConsoleBindCmds::execute(int dik)
 {
-	xr_map<int,_conCmd>::iterator it = m_bindConsoleCmds.find(dik);
-	if(it==m_bindConsoleCmds.end())
+	xr_map<int, _conCmd>::iterator it = m_bindConsoleCmds.find(dik);
+	if (it == m_bindConsoleCmds.end())
 		return false;
 
 	Console->Execute(it->second.cmd.c_str());
@@ -613,28 +633,27 @@ bool ConsoleBindCmds::execute(int dik)
 
 void ConsoleBindCmds::save(IWriter* F)
 {
-	xr_map<int,_conCmd>::iterator it = m_bindConsoleCmds.begin();
-	
-	for(;it!=m_bindConsoleCmds.end();++it)
+	xr_map<int, _conCmd>::iterator it = m_bindConsoleCmds.begin();
+
+	for (; it != m_bindConsoleCmds.end(); ++it)
 	{
-		LPCSTR keyname		= dik_to_keyname(it->first);
+		LPCSTR keyname = dik_to_keyname(it->first);
 		F->w_printf("bind_console %s %s\n", *it->second.cmd, keyname);
 	}
 }
 
-
-void CCC_RegisterInput()
+ENGINE_API void CCC_RegisterInput()
 {
-	initialize_bindings									();
-	CMD2(CCC_Bind,				"bind",					0);
-	CMD2(CCC_Bind,				"bind_sec",				1);
-	CMD2(CCC_UnBind,			"unbind",				0);
-	CMD2(CCC_UnBind,			"unbind_sec",			1);
-	CMD1(CCC_UnBindAll,			"unbindall"				);
-	CMD1(CCC_DefControls,		"default_controls"		);
-	CMD1(CCC_ListActions,		"list_actions"			);
+	initialize_bindings();
+	CMD2(CCC_Bind, "bind", 0);
+	CMD2(CCC_Bind, "bind_sec", 1);
+	CMD2(CCC_UnBind, "unbind", 0);
+	CMD2(CCC_UnBind, "unbind_sec", 1);
+	CMD1(CCC_UnBindAll, "unbindall");
+	CMD1(CCC_DefControls, "default_controls");
+	CMD1(CCC_ListActions, "list_actions");
 
-	CMD1(CCC_BindList,			"bind_list"				);
-	CMD1(CCC_BindConsoleCmd,	"bind_console"			);
-	CMD1(CCC_UnBindConsoleCmd,	"unbind_console"		);
+	CMD1(CCC_BindList, "bind_list");
+	CMD1(CCC_BindConsoleCmd, "bind_console");
+	CMD1(CCC_UnBindConsoleCmd, "unbind_console");
 };

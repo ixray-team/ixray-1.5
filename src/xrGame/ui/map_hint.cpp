@@ -8,7 +8,7 @@
 #include "../gametaskmanager.h"
 #include "../gametask.h"
 #include "UIInventoryUtilities.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 
 CUIStatic* init_static_field(CUIXml& uiXml, LPCSTR path, LPCSTR path2)
 {

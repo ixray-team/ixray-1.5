@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "ServerList.h"
 #include "UIXmlInit.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 #include "../../xrEngine/xr_ioconsole.h"
 #include "UIEditBox.h"
 #include "UIColorAnimatorWrapper.h"

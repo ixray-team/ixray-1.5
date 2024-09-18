@@ -10,7 +10,7 @@
 #include "game_cl_base.h"
 #include "game_cl_capture_the_artefact.h"
 #include "game_cl_mp.h"
-
+#include "UIFontDefines.h"
 #include "level.h"
 #include "actor.h"
 #include "artefact.h"
@@ -19,7 +19,7 @@
 #include "weapon.h"
 #include "WeaponMagazinedWGrenade.h"
 #include "WeaponKnife.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 
 #include "object_broker.h"
 //#include "clsid_game.h"
@@ -91,21 +91,21 @@ CUIGameCTA::CUIGameCTA()
 	CUIXmlInit::InitStatic			(uiXml, "team2_score", 0,	m_team2_score);
 
 	m_round_result_caption =	"round_result";
-	GameCaptions()->addCustomMessage(m_round_result_caption, DI2PX(0.0f), DI2PY(-0.1f), SZ(0.03f), UI().Font().pFontGraffiti19Russian, CGameFont::alCenter, ROUND_RESULT_COLOR, "");
+	GameCaptions()->addCustomMessage(m_round_result_caption, DI2PX(0.0f), DI2PY(-0.1f), SZ(0.03f), UI().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alCenter, ROUND_RESULT_COLOR, "");
 	m_pressbuy_caption = "pressbuy";
-	GameCaptions()->addCustomMessage(m_pressbuy_caption, DI2PX(0.0f), DI2PY(0.95f), SZ(0.02f), UI().Font().pFontGraffiti19Russian, CGameFont::alCenter, NORMAL_MSG_COLOR, "");
+	GameCaptions()->addCustomMessage(m_pressbuy_caption, DI2PX(0.0f), DI2PY(0.95f), SZ(0.02f), UI().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alCenter, NORMAL_MSG_COLOR, "");
 	m_pressjump_caption = "pressjump";
-	GameCaptions()->addCustomMessage(m_pressjump_caption, DI2PX(0.0f), DI2PY(0.9f), SZ(0.02f), UI().Font().pFontGraffiti19Russian, CGameFont::alCenter, NORMAL_MSG_COLOR, "");
+	GameCaptions()->addCustomMessage(m_pressjump_caption, DI2PX(0.0f), DI2PY(0.9f), SZ(0.02f), UI().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alCenter, NORMAL_MSG_COLOR, "");
 	m_spectator_caption = "spectator";
-	GameCaptions()->addCustomMessage(m_spectator_caption, DI2PX(0.0f), DI2PY(-0.7f), SZ(0.03f), UI().Font().pFontGraffiti19Russian, CGameFont::alCenter, NORMAL_MSG_COLOR, "");
+	GameCaptions()->addCustomMessage(m_spectator_caption, DI2PX(0.0f), DI2PY(-0.7f), SZ(0.03f), UI().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alCenter, NORMAL_MSG_COLOR, "");
 	m_spectrmode_caption = "spetatormode";
-	GameCaptions()->addCustomMessage(m_spectrmode_caption, DI2PX(0.0f), DI2PY(-0.7f), SZ(0.03f), UI().Font().pFontGraffiti19Russian, CGameFont::alCenter, SPECTRMODE_MSG_COLOR, "");
+	GameCaptions()->addCustomMessage(m_spectrmode_caption, DI2PX(0.0f), DI2PY(-0.7f), SZ(0.03f), UI().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alCenter, SPECTRMODE_MSG_COLOR, "");
 	m_warm_up_caption =	"warm_up";
-	GameCaptions()->addCustomMessage(m_warm_up_caption, DI2PX(0.0f), DI2PY(-0.75f), SZ(0.05f), UI().Font().pFontGraffiti19Russian, CGameFont::alCenter, WARM_UP_COLOR, "");
+	GameCaptions()->addCustomMessage(m_warm_up_caption, DI2PX(0.0f), DI2PY(-0.75f), SZ(0.05f), UI().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alCenter, WARM_UP_COLOR, "");
 	m_time_caption = "timelimit";
-	GameCaptions()->addCustomMessage(m_time_caption, DI2PX(0.0f), DI2PY(-0.8f), SZ(0.03f), UI().Font().pFontGraffiti19Russian, CGameFont::alCenter, TIME_MSG_COLOR, "");
+	GameCaptions()->addCustomMessage(m_time_caption, DI2PX(0.0f), DI2PY(-0.8f), SZ(0.03f), UI().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alCenter, TIME_MSG_COLOR, "");
 	m_demo_play_caption = "demo_play";
-	GameCaptions()->addCustomMessage(m_demo_play_caption, DI2PX(-1.0f), DI2PY(-0.5f), SZ(0.05f), UI().Font().pFontGraffiti19Russian, CGameFont::alLeft, DEMOPLAY_COLOR, "");
+	GameCaptions()->addCustomMessage(m_demo_play_caption, DI2PX(-1.0f), DI2PY(-0.5f), SZ(0.05f), UI().Font().GetFont(GRAFFITI19_FONT_NAME), CGameFont::alLeft, DEMOPLAY_COLOR, "");
 
 	m_pMapDesc			= NULL;
 	m_pCurBuyMenu		= NULL;

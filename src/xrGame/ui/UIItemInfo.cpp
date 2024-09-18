@@ -12,7 +12,7 @@
 
 #include "ai_space.h"
 #include "alife_simulator.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 #include "../Inventory_Item.h"
 #include "UIInventoryUtilities.h"
 #include "../PhysicsShellHolder.h"

@@ -36,7 +36,7 @@
 #include "../alife_registry_wrappers.h"
 #include "../actorcondition.h"
 
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 
 #ifdef DEBUG
 #	include "../attachable_item.h"

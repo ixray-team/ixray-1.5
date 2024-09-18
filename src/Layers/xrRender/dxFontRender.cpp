@@ -1,149 +1,186 @@
 #include "stdafx.h"
 #include "dxFontRender.h"
+#include "dxRenderDeviceRender.h"
 
 #include "../../xrEngine/GameFont.h"
 
-dxFontRender::dxFontRender()
-{
+extern ENGINE_API BOOL g_bRendering;
 
-}
+dxFontRender::dxFontRender() {}
 
-dxFontRender::~dxFontRender()
-{
+dxFontRender::~dxFontRender() {
 	pShader.destroy();
 	pGeom.destroy();
+	pTexture.destroy();
 }
 
-void dxFontRender::Initialize(LPCSTR cShader, LPCSTR cTexture)
-{
+void dxFontRender::Initialize(const char* cShader, const char* cTexture) {
+	if(pTexture._get() == nullptr) {
+		pTexture.create(cTexture);
+	}
+
 	pShader.create(cShader, cTexture);
 	pGeom.create(FVF::F_TL, RCache.Vertex.Buffer(), RCache.QuadIB);
 }
-extern ENGINE_API BOOL g_bRendering;
-extern ENGINE_API Fvector2		g_current_font_scale;
-void dxFontRender::OnRender(CGameFont &owner)
-{
-	VERIFY				(g_bRendering);
-	if (pShader)		RCache.set_Shader	(pShader);
 
-	if (!(owner.uFlags&CGameFont::fsValid)){
-		CTexture* T		= RCache.get_ActiveTexture(0);
-		owner.vTS.set			((int)T->get_Width(),(int)T->get_Height());
-		owner.fTCHeight		= owner.fHeight/float(owner.vTS.y);
-		owner.uFlags			|= CGameFont::fsValid;
+void dxFontRender::OnRender(CGameFont& owner) {
+	VERIFY(g_bRendering);
+
+	if(pShader != nullptr) {
+		RCache.set_Shader(pShader);
 	}
 
-	for (u32 i=0; i<owner.strings.size(); ){
-		// calculate first-fit
-		int		count	=	1;
+	auto fWidth = (float)std::max(pTexture->get_Width(), 4u);
+	auto fHeight = (float)std::max(pTexture->get_Height(), 4u);
 
-		int length = owner.smart_strlen( owner.strings[ i ].string );
+	//#TODO mb need use optimization for minimize vertexes allocations?
+	for(CGameFont::String& str : owner.strings) {
+		int length = xr_strlen(str.string);
+		if(length) {
+			// lock AGP memory
+			u32	vOffset;
+			FVF::TL* vertexes = (FVF::TL*)RCache.Vertex.Lock(length * 4, pGeom.stride(), vOffset);
+			FVF::TL* start = vertexes;
 
-		while	((i+count)<owner.strings.size()) {
-			int L = owner.smart_strlen( owner.strings[ i + count ].string );
+			float X = float(iFloor(str.x));
+			float Y = float(iFloor(str.y));
+			float Y2 = Y + str.height;
 
-			if ((L+length)<MAX_MB_CHARS){
-				count	++;
-				length	+=	L;
+			if(str.align) {
+				float width = (float)owner.WidthOf(str.string);
+
+				switch(str.align) {
+					case CGameFont::alCenter:
+					X -= iFloor(width * 0.5f);
+					break;
+					case CGameFont::alRight:
+					X -= iFloor(width);
+					break;
+				}
 			}
-			else		break;
-		}
 
-		// lock AGP memory
-		u32	vOffset;
-		FVF::TL* v		= (FVF::TL*)RCache.Vertex.Lock	(length*4,pGeom.stride(),vOffset);
-		FVF::TL* start	= v;
+			u32	clr, clr2;
+			clr2 = clr = str.c;
+			if(owner.uFlags & CGameFont::fsGradient) {
+				u32	_R = color_get_R(clr) / 2;
+				u32	_G = color_get_G(clr) / 2;
+				u32	_B = color_get_B(clr) / 2;
+				u32	_A = color_get_A(clr);
+				clr2 = color_rgba(_R, _G, _B, _A);
+			}
 
-		// fill vertices
-		u32 last		= i+count;
-		for (; i<last; i++) {
-			CGameFont::String		&PS	= owner.strings[i];
-			wide_char wsStr[ MAX_MB_CHARS ];
+			X -= 0.5f;
+			Y -= 0.5f;
+			Y2 -= 0.5f;
 
-			int	len	= owner.IsMultibyte() ? 
-				mbhMulti2Wide( wsStr , NULL , MAX_MB_CHARS , PS.string ) :
-			xr_strlen( PS.string );
+			xr_special_char* UniStr = nullptr; 
+			bool IsUTF8Str = IsUTF8(str.string);
+			if (IsUTF8Str)
+			{
+				UniStr = Platform::ANSI_TO_TCHAR(str.string);
+			}
+			else
+			{
+				UniStr = Platform::ANSI_TO_TCHAR(str.string_utf8.c_str());
+			}
 
-			if (len) {
-				float	X	= float(iFloor(PS.x));
-				float	Y	= float(iFloor(PS.y));
-				float	S	= PS.height*g_current_font_scale.y;
-				float	Y2	= Y+S;
-				float fSize = 0;
+			for(int i = 0; i < length; i++) 
+			{
+				CGameFont::Glyph* glyphInfo = nullptr;
 
-				if ( PS.align )
-					fSize = owner.IsMultibyte() ? owner.SizeOf_( wsStr ) : owner.SizeOf_( PS.string );
-
-				switch ( PS.align )
+				if (!IsUTF8Str)
 				{
-				case CGameFont::alCenter:	
-					X	-= ( iFloor( fSize * 0.5f ) ) * g_current_font_scale.x;	
-					break;
-				case CGameFont::alRight:	
-					X	-=	iFloor( fSize );
-					break;
+					glyphInfo = const_cast<CGameFont::Glyph*>(owner.GetGlyphInfo((u8)str.string[i]));
 				}
 
-				u32	clr,clr2;
-				clr2 = clr	= PS.c;
-				if (owner.uFlags&CGameFont::fsGradient){
-					u32	_R	= color_get_R	(clr)/2;
-					u32	_G	= color_get_G	(clr)/2;
-					u32	_B	= color_get_B	(clr)/2;
-					u32	_A	= color_get_A	(clr);
-					clr2	= color_rgba	(_R,_G,_B,_A);
-				}
-
-#ifdef	USE_DX10		//	Vertex shader will cancel a DX9 correction, so make fake offset
-				X			-= 0.5f;
-				Y			-= 0.5f;
-				Y2			-= 0.5f;
-#endif	//	USE_DX10
-
-				float	tu,tv;
-				for (int j=0; j<len; j++)
+				if (glyphInfo == nullptr) 
 				{
-					Fvector l;
-
-					l = owner.IsMultibyte() ? owner.GetCharTC( wsStr[ 1 + j ] ) : owner.GetCharTC( ( u16 ) ( u8 ) PS.string[j] );
-
-					float scw		= l.z * g_current_font_scale.x;
-
-					float fTCWidth	= l.z/owner.vTS.x;
-
-					if (!fis_zero(l.z))
+					glyphInfo = const_cast<CGameFont::Glyph*>(owner.GetGlyphInfo(UniStr[i]));
+					if (glyphInfo == nullptr)
 					{
-//						tu			= ( l.x / owner.vTS.x ) + ( 0.5f / owner.vTS.x );
-//						tv			= ( l.y / owner.vTS.y ) + ( 0.5f / owner.vTS.y );
-						tu			= ( l.x / owner.vTS.x );
-						tv			= ( l.y / owner.vTS.y );
-#ifndef	USE_DX10
-						//	Make half pixel offset for 1 to 1 mapping
-						tu			+=( 0.5f / owner.vTS.x );
-						tv			+=( 0.5f / owner.vTS.y );
-#endif	//	USE_DX10
-
-						v->set( X , Y2 , clr2 , tu , tv + owner.fTCHeight );						v++;
-						v->set( X ,	Y , clr , tu , tv );									v++;
-						v->set( X + scw , Y2 , clr2 , tu + fTCWidth , tv + owner.fTCHeight );		v++;
-						v->set( X + scw , Y , clr , tu + fTCWidth , tv );					v++;
-					}
-					X += scw * owner.vInterval.x;
-					if ( owner.IsMultibyte() ) {
-						X -= 2;
-						if ( IsNeedSpaceCharacter( wsStr[ 1 + j ] ) )
-							X += owner.fXStep;
+						continue;
 					}
 				}
+
+				if(i != 0) {
+					X += glyphInfo->Abc.abcA;
+				}
+
+				float GlyphY = Y + glyphInfo->yOffset;
+				float GlyphY2 = Y2 + glyphInfo->yOffset;
+
+				float X2 = X + glyphInfo->Abc.abcB;
+
+				float u1 = float(glyphInfo->TextureCoord.left) / fWidth;
+				float u2 = float(glyphInfo->TextureCoord.right) / fWidth;
+
+				float v1 = float(glyphInfo->TextureCoord.top) / fHeight;
+				float v2 = float(glyphInfo->TextureCoord.bottom) / fHeight;
+
+				vertexes->set(X, GlyphY2, clr2, u1, v2);
+				++vertexes;
+				vertexes->set(X, GlyphY, clr, u1, v1);
+				++vertexes;
+				vertexes->set(X2, GlyphY2, clr2, u2, v2);
+				++vertexes;
+				vertexes->set(X2, GlyphY, clr, u2, v1);
+				++vertexes;
+
+				X = X2 + glyphInfo->Abc.abcC;
+			}
+
+			// Unlock and draw
+			u32 vertexesCount = (u32)(vertexes - start);
+			RCache.Vertex.Unlock(vertexesCount, pGeom.stride());
+
+			if(vertexesCount > 0) {
+				RCache.set_Geometry(pGeom);
+				RCache.Render(D3DPT_TRIANGLELIST, vOffset, 0, vertexesCount, 0, vertexesCount / 2);
 			}
 		}
-
-		// Unlock and draw
-		u32 vCount = (u32)(v-start);
-		RCache.Vertex.Unlock		(vCount,pGeom.stride());
-		if (vCount){
-			RCache.set_Geometry		(pGeom);
-			RCache.Render			(D3DPT_TRIANGLELIST,vOffset,0,vCount,0,vCount/2);
-		}
 	}
+}
+
+void dxFontRender::CreateFontAtlas(u32 width, u32 height, const char* name, void* bitmap) {
+	ID3DTexture2D* pSurface = nullptr;
+
+#ifdef USE_DX10
+	D3D_TEXTURE2D_DESC descFontAtlas;
+	ZeroMemory(&descFontAtlas, sizeof(D3D_TEXTURE2D_DESC));
+	descFontAtlas.Width = width;
+	descFontAtlas.Height = height;
+	descFontAtlas.MipLevels = 1;
+	descFontAtlas.ArraySize = 1;
+	descFontAtlas.SampleDesc.Count = 1;
+	descFontAtlas.SampleDesc.Quality = 0;
+	descFontAtlas.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+	descFontAtlas.Usage = D3D10_USAGE_DEFAULT;
+	descFontAtlas.BindFlags = D3D10_BIND_SHADER_RESOURCE;
+	descFontAtlas.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE;
+	descFontAtlas.MiscFlags = 0;
+
+	D3D10_SUBRESOURCE_DATA FontData;
+	FontData.pSysMem = bitmap;
+	FontData.SysMemSlicePitch = 0;
+	FontData.SysMemPitch = width * 4;
+
+	if(HW.pDevice->CreateTexture2D(&descFontAtlas, &FontData, &pSurface) != S_OK) {
+		Msg("! D3D_USAGE_DEFAULT may not be working");
+		_RELEASE(pSurface); descFontAtlas.Usage = D3D10_USAGE_DYNAMIC;
+		R_CHK(HW.pDevice->CreateTexture2D(&descFontAtlas, &FontData, &pSurface));
+	}
+#else
+	D3DLOCKED_RECT LockedRect = {};
+	R_CHK(HW.pDevice->CreateTexture(width, height, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &pSurface, nullptr));
+	R_CHK(pSurface->LockRect(0, &LockedRect, nullptr, 0));
+
+	memcpy(LockedRect.pBits, bitmap, width * height * 4);
+
+	R_CHK(pSurface->UnlockRect(0));
+#endif
+
+	pTexture.create(name);
+	pTexture->surface_set(pSurface);
+
+	_RELEASE(pSurface);
 }

@@ -4,7 +4,7 @@
 #include "UICursor.h"
 #include "level.h"
 #include "actor.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 
 dlgItem::dlgItem(CUIWindow* pWnd)
 {

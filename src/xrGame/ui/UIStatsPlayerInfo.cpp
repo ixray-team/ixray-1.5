@@ -6,7 +6,7 @@
 #include "UIStatsIcon.h"
 #include "../game_cl_artefacthunt.h"
 #include "../level.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 
 CUIStatsPlayerInfo::CUIStatsPlayerInfo(xr_vector<PI_FIELD_INFO>* info, CGameFont* pF, u32 text_col)
 {

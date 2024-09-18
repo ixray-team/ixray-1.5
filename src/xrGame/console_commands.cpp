@@ -26,7 +26,7 @@
 #include "ui/UIMainIngameWnd.h"
 //#include "../xrPhysics/PhysicsGamePars.h"
 #include "../xrPhysics/iphworld.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 #include "autosave_manager.h"
 #include "ai_space.h"
 #include "ai/monsters/BaseMonster/base_monster.h"
@@ -44,7 +44,6 @@
 #include "cameralook.h"
 #include "character_hit_animations_params.h"
 #include "inventory_upgrade_manager.h"
-#include "string_table.h"
 #include "GameSpy/GameSpy_Full.h"
 #include "GameSpy/GameSpy_Patching.h"
 

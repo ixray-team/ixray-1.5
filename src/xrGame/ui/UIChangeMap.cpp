@@ -142,7 +142,7 @@ void CUIChangeMap::OnBtnOk()
 		GetHolder()->StartStopMenu	(this, true);
 	}
 }
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 void CUIChangeMap::FillUpList()
 {
 	lst->Clear				();

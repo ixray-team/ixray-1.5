@@ -2,7 +2,7 @@
 #include "hudtarget.h"
 #include "hudmanager.h"
 #include "../xrEngine/gamemtllib.h"
-
+#include "UIFontDefines.h"
 #include "../xrEngine/Environment.h"
 #include "../xrEngine/CustomHUD.h"
 #include "Entity.h"
@@ -15,7 +15,7 @@
 #include "relation_registry.h"
 #include "character_info.h"
 
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 #include "entity_alive.h"
 
 #include "inventory_item.h"
@@ -164,7 +164,7 @@ void CHUDTarget::Render()
 	//float				di_size = C_SIZE/powf(PT.p.w,.2f);
 	float				di_size = C_SIZE/powf(pt.w,.2f);
 
-	CGameFont* F		= UI().Font().pFontGraffiti19Russian;
+	CGameFont* F		= UI().Font().GetFont(GRAFFITI19_FONT_NAME);
 	F->SetAligment		(CGameFont::alCenter);
 	F->OutSetI			(0.f,0.05f);
 

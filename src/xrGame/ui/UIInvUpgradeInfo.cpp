@@ -9,7 +9,7 @@
 #include "stdafx.h"
 #include "pch_script.h"
 #include "UIInvUpgradeInfo.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 #include "../Actor.h"
 
 #include "UIStatic.h"

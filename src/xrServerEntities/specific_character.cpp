@@ -3,7 +3,7 @@
 
 #ifdef  XRGAME_EXPORTS
 #include "PhraseDialog.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 
 
 SSpecificCharacterData::SSpecificCharacterData()

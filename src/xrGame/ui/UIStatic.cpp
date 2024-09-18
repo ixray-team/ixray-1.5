@@ -6,7 +6,7 @@
 #include "../HUDManager.h"
 #include "../../xrEngine/LightAnimLibrary.h"
 #include "uilines.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 #include "../ui_base.h"
 
 #include "../Include/xrRender/UIRender.h"

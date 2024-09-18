@@ -116,7 +116,7 @@ void CUIComboBox::enable_id(int id)
 		m_disabled.erase(it);
 }
 
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 void CUIComboBox::SetCurrentValue()
 {
 	m_list_box.Clear		();

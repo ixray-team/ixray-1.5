@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "game_cl_mp.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 #include "xrMessages.h"
 #include "GameObject.h"
 #include "Actor.h"
@@ -23,7 +23,7 @@
 #include "ui/UIVotingCategory.h"
 #include "ui/UIVote.h"
 #include "ui/UIMessageBoxEx.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 #include "../xrEngine/IGame_Persistent.h"
 #include "../Include/xrRender/UIShader.h"
 #include "clsid_game.h"
@@ -1817,7 +1817,7 @@ void game_cl_mp::draw_all_active_binder_states()
 {
 	//drawing download states ..
 	CGameFont* F = UI().Font().pFontDI;
-	F->SetHeightI	(0.015f);
+	F->SetHeight	(0.015f);
 	F->OutSetI		(0.1f,0.2f);
 	F->SetColor(color_xrgb(0, 255, 0));
 	

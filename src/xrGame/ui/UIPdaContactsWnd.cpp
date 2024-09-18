@@ -8,7 +8,7 @@
 #include "UIAnimatedStatic.h"
 #include "UIScrollView.h"
 #include "../actor.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 
 #define PDA_CONTACT_HEIGHT 70
 

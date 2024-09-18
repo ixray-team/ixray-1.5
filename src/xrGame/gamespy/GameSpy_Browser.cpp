@@ -10,7 +10,7 @@
 #include "GameSpy_QR2.h"
 
 #include "object_broker.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 
 void __cdecl SBCallback(void* sb, SBCallbackReason reason, void* server, void *instance);
 EGameIDs ParseStringToGameType(LPCSTR str);

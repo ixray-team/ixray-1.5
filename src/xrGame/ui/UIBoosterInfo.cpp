@@ -4,7 +4,7 @@
 #include "UIXmlInit.h"
 #include "UIHelper.h"
 #include "../Actor.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 
 CUIBoosterInfo::CUIBoosterInfo()
 {

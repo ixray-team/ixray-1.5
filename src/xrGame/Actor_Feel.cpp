@@ -5,7 +5,7 @@
 #include "inventory.h"
 #include "hudmanager.h"
 #include "character_info.h"
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 #include "UsableScriptObject.h"
 #include "customzone.h"
 #include "../xrEngine/gamemtllib.h"
@@ -16,6 +16,7 @@
 #include "game_cl_base.h"
 #include "Level.h"
 #include "clsid_game.h"
+#include "UIFontDefines.h"
 
 #define PICKUP_INFO_COLOR 0xFFDDDDDD
 //AAAAAA
@@ -261,9 +262,9 @@ void CActor::PickupInfoDraw(CObject* object)
 	float x = (1.f + v_res.x)/2.f * (Device.dwWidth);
 	float y = (1.f - v_res.y)/2.f * (Device.dwHeight);
 
-	UI().Font().pFontLetterica16Russian->SetAligment	(CGameFont::alCenter);
-	UI().Font().pFontLetterica16Russian->SetColor		(PICKUP_INFO_COLOR);
-	UI().Font().pFontLetterica16Russian->Out			(x,y,draw_str);
+	UI().Font().GetFont(LETTERICA16_FONT_NAME)->SetAligment(CGameFont::alCenter);
+	UI().Font().GetFont(LETTERICA16_FONT_NAME)->SetColor(PICKUP_INFO_COLOR);
+	UI().Font().GetFont(LETTERICA16_FONT_NAME)->Out			(x,y,draw_str);
 }
 
 void CActor::feel_sound_new(CObject* who, int type, CSound_UserDataPtr user_data, const Fvector& Position, float power)

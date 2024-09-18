@@ -28,7 +28,7 @@
 #include "../Actor.h"
 #include "../ActorCondition.h"
 #include "../CustomOutfit.h"
-#include "../string_table.h"
+#include "../../xrEngine/string_table.h"
 
 ui_actor_state_wnd::ui_actor_state_wnd()
 {

@@ -167,7 +167,7 @@ void CGamePersistent::Disconnect()
 	m_game_params.m_e_game_type	= eGameIDNoGame;
 }
 
-#include "xr_level_controller.h"
+#include "../xrEngine/xr_level_controller.h"
 
 void CGamePersistent::OnGameStart()
 {
@@ -692,7 +692,7 @@ void CGamePersistent::OnRenderPPUI_PP()
 {
 	MainMenu()->OnRenderPPUI_PP();
 }
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 #include "../xrEngine/x_ray.h"
 void CGamePersistent::LoadTitle(LPCSTR str)
 {

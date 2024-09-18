@@ -5,7 +5,7 @@
 #include "xrserver.h"
 #include "Level.h"
 #include "game_cl_base.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 
 #include "ui\UIBuyWndShared.h"
 

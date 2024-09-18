@@ -5,7 +5,7 @@
 #include "Level.h"
 #include "HUDManager.h"
 #include "ui/UIMessagesWindow.h"
-#include "string_table.h"
+#include "../xrEngine/string_table.h"
 #include "map_manager.h"	
 #include "map_location.h"
 
