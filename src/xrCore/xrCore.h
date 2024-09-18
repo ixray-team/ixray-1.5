@@ -1,5 +1,5 @@
 #pragma once
-#	include "xrCore_platform.h"
+#include "Platform/Platform.h"
 
 
 // *** try to minimize code bloat of STLport
@@ -66,6 +66,7 @@
 	#endif
 #endif
 
+#include <filesystem>
 #include <time.h>
 // work-around dumb borland compiler
 #ifdef __BORLANDC__
@@ -162,7 +163,7 @@
 #include "clsid.h"
 #include "xrSyncronize.h"
 #include "xrMemory.h"
-#include "xrDebug.h"
+#include "Platform/PlatformAPI.h"
 
 #include "_stl_extensions.h"
 #include "xrsharedmem.h"
@@ -264,5 +265,14 @@ public:
 //Borland global function dll interface
 #define	_BGCL			//__stdcall
 
+
+#include <DirectXMath.h>
+namespace Platform
+{
+    XRCORE_API xr_string TCHAR_TO_ANSI_U8(const xr_special_char* C);
+    XRCORE_API xr_string CP_TCHAR_TO_ANSI_U8(const xr_special_char* C);
+    XRCORE_API xr_string UTF8_to_CP1251(xr_string const& utf8);
+    XRCORE_API xr_string ANSI_TO_UTF8(const xr_string& ansi);
+}
 
 extern XRCORE_API xrCore Core;

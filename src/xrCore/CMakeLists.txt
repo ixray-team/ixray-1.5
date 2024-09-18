@@ -38,6 +38,9 @@ file(GLOB CORE_SOURCE_MEMORY_FILES
     "*malloc*.*"
     "doug_lea_allocator.*"
 )
+file(GLOB CORE_SOURCE_XR_API_PLATF_FILES "Platform/*.*")
+file(GLOB CORE_SOURCE_XR_API_WIN_FILES "Platform/Windows/*.*")
+file(GLOB CORE_SOURCE_XR_API_LIN_FILES "Platform/Linux/*.*")
 file(GLOB_RECURSE CORE_SOURCE_MEMORY_P3_FILES
     "ptmalloc3/*.*"
 )
@@ -60,6 +63,9 @@ file(GLOB_RECURSE CORE_SOURCE_ALL_FILES CONFIGURE_DEPENDS
 source_group("core" FILES ${CORE_SOURCE_ALL_FILES})
 source_group("math" FILES ${CORE_SOURCE_MATH_FILES})
 source_group("memory" FILES ${CORE_SOURCE_MEMORY_FILES})
+source_group("platform" FILES ${CORE_SOURCE_XR_API_PLATF_FILES})
+source_group("platform/windows" FILES ${CORE_SOURCE_XR_API_WIN_FILES})
+source_group("platform/linux" FILES ${CORE_SOURCE_XR_API_LIN_FILES})
 source_group("memory/p3malloc" FILES ${CORE_SOURCE_MEMORY_P3_FILES})
 source_group("debug" FILES ${CORE_SOURCE_DEBUG_FILES})
 source_group("compressors/rt" FILES ${CORE_SOURCE_RT_FILES})
@@ -84,6 +90,12 @@ list(FILTER CORE_SRC_FILES EXCLUDE REGEX "ptmalloc3/ptmalloc3.c")
 list(FILTER CORE_SRC_FILES EXCLUDE REGEX "ptmalloc3/tst-independent-alloc.c")
 list(FILTER CORE_SRC_FILES EXCLUDE REGEX "rt_lzo*.cpp")
 
+if (MSVC)
+    list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/Linux/")
+else()
+    list(FILTER CORE_SRC_FILES EXCLUDE REGEX "Platform/Windows/")
+endif()
+	
 # xrCore project
 add_library(xrCore SHARED ${CORE_SRC_FILES})
 target_include_directories(xrCore PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -118,3 +130,19 @@ target_link_options(xrCore PUBLIC "$<$<CONFIG:DEBUG>:/SAFESEH:NO>")
 
 add_compile_options(/fp:fast)
 target_compile_definitions(xrCore PRIVATE "$<$<CONFIG:Debug>:DEBUG>")
+
+set(CORE_DXMATH ${CMAKE_BINARY_DIR}/packages/directxmath.2022.12.12.1/)
+
+if (MSVC)
+	add_custom_command(TARGET ${PROJECT_NAME}
+    	PRE_BUILD
+    	COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
+	)
+else()
+	execute_process(
+    	COMMAND ${NUGET_COMMAND} restore ${CMAKE_CURRENT_SOURCE_DIR}/Packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
+	)
+endif()
+
+# DxMath
+target_include_directories(xrCore PUBLIC "${CORE_DXMATH}/include/")

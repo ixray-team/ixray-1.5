@@ -542,6 +542,11 @@ bool ignore_path(const char* _path){
 		return true;
 }
 
+namespace Platform
+{
+	XRCORE_API xr_string TCHAR_TO_ANSI_U8(const xr_special_char* C);
+}
+
 bool CLocatorAPI::Recurse		(const char* path)
 {
     _finddata_t		sFile;
