@@ -624,10 +624,13 @@ void player_hud::update_additional	(Fmatrix& trans)
 
 				for (; I <= E; ++I)
 				{
-					PIItem item_in_slot = pActor->inventory().ItemFromSlot(pActor->inventory().GetActiveSlot());
-					CHudItem* itm =	smart_cast<CHudItem*>(item_in_slot);
-					if(itm)
-						itm->UpdateHudAdditonal(trans);
+					if (pActor->inventory().ActiveItem())
+					{
+						PIItem item_in_slot = pActor->inventory().ItemFromSlot(pActor->inventory().GetActiveSlot());
+						CHudItem* itm = smart_cast<CHudItem*>(item_in_slot);
+						if (itm)
+							itm->UpdateHudAdditonal(trans);
+					}
 				}
 			}
 		}
