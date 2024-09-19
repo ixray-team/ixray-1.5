@@ -51,7 +51,6 @@
 #include "../xrPhysics/console_vars.h"
 #ifdef DEBUG
 #	include "PHDebug.h"
-#	include "ui/UIDebugFonts.h" 
 #	include "game_graph.h"
 #	include "CharacterPhysicsSupport.h"
 #endif // DEBUG
@@ -950,14 +949,6 @@ public:
 };
 
 
-
-class CCC_DebugFonts : public IConsole_Command {
-public:
-	CCC_DebugFonts (LPCSTR N) : IConsole_Command(N) {bEmptyArgsHandled = true; }
-	virtual void Execute				(LPCSTR args) {
-		HUD().GetUI()->StartStopMenu( xr_new<CUIDebugFonts>(), true);		
-	}
-};
 
 class CCC_DebugNode : public IConsole_Command {
 public:
@@ -1991,7 +1982,6 @@ CMD4(CCC_Integer,			"hit_anims_tune",						&tune_hit_anims,		0, 1);
 #endif // #if defined(USE_DEBUGGER) && defined(USE_LUA_STUDIO)
 	
 	CMD1(CCC_ShowMonsterInfo,	"ai_monster_info");
-	CMD1(CCC_DebugFonts,		"debug_fonts");
 	CMD1(CCC_TuneAttachableItem,"dbg_adjust_attachable_item");
 
 
