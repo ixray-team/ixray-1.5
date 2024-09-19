@@ -98,12 +98,12 @@ sPoly2D* C2DFrustum::ClipPoly	(sPoly2D& S, sPoly2D& D) const
 
 void ui_core::OnDeviceReset()
 {
-	m_scale_.set		( float(Device.dwWidth)/UI_BASE_WIDTH, float(Device.dwHeight)/UI_BASE_HEIGHT );
+	m_scale_.set		( float(Device.TargetWidth)/UI_BASE_WIDTH, float(Device.TargetHeight)/UI_BASE_HEIGHT );
 
 	m_2DFrustum.CreateFromRect	(Frect().set(	0.0f,
 												0.0f,
-												float(Device.dwWidth),
-												float(Device.dwHeight)
+												float(Device.TargetWidth),
+												float(Device.TargetHeight)
 												));
 }
 
@@ -254,12 +254,12 @@ void ui_core::RenderFont()
 
 bool ui_core::is_widescreen()
 {
-	return (Device.dwWidth)/float(Device.dwHeight) > (UI_BASE_WIDTH / UI_BASE_HEIGHT +0.01f);
+	return (Device.TargetWidth)/float(Device.TargetHeight) > (UI_BASE_WIDTH / UI_BASE_HEIGHT +0.01f);
 }
 
 float ui_core::get_current_kx() {
-	float h = float(Device.dwHeight);
-	float w = float(Device.dwWidth);
+	float h = float(Device.TargetHeight);
+	float w = float(Device.TargetWidth);
 	float res = (h / w) / (UI_BASE_HEIGHT / UI_BASE_WIDTH);
 	return res;
 }

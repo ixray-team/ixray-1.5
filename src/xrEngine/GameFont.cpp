@@ -18,8 +18,8 @@ void CGameFont::InitializeFreetype()
 	R_ASSERT2(Error == 0, "Freetype2 initialize failed");
 }
 
-#define DI2PX(x) float(iFloor((x + 1) * float(Device.dwWidth) * 0.5f))
-#define DI2PY(y) float(iFloor((y + 1) * float(Device.dwHeight) * 0.5f))
+#define DI2PX(x) float(iFloor((x + 1) * float(Device.TargetWidth) * 0.5f))
+#define DI2PY(y) float(iFloor((y + 1) * float(Device.TargetHeight) * 0.5f))
 
 ENGINE_API Fvector2	g_current_font_scale = { 1.0f, 1.0f };
 
@@ -159,7 +159,7 @@ void CGameFont::Initialize2(const char* name, const char* shader, const char* st
 
 	auto ppi = int(25.4f * sqrt(Hpx * Hpx + Wpx * Wpx) / sqrt(Hmm * Hmm + Wmm * Wmm));
 
-	auto res_scale = is_res_depend ? float(Device.dwHeight) / 900.0f : 1.0f;
+	auto res_scale = is_res_depend ? float(Device.TargetHeight) / 900.0f : 1.0f;
 	auto ppi_scale = is_dpi_depend ? float(ppi) / 92.0f : 1.0f;
 
 	auto fHeight = float(size * res_scale * ppi_scale);

@@ -24,14 +24,14 @@ IC u32 convert				(float c)	{
 }
 IC void MouseRayFromPoint	( Fvector& direction, int x, int y, Fmatrix& m_CamMat )
 {
-	int halfwidth		= Device.dwWidth/2;
-	int halfheight		= Device.dwHeight/2;
+	int halfwidth		= Device.TargetWidth/2;
+	int halfheight		= Device.TargetHeight/2;
 
 	Ivector2 point2;
 	point2.set			(x-halfwidth, halfheight-y);
 
 	float size_y		= VIEWPORT_NEAR * tanf( deg2rad(60.f) * 0.5f );
-	float size_x		= size_y / (Device.fHeight_2/Device.fWidth_2);
+	float size_x		= size_y / (Device.HalfTargetHeight/Device.HalfTargetWidth);
 
 	float r_pt			= float(point2.x) * size_x / (float) halfwidth;
 	float u_pt			= float(point2.y) * size_y / (float) halfheight;
@@ -176,8 +176,8 @@ void CRender::ScreenshotImpl	(ScreenshotMode mode, LPCSTR name, CMemoryWriter* m
 
 			D3D_TEXTURE2D_DESC desc;
 			ZeroMemory(&desc, sizeof(desc));
-			desc.Width = Device.dwHeight;
-			desc.Height = Device.dwHeight;
+			desc.Width = Device.TargetHeight;
+			desc.Height = Device.TargetHeight;
 			desc.MipLevels = 1;
 			desc.ArraySize = 1;
 			desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -225,7 +225,7 @@ void CRender::ScreenshotImpl	(ScreenshotMode mode, LPCSTR name, CMemoryWriter* m
 	IDirect3DSurface9*	pFB;
 	D3DLOCKED_RECT		D;
 	HRESULT				hr;
-	hr = HW.pDevice->CreateOffscreenPlainSurface(Device.dwWidth, Device.dwHeight, HW.DevPP.BackBufferFormat, D3DPOOL_SYSTEMMEM, &pFB, NULL);
+	hr = HW.pDevice->CreateOffscreenPlainSurface(Device.TargetWidth, Device.TargetHeight, HW.DevPP.BackBufferFormat, D3DPOOL_SYSTEMMEM, &pFB, NULL);
 	if(hr!=D3D_OK)		return;
 
 	hr = HW.pDevice->GetRenderTargetData(HW.pBaseRT, pFB);
@@ -237,7 +237,7 @@ void CRender::ScreenshotImpl	(ScreenshotMode mode, LPCSTR name, CMemoryWriter* m
 
 	// Image processing (gamma-correct)
 	pPixel		= (u32*)D.pBits;
-	pEnd		= pPixel+(Device.dwWidth*Device.dwHeight);
+	pEnd		= pPixel+(Device.TargetWidth*Device.TargetHeight);
 	//	IGOR: Remove inverse color correction and kill alpha
 	/*
 	D3DGAMMARAMP	G;
@@ -388,11 +388,11 @@ void CRender::ScreenshotImpl	(ScreenshotMode mode, LPCSTR name, CMemoryWriter* m
 				if(hr!=D3D_OK)		goto _end_;
 
 				// save
-				u32* data			= (u32*)xr_malloc(Device.dwHeight*Device.dwHeight*4);
-				imf_Process			(data,Device.dwHeight,Device.dwHeight,(u32*)D.pBits,Device.dwWidth,Device.dwHeight,imf_lanczos3);
-				p.scanlenght		= Device.dwHeight*4;
-				p.width				= Device.dwHeight;
-				p.height			= Device.dwHeight;
+				u32* data			= (u32*)xr_malloc(Device.TargetHeight*Device.TargetHeight*4);
+				imf_Process			(data,Device.TargetHeight,Device.TargetHeight,(u32*)D.pBits,Device.TargetWidth,Device.TargetHeight,imf_lanczos3);
+				p.scanlenght		= Device.TargetHeight*4;
+				p.width				= Device.TargetHeight;
+				p.height			= Device.TargetHeight;
 				p.data				= data;
 				p.maketga			(*fs);
 				xr_free				(data);
@@ -445,7 +445,7 @@ void CRender::ScreenshotAsyncEnd(CMemoryWriter &memory_writer)
 	{
 
 		u32* pPixel		= (u32*)MappedData.pData;
-		u32* pEnd		= pPixel+(Device.dwWidth*Device.dwHeight);
+		u32* pEnd		= pPixel+(Device.TargetWidth*Device.TargetHeight);
 
 		//	Kill alpha and swap r and b.
 		for (;pPixel!=pEnd; pPixel++)	
@@ -458,9 +458,9 @@ void CRender::ScreenshotAsyncEnd(CMemoryWriter &memory_writer)
 				);
 		}
 
-		memory_writer.w( &Device.dwWidth, sizeof(Device.dwWidth) );
-		memory_writer.w( &Device.dwHeight, sizeof(Device.dwHeight) );
-		memory_writer.w( MappedData.pData, (Device.dwWidth*Device.dwHeight)*4 );
+		memory_writer.w( &Device.TargetWidth, sizeof(Device.TargetWidth) );
+		memory_writer.w( &Device.TargetHeight, sizeof(Device.TargetHeight) );
+		memory_writer.w( MappedData.pData, (Device.TargetWidth*Device.TargetHeight)*4 );
 	}
 
 	pTex->Unmap(0);
@@ -487,8 +487,8 @@ void CRender::ScreenshotAsyncEnd(CMemoryWriter &memory_writer)
 	u32 rtWidth = Target->get_rtwidth();
 	u32 rtHeight = Target->get_rtheight();
 #else	//	RENDER != R_R1
-	u32 rtWidth = Device.dwWidth;
-	u32 rtHeight = Device.dwHeight;
+	u32 rtWidth = Device.TargetWidth;
+	u32 rtHeight = Device.TargetHeight;
 #endif	//	RENDER != R_R1
 
 	// Image processing (gamma-correct)

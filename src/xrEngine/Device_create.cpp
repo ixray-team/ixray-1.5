@@ -183,10 +183,10 @@ void CRenderDevice::Create	()
 	fASPECT				= 1.f;
 	m_pRender->Create	(
 		m_hWnd,
-		dwWidth,
-		dwHeight,
-		fWidth_2,
-		fHeight_2,
+		TargetWidth,
+		TargetHeight,
+		HalfTargetWidth,
+		HalfTargetHeight,
 #ifdef INGAME_EDITOR
 		editor() ? false :
 #endif // #ifdef INGAME_EDITOR

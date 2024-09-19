@@ -111,8 +111,8 @@ void CUICursor::UpdateCursorPosition()
 
 	vPrevPos = vPos;
 
-	vPos.x			= (float)p.x * (UI_BASE_WIDTH/(float)Device.dwWidth);
-	vPos.y			= (float)p.y * (UI_BASE_HEIGHT/(float)Device.dwHeight);
+	vPos.x			= (float)p.x * (UI_BASE_WIDTH/(float)Device.TargetWidth);
+	vPos.y			= (float)p.y * (UI_BASE_HEIGHT/(float)Device.TargetHeight);
 	clamp			(vPos.x, 0.f, UI_BASE_WIDTH);
 	clamp			(vPos.y, 0.f, UI_BASE_HEIGHT);
 }
@@ -121,8 +121,8 @@ void CUICursor::SetUICursorPosition(Fvector2 pos)
 {
 	vPos		= pos;
 	POINT		p;
-	p.x			= iFloor(vPos.x / (UI_BASE_WIDTH/(float)Device.dwWidth));
-	p.y			= iFloor(vPos.y / (UI_BASE_HEIGHT/(float)Device.dwHeight));
+	p.x			= iFloor(vPos.x / (UI_BASE_WIDTH/(float)Device.TargetWidth));
+	p.y			= iFloor(vPos.y / (UI_BASE_HEIGHT/(float)Device.TargetHeight));
 
 	SetCursorPos(p.x, p.y);
 }

@@ -46,11 +46,11 @@ void CRenderTarget::phase_ssao	()
 	fSSAOKernelSize /= tan(deg2rad(Device.fFOV));
 
 	// Fill VB
-	float	scale_X				= float(Device.dwWidth)	* 0.5f / float(TEX_jitter);
-	float	scale_Y				= float(Device.dwHeight) * 0.5f / float(TEX_jitter);
+	float	scale_X				= float(Device.TargetWidth)	* 0.5f / float(TEX_jitter);
+	float	scale_Y				= float(Device.TargetHeight) * 0.5f / float(TEX_jitter);
 
-	float _w = float(Device.dwWidth) * 0.5f;
-	float _h = float(Device.dwHeight) * 0.5f;
+	float _w = float(Device.TargetWidth) * 0.5f;
+	float _h = float(Device.TargetHeight) * 0.5f;
 
 	set_viewport(HW.pDevice, _w, _h);
 
@@ -99,7 +99,7 @@ void CRenderTarget::phase_ssao	()
 		//RCache.set_Stencil( FALSE, D3DCMP_EQUAL, 0x01, 0xff, 0 );
 	}  
 
-	set_viewport(HW.pDevice, float(Device.dwWidth), float(Device.dwHeight));
+	set_viewport(HW.pDevice, float(Device.TargetWidth), float(Device.TargetHeight));
 
 	RCache.set_Stencil	(FALSE);
 }
@@ -122,12 +122,12 @@ void CRenderTarget::phase_downsamp	()
 	FLOAT ColorRGBA[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	HW.pDevice->ClearRenderTargetView(rt_half_depth->pRT, ColorRGBA);
 
-	u32 w = Device.dwWidth;
-	u32 h = Device.dwHeight;
+	u32 w = Device.TargetWidth;
+	u32 h = Device.TargetHeight;
 
 	if (RImplementation.o.ssao_half_data)
 	{
-		set_viewport(HW.pDevice, float(Device.dwWidth) * 0.5f, float(Device.dwHeight) * 0.5f);
+		set_viewport(HW.pDevice, float(Device.TargetWidth) * 0.5f, float(Device.TargetHeight) * 0.5f);
 		w /= 2;
 		h /= 2;
 	}
@@ -158,5 +158,5 @@ void CRenderTarget::phase_downsamp	()
 	}
 
 	if (RImplementation.o.ssao_half_data)
-		set_viewport(HW.pDevice, float(Device.dwWidth), float(Device.dwHeight));
+		set_viewport(HW.pDevice, float(Device.TargetWidth), float(Device.TargetHeight));
 }

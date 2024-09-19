@@ -164,7 +164,7 @@ void CConsole::OutFont( LPCSTR text, float& pos_y )
 {
 	CGameFont* pFont = g_FontManager->GetFont(m_fontConsoleName);
 	float str_length = pFont->SizeOf_( text );
-	float scr_width  = 1.98f * Device.fWidth_2;
+	float scr_width  = 1.98f * Device.HalfTargetWidth;
 	if( str_length > scr_width ) //1024.0f
 	{
 		float f	= 0.0f;
@@ -222,7 +222,7 @@ void CConsole::OnRender()
 	m_prompt_width = pFont->WidthOf(ioc_prompt);
 	m_cursor_width = pFont->WidthOf(ch_cursor);
 
-	m_line_height = pFont->CurrentHeight_() / (Device.dwHeight/2);
+	m_line_height = pFont->CurrentHeight_() / Device.HalfTargetHeight;
 
 	bool bGame = false;	
 	if ( ( g_pGameLevel && g_pGameLevel->bReady ) ||
@@ -238,11 +238,11 @@ void CConsole::OnRender()
 	DrawBackgrounds(bGame);
 
 	float fMaxY = bGame ? 0.0f : 1.0f;
-	float dwMaxY = (float)Device.dwHeight;
-	float maxStrWidth = Device.dwWidth * 0.9f; // max cmd str width
+	float dwMaxY = (float)Device.TargetHeight;
+	float maxStrWidth = Device.TargetWidth * 0.9f; // max cmd str width
 
 	float outY = fMaxY - m_line_height * 1.1f;
-	float relativeX = 1.0f / (Device.dwWidth/2);
+	float relativeX = 1.0f / Device.HalfTargetWidth;
 
 	const char* strBeforeCursor = ec().str_before_cursor();
 	const char* strBeforeSelected = ec().str_before_mark();
@@ -336,7 +336,7 @@ void CConsole::DrawBackgrounds(bool bGame) {
 	float ky = (bGame)? 0.5f : 1.0f;
 
 	Frect r;
-	r.set( 0.0f, 0.0f, float(Device.dwWidth), ky * float(Device.dwHeight) );
+	r.set( 0.0f, 0.0f, float(Device.TargetWidth), ky * float(Device.TargetHeight) );
 
 	UIRender->SetShader( **m_hShader_back );
 	// 6 = back, 12 = tips, (VIEW_TIPS_COUNT+1)*6 = highlight_words, 12 = scroll
@@ -375,7 +375,7 @@ void CConsole::DrawBackgrounds(bool bGame) {
 	pr.x2 = pr.x1 + maxStrWidth + 2 * m_cursor_width;
 
 	pr.y1 = UI_BASE_HEIGHT * 0.5f;
-	pr.y1 *= float(Device.dwHeight)/UI_BASE_HEIGHT;
+	pr.y1 *= float(Device.TargetHeight)/UI_BASE_HEIGHT;
 
 	pr.y2 = pr.y1 + tipsHeight;
 

@@ -443,20 +443,20 @@ void CController::UpdateCL()
 			HUD().GetUI()->UIGame()->RemoveCustomStatic("controller_fx2");
 			SDrawStaticStruct* s = HUD().GetUI()->UIGame()->AddCustomStatic("controller_fx", true);
 			
-			float x1 = Device.dwWidth  / 2 - ((Device.dwWidth	/ 2) * percent);
-			float y1 = Device.dwHeight / 2 - ((Device.dwHeight	/ 2) * percent);
-			float x2 = Device.dwWidth  / 2 + ((Device.dwWidth	/ 2) * percent);
-			float y2 = Device.dwHeight / 2 + ((Device.dwHeight	/ 2) * percent);
+			float x1 = Device.TargetWidth  / 2 - ((Device.TargetWidth / 2) * percent);
+			float y1 = Device.TargetHeight / 2 - ((Device.TargetHeight / 2) * percent);
+			float x2 = Device.TargetWidth / 2 + ((Device.TargetWidth / 2) * percent);
+			float y2 = Device.TargetHeight / 2 + ((Device.TargetHeight / 2) * percent);
 
 			s->wnd()->SetWndRect				(Frect().set(x1,y1,x2-x1,y2-y1));
 		} else if (percent2 > 0){
 			HUD().GetUI()->UIGame()->RemoveCustomStatic("controller_fx");
 			SDrawStaticStruct* s = HUD().GetUI()->UIGame()->AddCustomStatic("controller_fx2", true);
 			
-			float x1 = Device.dwWidth  / 2 - ((Device.dwWidth	/ 2) * percent2);
-			float y1 = Device.dwHeight / 2 - ((Device.dwHeight	/ 2) * percent2);
-			float x2 = Device.dwWidth  / 2 + ((Device.dwWidth	/ 2) * percent2);
-			float y2 = Device.dwHeight / 2 + ((Device.dwHeight	/ 2) * percent2);
+			float x1 = Device.TargetWidth / 2 - ((Device.TargetWidth / 2) * percent2);
+			float y1 = Device.TargetHeight / 2 - ((Device.TargetHeight / 2) * percent2);
+			float x2 = Device.TargetWidth / 2 + ((Device.TargetWidth / 2) * percent2);
+			float y2 = Device.TargetHeight / 2 + ((Device.TargetHeight / 2) * percent2);
 
 			s->wnd()->SetWndRect				(Frect().set(x1,y1,x2-x1,y2-y1));
 		} else {
